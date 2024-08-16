@@ -6,6 +6,7 @@ This repo contains the dotfiles for my system, plus a script to prepare a new Ma
 
 ### 1.1 Install brew and packages:
 
+Customize the packages in `install.sh` and the personal paths at the end of the file:
 ```
 ./install.sh
 ```
