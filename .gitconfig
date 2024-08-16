@@ -1,0 +1,26 @@
+[filter "media"]
+	clean = git-media-clean %f
+	smudge = git-media-smudge %f
+[user]
+	name = Diego Giorgini
+	email = diego.giorgini@icloud.com
+[core]
+	autocrlf = input
+	editor = micro
+	excludesfile = /Users/diego/.gitignore_global
+[credential]
+	helper = store
+[filter "lfs"]
+	required = true
+	clean = git-lfs clean %f
+	smudge = git-lfs smudge %f
+[diff]
+    tool = vimdiff
+[color]
+	ui = true
+[pull]
+	rebase = false
+[init]
+	defaultBranch = main
+[push]
+	followTags = true

@@ -1,0 +1,97 @@
+## Use auto-indentation
+#set autoindent
+# It makes pasting to nano extremely unuseful
+
+## Turn tabstospaces
+set tabstospaces
+
+## Constantly display the cursor position in the status bar.
+#set const
+
+# If the mouse is available, use it to change cursor position.
+set mouse
+
+## Cut only to the end of line
+# set cut
+
+#bind ^[b prevword main
+#bind ^[f nextword main
+
+
+include "/Users/diego/Documents/Sorgenti/nanorc/apacheconf.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/arduino.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/asciidoc.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/asm.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/awk.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/c.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/cmake.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/coffeescript.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/colortest.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/conf.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/csharp.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/css.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/cython.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/dot.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/email.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/Dockerfile.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/fish.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/fortran.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/gentoo.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/git.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/gitcommit.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/glsl.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/go.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/groff.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/haml.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/haskell.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/html.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/ini.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/inputrc.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/java.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/javascript.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/js.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/json.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/keymap.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/kickstart.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/ledger.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/lisp.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/lua.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/makefile.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/man.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/markdown.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/mpdconf.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/mutt.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/nanorc.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/nginx.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/ocaml.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/patch.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/peg.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/perl.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/perl6.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/php.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/pkg-config.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/pkgbuild.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/po.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/pov.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/privoxy.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/python.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/reST.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/rpmspec.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/ruby.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/rust.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/scala.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/sed.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/sh.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/sls.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/sql.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/swift.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/systemd.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/tcl.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/tex.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/vala.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/vi.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/xml.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/xresources.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/yaml.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/yum.nanorc"
+include "/Users/diego/Documents/Sorgenti/nanorc/zsh.nanorc"
