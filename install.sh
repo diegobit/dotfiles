@@ -83,7 +83,6 @@ brew install node
 echo "👉 Install docker and colima"
 brew install docker docker-credential-helper docker-buildx docker-completion docker-compose
 brew install colima
-echo "---- Follow the instructions at the end to complete the installation"
 
 # OTHERS
 brew install ngrok
@@ -129,25 +128,4 @@ mkdir -p "$HOME/Progetti/plg"
 # ---------------------------------------------
 # Manual actions
 # ---------------------------------------------
-
-echo "⚠️  Manual actions:"
-echo "---"
-echo "Install a FONT: either the Meslo Nerd Font for powerlevel10k here:"
-echo "https://github.com/romkatv/powerlevel10k#meslo-nerd-font-patched-for-powerlevel10k"
-echo "or JetBrains Mono NerdFont"
-echo "https://www.nerdfonts.com/font-downloads"
-echo "---"
-echo "Add NAVI repositories:"
-echo "navi browse"
-echo "---"
-echo "Handle dotfiles with stow. See the README.md"
-
-# DOCKER COMPOSE
-echo "To complete DOCKER-COMPOSE install wtih colima. Do the following:"
-echo "    ln -sfn $HOMEBREW_PREFIX/opt/docker-compose/bin/docker-compose ~/.docker/cli-plugins/docker-compose"
-echo "DOCKER BUILDX might not work. Check the comments or the install guides online"
-echo "    mkdir -p ~/.docker/cli-plugins"
-echo "    ln -sfn $(which docker-buildx) ~/.docker/cli-plugins/docker-buildx"
-echo "To keep using the `docker build` install but with buildkit:"
-echo "https://docs.docker.com/engine/reference/commandline/buildx_install/"
-echo "    docker buildx install"
+echo "⚠️  Proceed with manual steps from README.md"
