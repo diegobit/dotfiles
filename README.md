@@ -6,7 +6,6 @@ This repo contains the dotfiles for my system, plus a script to prepare a new Ma
 Install brew and packages:
 
 ```
-chmod +x *.sh
 ./install.sh
 ```
 
@@ -18,17 +17,24 @@ git clone git@github.com:diegobit/dotfiles.git
 cd dotfiles
 ```
 
-then use GNU stow to create symlinks
+then use GNU stow to create symlinks. For an explanation on this dotfiles management, see:
+https://youtu.be/y6XCebnB9gs?si=PVgjVFBUp82NuZwH
 
 ```
 stow .
 ```
 
+## Install VSCode extensions
+
+```
+./install_vscode_extensions.sh
+```
+
 ## Other personal settings
 - Configure the username of .gitconfig
 
-### gcloud
-- login with ait, then cd into `.config/gcloud`, then copy `application_default_credentials.json` to ait.json
-- repeat for logifuture
+### gcloud with multiple accounts
+- login with `<account_one>`, then cd into `.config/gcloud`, then copy `application_default_credentials.json` to `<account_one>.json`
+- repeat for `<account_two>`
 - activate one configuration with `gconf logi`
 
