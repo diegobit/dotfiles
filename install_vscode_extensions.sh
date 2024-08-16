@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "👉 Installing VSCode extensions"
+echo "👉 Installing VSCode extensions. Location: '$HOME/.vscode/extensions'"
 
 # Visual Studio Code :: Package list
 pkglist=(
