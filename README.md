@@ -73,3 +73,9 @@ Install VSCode, then:
 - repeat for `<account_two>`
 - activate one configuration with `gconf logi`
 
+## 5. Notes
+The most configured apps are (in order):
+- zsh (.zshrc)
+- karabiner elements (.config/karabiner)
+- neovim (.config/nvim), which is customized from kickstart.vim settings
+- vscode settings
