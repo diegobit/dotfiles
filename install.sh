@@ -124,6 +124,8 @@ echo "Making a Projects folder in ~/Documents/Progetti if it doesn't already exi
 mkdir -p "$HOME/Documents/Progetti"
 echo "Making a Playground folder in ~/Progetti/Playgrounds if it doesn't already exist"
 mkdir -p "$HOME/Progetti/plg"
+echo "Making link to notes"
+ln -s "$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/Note" "$HOME/note"
 
 # ---------------------------------------------
 # Manual actions
