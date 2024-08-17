@@ -76,7 +76,7 @@ option_as_alt = "OnlyLeft"
 
 # the default padding
 [window.padding]
-x = 1
+x = 2
 y = 0
 
 # vertical, slightly thickened cursor
