@@ -483,6 +483,12 @@ require('lazy').setup({
                 vim.api.nvim_clear_autocmds { group = 'kickstart-lsp-highlight', buffer = event2.buf }
               end,
             })
+
+            vim.api.nvim_create_autocmd('VimLeavePre', {
+              callback = function()
+                vim.opt.guicursor = 'a:ver25-blinkon1'
+              end,
+            })
           end
 
           -- The following code creates a keymap to toggle inlay hints in your
