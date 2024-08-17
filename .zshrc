@@ -94,7 +94,7 @@ local _black="\[\e[0;90m\]"
 ##############################
 # iterm integration
 ##############################
-source ~/.iterm2_shell_integration.zsh
+#source ~/.iterm2_shell_integration.zsh
 
 ##############################
 # Zeoxide

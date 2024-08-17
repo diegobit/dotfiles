@@ -1,0 +1,119 @@
+live_config_reload = true
+
+[env]
+TERM = "xterm-256color"
+
+# start zsh then attach to a consistent tmux session that lives beyond quitting the app
+#[shell]
+# program = "/etc/profiles/per-user/danielcorin/bin/zsh"
+# args = ["--login", "-c", "tmux new-session -A -s main-alacritty"]
+
+[font]
+size = 15.0
+
+# installed via nix
+[font.bold]
+family = "JetBrainsMono Nerd Font"
+style = "Bold"
+
+[font.italic]
+family = "JetBrainsMono Nerd Font"
+style = "Italic"
+
+[font.normal]
+family = "JetBrainsMono Nerd Font"
+style = "Regular"
+
+[font.bold_italic]
+family = "JetBrainsMono Nerd Font"
+style = "Italic"
+
+# [colors.selection]
+# text = "#ffffff"
+# background
+
+# Midnight Haze theme
+# https://github.com/alacritty/alacritty-theme/blob/master/themes/midnight-haze.toml
+# Default colors
+[colors.primary]
+background = '#121212'
+foreground = '#d8dee9'
+
+# Normal colors
+[colors.normal]
+black   = '#2c2c3d'
+red     = '#ff6e6e'
+green   = '#9ec875'
+yellow  = '#ffa759'
+blue    = '#70a7d4'
+magenta = '#d291e0'
+cyan    = '#96e0e0'
+white   = '#d8dee9'
+
+# Bright colors
+[colors.bright]
+black   = '#414166'
+red     = '#ff8d8d'
+green   = '#b3d987'
+yellow  = '#ffc57f'
+blue    = '#9bb3d3'
+magenta = '#ffa1ff'
+cyan    = '#9cd8d8'
+white   = '#ffffff'
+
+# highlight copies text, only really useful when a pane is in full screen unless selection isn't multi-line
+[selection]
+save_to_clipboard = true
+
+[window]
+opacity = 0.9999999
+decorations = "Full"
+dynamic_padding = true
+dynamic_title = true
+decorations_theme_variant = "Dark"
+resize_increments = true
+option_as_alt = "OnlyLeft"
+
+# the default padding
+[window.padding]
+x = 1
+y = 0
+
+# vertical, slightly thickened cursor
+[cursor]
+style.shape = "Beam"
+style.blinking = "Always" 
+unfocused_hollow = false
+thickness = 0.2
+
+[scrolling]
+history = 20000
+
+[keyboard]
+bindings = [
+    # Fullscreen
+    { key = "F", mods = "Control|Shift|Alt|Command", action = "ToggleFullscreen"},
+
+    # Navigation:
+    # opt + right and left jump between words
+    { key = "Right", mods = "Alt", chars = "\u001BF" },
+    { key = "Left",  mods = "Alt", chars = "\u001BB" },
+
+    # TMUX Navigation:
+    # ⌘ + ⇧ + d adds a pane below (splits window horizontally)
+    # { key = "D",  mods = "Command|Shift", chars = "\u0002\"" },
+    # ⌘ + w prompts you to close the pane, "y" to confirm
+    # { key = "W",  mods = "Command", chars = "\u0002x" },
+    # ⌘ + arrows are for directional navigation around the panes
+    # move down a pane
+    # { key = "Down", mods = "Command", chars = "\u0002\u001b[B" },
+    # move up a pane
+    # { key = "Up", mods = "Command", chars = "\u0002\u001b[A" },
+    # move left a pane
+    # { key = "Left", mods = "Command", chars = "\u0002\u001b[D" },
+    # move right a pane
+    # { key = "Right", mods = "Command", chars = "\u0002\u001b[C" },
+    # ⌘ + ⇧ + enter maximizes the pane within the alacritty window
+    # { key = "Enter", mods = "Command|Shift", chars = "\u0002z" }
+]
+
