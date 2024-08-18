@@ -7,6 +7,8 @@ return {
     local neocodeium = require 'neocodeium'
     neocodeium.setup {
       debounce = true,
+      show_label = true,
+      silent = true,
     }
     vim.keymap.set('i', '<A-a>', neocodeium.accept)
     vim.keymap.set('i', '<A-w>', neocodeium.accept_word)
