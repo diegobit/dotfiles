@@ -32,6 +32,7 @@ brew install stow
 # ---------------------------------------------
 # Terminal/zsh
 # ---------------------------------------------
+brew install --cask kitty
 brew install neovim
 brew install zsh-autosuggestions
 brew install zsh-syntax-highlighting
@@ -49,6 +50,7 @@ brew install zoxide
 # ---------------------------------------------
 brew install --cask font-jetbrains-mono
 brew install --cask font-fira-code
+brew install --cask font-symbols-only-nerd-font # font for kitty
 
 # ---------------------------------------------
 # Tools
