@@ -269,10 +269,6 @@
         "when": "editorTextFocus && config.gitlens.keymap == 'alternate' && gitlens:activeFileStatus =~ /tracked/"
     },
     {
-        "key": "alt+w",
-        "command": "editor.action.toggleWordWrap"
-    },
-    {
         "key": "alt+z",
         "command": "-editor.action.toggleWordWrap"
     },
@@ -484,11 +480,6 @@
     {
         "key": "f1",
         "command": "-workbench.action.showCommands"
-    },
-    {
-        "key": "alt+a",
-        "command": "editor.action.inlineSuggest.commit",
-        "when": "inlineSuggestionHasIndentationLessThanTabSize && inlineSuggestionVisible && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetVisible"
     },
     {
         "key": "tab",
@@ -1183,29 +1174,14 @@
         "when": "inlineEditsVisible"
     },
     {
-        "key": "alt+a",
-        "command": "editor.action.inlineEdit.accept",
-        "when": "cursorAtInlineEdit && inlineEditVisible && !editorReadonly"
-    },
-    {
         "key": "tab",
         "command": "-editor.action.inlineEdit.accept",
         "when": "cursorAtInlineEdit && inlineEditVisible && !editorReadonly"
     },
     {
-        "key": "alt+a",
-        "command": "editor.action.accessibleViewAcceptInlineCompletion",
-        "when": "accessibleViewIsShown && accessibleViewCurrentProviderId == 'inlineCompletions'"
-    },
-    {
         "key": "ctrl+/",
         "command": "-editor.action.accessibleViewAcceptInlineCompletion",
         "when": "accessibleViewIsShown && accessibleViewCurrentProviderId == 'inlineCompletions'"
-    },
-    {
-        "key": "alt+a",
-        "command": "inlineChat.acceptChanges",
-        "when": "inlineChatHasProvider && inlineChatVisible && !inlineChatDocumentChanged || inlineChatHasProvider && inlineChatVisible && config.inlineChat.mode != 'preview'"
     },
     {
         "key": "cmd+enter",
@@ -1228,26 +1204,6 @@
         "when": "false"
     },
     {
-        "key": "alt+l",
-        "command": "editor.action.accessibleViewAcceptInlineCompletion",
-        "when": "accessibleViewIsShown && accessibleViewCurrentProviderId == 'inlineCompletions'"
-    },
-    {
-        "key": "alt+l",
-        "command": "editor.action.inlineEdit.accept",
-        "when": "cursorAtInlineEdit && inlineEditVisible && !editorReadonly"
-    },
-    {
-        "key": "alt+l",
-        "command": "editor.action.inlineSuggest.commit",
-        "when": "inlineSuggestionHasIndentationLessThanTabSize && inlineSuggestionVisible && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetVisible"
-    },
-    {
-        "key": "alt+l",
-        "command": "inlineChat.acceptChanges",
-        "when": "inlineChatHasProvider && inlineChatVisible && !inlineChatDocumentChanged || inlineChatHasProvider && inlineChatVisible && config.inlineChat.mode != 'preview'"
-    },
-    {
         "key": "shift+cmd+/",
         "command": "editor.action.blockComment",
         "when": "editorTextFocus && !editorReadonly"
@@ -1256,5 +1212,37 @@
         "key": "shift+alt+a",
         "command": "-editor.action.blockComment",
         "when": "editorTextFocus && !editorReadonly"
+    },
+    {
+        "key": "alt+l",
+        "command": "editor.action.inlineSuggest.acceptNextLine"
+    },
+    {
+        "key": "alt+n",
+        "command": "editor.action.inlineSuggest.showNext",
+        "when": "inlineSuggestionVisible && !editorReadonly"
+    },
+    {
+        "key": "alt+]",
+        "command": "-editor.action.inlineSuggest.showNext",
+        "when": "inlineSuggestionVisible && !editorReadonly"
+    },
+    {
+        "key": "shift+alt+n",
+        "command": "editor.action.inlineSuggest.showPrevious",
+        "when": "inlineSuggestionVisible && !editorReadonly"
+    },
+    {
+        "key": "alt+[",
+        "command": "-editor.action.inlineSuggest.showPrevious",
+        "when": "inlineSuggestionVisible && !editorReadonly"
+    },
+    {
+        "key": "alt+a",
+        "command": "editor.action.inlineSuggest.commit"
+    },
+    {
+        "key": "alt+w",
+        "command": "editor.action.inlineSuggest.acceptNextWord"
     }
 ]
