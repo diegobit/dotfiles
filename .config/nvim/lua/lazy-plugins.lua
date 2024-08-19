@@ -42,6 +42,8 @@ require('lazy').setup({
 
   require 'plugins/zen-mode',
 
+  require 'plugins/kitty-scrollback',
+
   -- require 'plugins/indent_line',
 
   -- require 'plugins/debug',
@@ -53,7 +55,6 @@ require('lazy').setup({
   -- require 'plugins/neo-tree',
 
   -- require 'plugins/nvim-possession'
-
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
