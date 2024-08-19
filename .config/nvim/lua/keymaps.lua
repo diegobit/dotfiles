@@ -46,11 +46,29 @@ vim.keymap.set('n', '<C-q>', '<Cmd>q<CR>', { desc = 'Quit current buffer' })
 vim.keymap.set('i', '<C-s>', '<cmd>w<CR>', { desc = 'Save file' })
 vim.keymap.set('n', '<C-s>', '<cmd>w<CR>', { desc = 'Save file' })
 
--- clipboard
--- Delete without yanking
-vim.keymap.set('n', '<leader>d', '"_d', { desc = 'Delete without yanking' })
-vim.keymap.set('v', '<leader>d', '"_d', { desc = 'Delete without yanking' })
--- Replace currently selected text without yanking
-vim.keymap.set('v', '<leader>p', '"_dP', { desc = 'Replace without yanking' })
+-- clipboard and yanking. What yanks?
+-- Rule of thumb: yanks what visual selects; except for d, because there is already x
+--
+--      char:   d    D    x    X    c    C
+--      mode:  v n  v n  v n  v n  v n  v n
+--
+-- Yank? YES:            x    x    x    x
+--        NO:  x x  x x    x    x    x    x
+--
+vim.keymap.set('n', 'd', '"_d', { desc = 'Delete without yanking' })
+vim.keymap.set('v', 'd', '"_d', { desc = 'Delete without yanking' })
+vim.keymap.set('n', 'D', '"_D', { desc = 'Delete char without yanking' })
+vim.keymap.set('v', 'D', '"_D', { desc = 'Delete char without yanking' })
+
+vim.keymap.set('n', 'x', '"_x', { desc = 'Delete char without yanking' })
+vim.keymap.set('n', 'X', '"_x', { desc = 'Delete char without yanking' })
+
+vim.keymap.set('n', 'c', '"_c', { desc = 'Change without yanking' })
+vim.keymap.set('n', 'C', '"_C', { desc = 'Change without yanking' })
+
+-- OLD METHOD with leader
+-- vim.keymap.set('n', '<leader>d', '"_d', { desc = 'Delete without yanking' })
+-- vim.keymap.set('v', '<leader>d', '"_d', { desc = 'Delete without yanking' })
+-- vim.keymap.set('v', '<leader>p', '"_dP', { desc = 'Replace without yanking' })
 
 -- vim: ts=2 sts=2 sw=2 et
