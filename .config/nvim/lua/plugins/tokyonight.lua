@@ -12,10 +12,10 @@ return {
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
       vim.cmd.colorscheme 'tokyonight-night'
 
-      -- You can configure highlights by doing something like:
+      -- Comments and line numbers
       vim.cmd.hi 'Comment gui=none'
-      vim.cmd.hi 'Comment guifg=#4E567B'
-      vim.cmd.hi 'LineNr guifg=#4E567B'
+      vim.cmd.hi 'Comment guifg=#a76b61'
+      vim.cmd.hi 'LineNr  guifg=#a76b61'
       vim.cmd.hi 'LineNrAbove guifg=#4E567B'
       vim.cmd.hi 'LineNrBelow guifg=#4E567B'
     end,
