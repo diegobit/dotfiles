@@ -44,6 +44,8 @@ require('lazy').setup({
 
   require 'plugins/kitty-scrollback',
 
+  -- require 'plugins/harpoon',
+
   -- require 'plugins/indent_line',
 
   -- require 'plugins/debug',

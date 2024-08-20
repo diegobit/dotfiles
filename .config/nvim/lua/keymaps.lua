@@ -71,4 +71,7 @@ vim.keymap.set('n', 'C', '"_C', { desc = 'Change without yanking' })
 -- vim.keymap.set('v', '<leader>d', '"_d', { desc = 'Delete without yanking' })
 -- vim.keymap.set('v', '<leader>p', '"_dP', { desc = 'Replace without yanking' })
 
+-- Quick access to mbbill/undotree
+vim.keymap.set('n', '<leader>u', '<Cmd>UndotreeToggle<CR>', { desc = 'Toggle undotree' })
+
 -- vim: ts=2 sts=2 sw=2 et
