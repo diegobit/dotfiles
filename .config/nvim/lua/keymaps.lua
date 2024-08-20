@@ -71,7 +71,7 @@ vim.keymap.set('n', 'C', '"_C', { desc = 'Change without yanking' })
 -- vim.keymap.set('v', '<leader>p', '"_dP', { desc = 'Replace without yanking' })
 
 -- Quick access to mbbill/undotree
-vim.keymap.set('n', '<leader>u', '<Cmd>UndotreeToggle<CR>', { desc = 'Toggle undotree' })
+-- vim.keymap.set('n', '<leader>u', vim.cmd.UndotreeToggle, { noremap = true, silent = true, desc = 'Toggle undotree' })
 
 -- akinsho/toggleterm enable
 -- vim.keymap.set('n', '<leader>t', '<Cmd>ToggleTerm<CR>', { desc = 'Toggle terminal' })
