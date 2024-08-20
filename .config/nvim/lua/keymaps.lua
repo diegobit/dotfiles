@@ -9,8 +9,6 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
 -- is not what someone will guess without a bit more experience.
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
--- Toggleterm enable
-vim.keymap.set('n', '<leader>tt', '<Cmd>ToggleTerm<CR>', { desc = 'Toggle terminal' })
 
 -- Disable arrow keys in normal mode to learn vim motions
 vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
@@ -73,5 +71,8 @@ vim.keymap.set('n', 'C', '"_C', { desc = 'Change without yanking' })
 
 -- Quick access to mbbill/undotree
 vim.keymap.set('n', '<leader>u', '<Cmd>UndotreeToggle<CR>', { desc = 'Toggle undotree' })
+
+-- akinsho/toggleterm enable
+-- vim.keymap.set('n', '<leader>t', '<Cmd>ToggleTerm<CR>', { desc = 'Toggle terminal' })
 
 -- vim: ts=2 sts=2 sw=2 et
