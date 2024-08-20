@@ -9,22 +9,6 @@
                 "parameters": { "basic.simultaneous_threshold_milliseconds": 750 },
                 "rules": [
                     {
-                        "description": "hyper+caps_lock -> caps_lock [must be first rule]",
-                        "manipulators": [
-                            {
-                                "from": {
-                                    "key_code": "caps_lock",
-                                    "modifiers": {
-                                        "mandatory": ["left_shift", "left_command", "left_control"],
-                                        "optional": ["any"]
-                                    }
-                                },
-                                "to": [{ "key_code": "caps_lock" }],
-                                "type": "basic"
-                            }
-                        ]
-                    },
-                    {
                         "description": "CAPS_LOCK LAYER: caps_lock -> ctrl. Send escape when pressed alone [300ms]",
                         "manipulators": [
                             {
