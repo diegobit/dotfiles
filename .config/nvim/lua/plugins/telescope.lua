@@ -93,6 +93,9 @@ return {
       vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[s]earch [f]iles by name' })
       vim.keymap.set('n', '<leader>sF', builtin.git_files, { desc = '[s]earch [F]iles on Git by name' })
       vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[s]earch grep /w current [W]ord' })
+      vim.keymap.set('n', '<leader>sG', function()
+        builtin.live_grep { additional_args = { '-uu' } }
+      end, { desc = '[s]earch [G]rep in All Files w/ hidden' })
       vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[s]earch [g]rep in All Files' })
       vim.keymap.set('n', '<leader>st', builtin.builtin, { desc = '[s]earch [t]elescope commands' })
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[s]earch [h]elp' })
