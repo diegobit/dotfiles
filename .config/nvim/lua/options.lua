@@ -63,6 +63,6 @@ vim.opt.scrolloff = 10
 vim.o.expandtab = true
 
 -- number of lines to keep when scrolling out of view
-vim.opt.scrolloff = 5
+vim.opt.scrolloff = 6
 
 -- vim: ts=2 sts=2 sw=2 et
