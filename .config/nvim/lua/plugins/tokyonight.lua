@@ -14,8 +14,8 @@ return {
 
       -- Comments and line numbers
       vim.cmd.hi 'Comment gui=none'
-      vim.cmd.hi 'Comment guifg=#a76b61'
-      vim.cmd.hi 'LineNr  guifg=#a76b61'
+      vim.cmd.hi 'Comment guifg=#95606a'
+      vim.cmd.hi 'LineNr  guifg=#95606a'
       vim.cmd.hi 'LineNrAbove guifg=#4E567B'
       vim.cmd.hi 'LineNrBelow guifg=#4E567B'
     end,
