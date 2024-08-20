@@ -6,7 +6,7 @@
 	email = diego.giorgini@icloud.com
 [core]
 	autocrlf = input
-	editor = nvim --clean
+	editor = nvim
 	excludesfile = /Users/diego/.gitignore_global
 [credential]
 	helper = store
