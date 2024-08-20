@@ -34,15 +34,16 @@ vim.keymap.set('n', '<M-k>', ':m .-2<CR>==', { desc = 'Move line up' })
 vim.keymap.set('v', '<M-j>', ":m '>+1<CR>gv=gv", { desc = 'Move block down' })
 vim.keymap.set('v', '<M-k>', ":m '<-2<CR>gv=gv", { desc = 'Move block up' })
 
--- Zenmode
-vim.keymap.set('n', '<leader>z', ':ZenMode<CR>', { desc = 'Toggle Zenmode' })
-
 -- Quick exit
 vim.keymap.set('i', '<C-q>', '<Cmd>q<CR>', { desc = 'Quit current buffer' })
 vim.keymap.set('n', '<C-q>', '<Cmd>q<CR>', { desc = 'Quit current buffer' })
 -- Quick Save file
-vim.keymap.set('i', '<C-s>', '<cmd>w<CR>', { desc = 'Save file' })
-vim.keymap.set('n', '<C-s>', '<cmd>w<CR>', { desc = 'Save file' })
+vim.keymap.set('i', '<C-s>', '<Cmd>w<CR>', { desc = 'Save file' })
+vim.keymap.set('n', '<C-s>', '<Cmd>w<CR>', { desc = 'Save file' })
+
+-- Quick open explorer
+vim.keymap.set('i', '<C-e>', '<Cmd>:Ex<CR>', { desc = 'Open Netrw file explorer' })
+vim.keymap.set('n', '<C-e>', '<Cmd>:Ex<CR>', { desc = 'Open Netrw file explorer' })
 
 -- clipboard and yanking. What yanks?
 -- Rule of thumb: yanks what visual selects; except for d, because there is already x
@@ -74,5 +75,8 @@ vim.keymap.set('n', '<leader>u', '<Cmd>UndotreeToggle<CR>', { desc = 'Toggle und
 
 -- akinsho/toggleterm enable
 -- vim.keymap.set('n', '<leader>t', '<Cmd>ToggleTerm<CR>', { desc = 'Toggle terminal' })
+
+-- folke/zen-mode enable
+vim.keymap.set('n', '<leader>z', ':ZenMode<CR>', { desc = 'Toggle Zenmode' })
 
 -- vim: ts=2 sts=2 sw=2 et
