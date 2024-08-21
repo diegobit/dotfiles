@@ -99,7 +99,7 @@ local _black="\[\e[0;90m\]"
 ##############################
 # Zeoxide
 ##############################
-_evalcache zoxide init zsh
+_evalcache zoxide init --cmd j zsh
 #_evalcache zoxide --cmd cd zsh
 
 ##############################
