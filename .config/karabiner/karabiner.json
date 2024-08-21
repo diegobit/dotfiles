@@ -244,37 +244,6 @@
                                 "type": "basic"
                             },
                             {
-                                "from": {
-                                    "modifiers": { "optional": ["any"] },
-                                    "simultaneous": [
-                                        { "key_code": "spacebar" },
-                                        { "key_code": "g" }
-                                    ],
-                                    "simultaneous_options": {
-                                        "key_down_order": "strict",
-                                        "key_up_order": "strict_inverse",
-                                        "to_after_key_up": [
-                                            {
-                                                "set_variable": {
-                                                    "name": "SpaceFN",
-                                                    "value": 0
-                                                }
-                                            }
-                                        ]
-                                    }
-                                },
-                                "to": [
-                                    {
-                                        "set_variable": {
-                                            "name": "SpaceFN",
-                                            "value": 1
-                                        }
-                                    },
-                                    { "key_code": "home" }
-                                ],
-                                "type": "basic"
-                            },
-                            {
                                 "conditions": [
                                     {
                                         "name": "SpaceFN",
@@ -364,21 +333,6 @@
                                 "to": [{ "key_code": "page_down" }],
                                 "type": "basic"
                             },
-                            {
-                                "conditions": [
-                                    {
-                                        "name": "SpaceFN",
-                                        "type": "variable_if",
-                                        "value": 1
-                                    }
-                                ],
-                                "from": {
-                                    "key_code": "g",
-                                    "modifiers": { "optional": ["any"] }
-                                },
-                                "to": [{ "key_code": "home" }],
-                                "type": "basic"
-                            }
                         ]
                     },
                     {
