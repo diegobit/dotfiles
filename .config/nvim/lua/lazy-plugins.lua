@@ -52,11 +52,9 @@ require('lazy').setup({
 
   -- require 'plugins/debug',
 
-  -- require 'plugins/autopairs',
+  require 'plugins/autopairs',
 
-  -- require 'plugins/lint',
-
-  -- require 'plugins/neo-tree',
+  require 'plugins/lint',
 
   -- require 'plugins/nvim-possession'
 }, {
