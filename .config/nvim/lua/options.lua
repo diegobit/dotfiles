@@ -65,4 +65,7 @@ vim.o.expandtab = true
 -- number of lines to keep when scrolling out of view
 vim.opt.scrolloff = 6
 
+vim.diagnostic.config {
+  float = { border = 'rounded' },
+}
 -- vim: ts=2 sts=2 sw=2 et
