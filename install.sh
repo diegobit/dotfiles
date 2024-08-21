@@ -33,7 +33,6 @@ brew install stow
 # Terminal/zsh
 # ---------------------------------------------
 brew install --cask kitty
-brew install neovim
 brew install zsh-autosuggestions
 brew install zsh-syntax-highlighting
 brew install romkatv/powerlevel10k/powerlevel10k
@@ -44,6 +43,11 @@ broot --set-install-state installed
 brew install lazygit
 brew install fd
 brew install zoxide
+# ---------------------------------------------
+# Neovim
+# ---------------------------------------------
+brew install neovim
+brew install luarocks
 
 # ---------------------------------------------
 # Fonts
