@@ -10,7 +10,7 @@ return {
       show_label = true,
       silent = true,
     }
-    vim.keymap.set('i', '<A-a>', neocodeium.accept)
+    vim.keymap.set('i', '<A-y>', neocodeium.accept)
     vim.keymap.set('i', '<A-w>', neocodeium.accept_word)
     vim.keymap.set('i', '<A-l>', neocodeium.accept_line)
     vim.keymap.set('i', '<A-n>', neocodeium.cycle)
