@@ -37,12 +37,12 @@ vim.keymap.set('v', '<M-k>', ":m '<-2<CR>gv=gv", { desc = 'Move block up' })
 vim.keymap.set('i', '<C-q>', '<Cmd>q<CR>', { desc = 'Quit current buffer' })
 vim.keymap.set('n', '<C-q>', '<Cmd>q<CR>', { desc = 'Quit current buffer' })
 -- Quick Save file
-vim.keymap.set('i', '<C-s>', '<Cmd>w<CR>', { desc = 'Save file' })
-vim.keymap.set('n', '<C-s>', '<Cmd>w<CR>', { desc = 'Save file' })
+vim.keymap.set('i', '<C-s>', '<Cmd>w<CR><Esc>', { desc = 'Save file' })
+vim.keymap.set('n', '<C-s>', '<Cmd>w<CR><Esc>', { desc = 'Save file' })
 
 -- Quick open explorer
-vim.keymap.set('i', '<C-e>', '<Cmd>:Ex<CR>', { desc = 'Open Netrw file explorer' })
-vim.keymap.set('n', '<C-e>', '<Cmd>:Ex<CR>', { desc = 'Open Netrw file explorer' })
+vim.keymap.set('i', '<C-e>', '<Cmd>:Ex<CR><Esc>', { desc = 'Open Netrw file explorer' })
+vim.keymap.set('n', '<C-e>', '<Cmd>:Ex<CR><Esc>', { desc = 'Open Netrw file explorer' })
 
 -- clipboard and yanking. What yanks?
 -- Rule of thumb: yanks what visual selects; except for d, because there is already x
