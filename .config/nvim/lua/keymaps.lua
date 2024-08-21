@@ -81,12 +81,12 @@ vim.keymap.set('n', '<leader>y', '"*y', { desc = 'Yank to clipboard ("*y)' })
 vim.keymap.set('v', '<leader>y', '"*y', { desc = 'Yank to clipboard ("*y)' })
 
 -- Quick access to mbbill/undotree
--- vim.keymap.set('n', '<leader>u', vim.cmd.UndotreeToggle, { noremap = true, silent = true, desc = 'Toggle undotree' })
+vim.keymap.set('n', '<leader>tu', vim.cmd.UndotreeToggle, { noremap = true, silent = true, desc = '[t]oggle [u]ndotree' })
 
 -- akinsho/toggleterm enable
--- vim.keymap.set('n', '<leader>t', '<Cmd>ToggleTerm<CR>', { desc = 'Toggle terminal' })
+-- vim.keymap.set('n', '<leader>tu', '<Cmd>ToggleTerm<CR>', { desc = 'Toggle terminal' })
 
 -- folke/zen-mode enable
-vim.keymap.set('n', '<leader>z', ':ZenMode<CR>', { desc = 'Toggle Zenmode' })
+vim.keymap.set('n', '<leader>tz', ':ZenMode<CR>', { desc = '[t]oggle [z]enmode' })
 
 -- vim: ts=2 sts=2 sw=2 et
