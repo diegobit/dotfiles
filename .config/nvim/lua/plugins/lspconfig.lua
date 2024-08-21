@@ -223,6 +223,10 @@ return {
           end,
         },
       }
+
+      -- `ruff`, not ruff_lsp!.
+      -- See: https://docs.astral.sh/ruff/editors/setup/#neovim
+      require('lspconfig').ruff.setup {}
     end,
   },
 }
