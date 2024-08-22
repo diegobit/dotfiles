@@ -58,6 +58,8 @@ require('lazy').setup({
 
   -- require 'plugins/nvim-possession'
 
+  require 'plugins/markdown-preview',
+
   require 'plugins/borderline',
 }, {
   ui = {
