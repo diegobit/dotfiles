@@ -21,7 +21,6 @@ brew upgrade
 brew install coreutils # gnu utils
 brew install bash
 brew install zsh
-brew install openssl # many pkg require it
 brew install git
 
 # ---------------------------------------------
@@ -77,11 +76,18 @@ brew install --cask jupyter-notebook-viewer
 # GCLOUD
 brew install google-cloud-sdk
 
-# PYTHON
+# PYTHON: pyenv and pyright
+# `pyenv local <env>` is not enough for pyright, it checks `$PYENV_VERSION`, which is
+# only set by `pyenv activate` or `pyenv shell`. Otherwise pyright checks `pyrightconfig.json`,
+# so with this plugin, we can do `pyenv pyright` to create the file in the root of the project.
 brew install pyenv pyenv-virtualenv
+git clone https://github.com/alefpereira/pyenv-pyright.git $(pyenv root)/plugins/pyenv-pyright
+# requirements to build python with pyenv: https://github.com/pyenv/pyenv/wiki#suggested-build-environment
+brew install openssl readline sqlite3 xz zlib tcl-tk
 
-# NODEJS 
+# NODEJS (yarn also required for some nvim plugins)
 brew install node
+brew install yarn
 
 # RUST
 # curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh

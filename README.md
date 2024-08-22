@@ -60,7 +60,17 @@ https://youtu.be/y6XCebnB9gs?si=PVgjVFBUp82NuZwH
 stow .
 ```
 
-## 3. Install VSCode extensions
+## 3. Setup nvim
+
+### 3.1 Python
+- (After setting up pyenv and python versions) create a venv for nvim: `pyenv virtualenv pynvim`
+- (now the `vim.g.python3_host_prog = "..."` in the config works)
+
+### 3.2 Inside nvim
+- open nvim to let it install plugins
+- `:Mason` to check lsp servers, install what you need
+
+## 4. Install VSCode extensions
 
 Install VSCode, then:
 
@@ -68,14 +78,15 @@ Install VSCode, then:
 ./install_vscode_extensions.sh
 ```
 
-## 4. gcloud with multiple accounts
+## 5. gcloud with multiple accounts
 - login with `<account_one>`, then cd into `.config/gcloud`, then copy `application_default_credentials.json` to `<account_one>.json`
 - repeat for `<account_two>`
 - activate one configuration with `gconf logi`
 
-## 5. Notes
+## 6. Notes
 The most configured apps are (in order):
 - zsh (.zshrc)
 - karabiner elements (.config/karabiner)
 - neovim (.config/nvim), which is customized from kickstart.vim settings
 - vscode settings
+
