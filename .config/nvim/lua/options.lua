@@ -63,5 +63,5 @@ vim.o.expandtab = true
 vim.opt.scrolloff = 6
 
 -- python
-vim.g.python3_host_prog = '/Users/diego/.pyenv/versions/pynvim/bin/python'
+vim.g.python3_host_prog = '$PYENV_ROOT/versions/pynvim/bin/python'
 -- vim: ts=2 sts=2 sw=2 et
