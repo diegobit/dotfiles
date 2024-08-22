@@ -100,13 +100,13 @@ return {
       vim.keymap.set('n', '<leader>st', builtin.builtin, { desc = '[s]earch [t]elescope commands' })
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[s]earch [h]elp' })
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[s]earch [k]eymaps' })
-      vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[s]earch [d]iagnostics' })
+      vim.keymap.set('n', '<leader>sD', builtin.diagnostics, { desc = '[s]earch [D]iagnostics' })
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[s]earch [r]esume' })
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[s]earch Recent Files ("." for repeat)' })
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] List existing buffers' })
 
       -- Show all diagnostics on current line in floating window
-      vim.api.nvim_set_keymap('n', '<Leader>sD', ':lua vim.diagnostic.open_float()<CR>', { noremap = true, silent = true, desc = '[show] line [D]iagnostics' })
+      vim.api.nvim_set_keymap('n', '<Leader>sd', ':lua vim.diagnostic.open_float()<CR>', { noremap = true, silent = true, desc = '[show] line [d]iagnostics' })
       -- Go to next diagnostic (if there are multiple on the same line, only shows
       -- one at a time in the floating window)
       vim.api.nvim_set_keymap('n', '<Leader>n', ':lua vim.diagnostic.goto_next()<CR>', { noremap = true, silent = true })
