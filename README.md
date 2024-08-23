@@ -63,12 +63,20 @@ stow .
 ## 3. Setup nvim
 
 ### 3.1 Python
-- (After setting up pyenv and python versions) create a venv for nvim: `pyenv virtualenv pynvim`
-- (now the `vim.g.python3_host_prog = "..."` in the config works)
+- Install ruff on global python version (used by nvim and vscode, not sure):
+  - `pyenv global XXX`
+  - `pip install ruff`
+- set up pynvim (for nvim plugins):
+  - `pyenv virtualenv pynvim`
+  - `pip install pynvim`
+  - (now the `vim.g.python3_host_prog = "..."` in the config works)
 
 ### 3.2 Inside nvim
 - open nvim to let it install plugins
 - `:Mason` to check lsp servers, install what you need
+
+### 3.3 Check
+- You can check health with `:checkhealth`
 
 ## 4. Install VSCode extensions
 
