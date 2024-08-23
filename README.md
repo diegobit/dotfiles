@@ -40,10 +40,10 @@ navi browse
 
 ### 1.4 Install Nerd Font for terminal and neovim
 
-- Install either the one from powerlevel:
-  https://github.com/romkatv/powerlevel10k#meslo-nerd-font-patched-for-powerlevel10k
-- Better: install a Nerd Font: https://www.nerdfonts.com/font-downloads
-  Current choice is JetBrainsMono NerdFont
+- Install either the one from powerlevel: https://github.com/romkatv/powerlevel10k#meslo-nerd-font-patched-for-powerlevel10k
+- or - better - install a Nerd Font: https://www.nerdfonts.com/font-downloads
+
+  My current font is JetBrainsMono NerdFont
 
 ## 2. Setup dotfiles
 checkout the dotfiles in yout $HOME directory
@@ -53,8 +53,7 @@ git clone git@github.com:diegobit/dotfiles.git
 cd dotfiles
 ```
 
-then use GNU stow to create symlinks. For an explanation on this dotfiles management, see:
-https://youtu.be/y6XCebnB9gs?si=PVgjVFBUp82NuZwH
+then use [GNU stow](https://www.gnu.org/software/stow/) to create symlinks. For an explanation on this dotfiles management, see [this video](https://youtu.be/y6XCebnB9gs?si=PVgjVFBUp82NuZwH).
 
 ```
 stow .
@@ -86,12 +85,7 @@ Install VSCode, then:
 ./install_vscode_extensions.sh
 ```
 
-## 5. gcloud with multiple accounts
-- login with `<account_one>`, then cd into `.config/gcloud`, then copy `application_default_credentials.json` to `<account_one>.json`
-- repeat for `<account_two>`
-- activate one configuration with `gconf logi`
-
-## 6. Notes
+## 5. Notes
 The most configured apps are (in order):
 - zsh (.zshrc)
 - karabiner elements (.config/karabiner)
