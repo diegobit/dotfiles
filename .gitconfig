@@ -24,3 +24,5 @@
 	defaultBranch = main
 [push]
 	followTags = true
+[merge]
+	tool = nvimdiff
