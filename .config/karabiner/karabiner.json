@@ -332,7 +332,7 @@
                                 },
                                 "to": [{ "key_code": "page_down" }],
                                 "type": "basic"
-                            },
+                            }
                         ]
                     },
                     {
