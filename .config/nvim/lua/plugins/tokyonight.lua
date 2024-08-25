@@ -12,12 +12,15 @@ return {
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
       vim.cmd.colorscheme 'tokyonight-night'
 
+      -- Background
+      -- vim.cmd.hi 'Normal guibg=#161720'
       -- Comments and line numbers
-      vim.cmd.hi 'Comment gui=none'
       vim.cmd.hi 'Comment guifg=#95606a'
-      vim.cmd.hi 'LineNr  guifg=#95606a'
+      -- vim.cmd.hi 'LineNr  guifg=#95606a'
       vim.cmd.hi 'LineNrAbove guifg=#4E567B'
       vim.cmd.hi 'LineNrBelow guifg=#4E567B'
+      -- change line highlight background
+      vim.cmd.hi 'CursorLine guibg=#232738'
     end,
   },
 }
