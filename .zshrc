@@ -271,14 +271,33 @@ notify() {
 # - Change the model to your favourite one: llm -m MODEL_NAME
 gcm() {
     generate_commit_message() {
-        git diff --cached | llm -m gemini-1.5-flash-latest "
-Below is a diff of all staged changes, coming from the command:
+        git diff --cached | llm -m gemini-1.5-flash-latest -s "Below is a diff of all staged changes, coming from the command:
 
 \`\`\`
 git diff --cached
 \`\`\`
 
-Please generate a concise, one-line commit message for these changes."
+Notes:
+- Lines starting with a '-' are deleted lines.
+- Lines starting with a '+' are added lines.
+- Focus on the differences in the changed code.
+
+Please generate a concise, one-line commit message for these changes, following these guidelines:
+
+1. Start with a capitalized, imperative verb (e.g., 'Add', 'Fix', 'Update', 'Refactor', 'Remove').
+2. Keep the message under 50 characters if possible, but no more than 72.
+3. If you want to provide additional information, add it in a bulleted list, two lines below the main message. Keep each line in this section shorter than 80 columns.
+4. Focus on the 'what' and 'why' of the changes, not the 'how'.
+5. If the changes affect multiple components or features, separate changes with a semicolon.
+
+Examples of good commit messages:
+
+- 'Add user authentication feature (#456)'
+- 'Fix memory leak in data processing module'
+- 'Update dependencies to latest versions'
+- 'Refactor database queries for better performance'
+
+Only generate the commit message (and optionally the comment), and nothing else."
     }
 
     read_input() {
@@ -295,7 +314,7 @@ Please generate a concise, one-line commit message for these changes."
 
     while true; do
         echo -e "Proposed commit message:\n"
-        echo "$commit_message"
+        echo "${_blue}${commit_message}${_reset}"
 
         read_input "\nDo you want to (a)ccept, (e)dit, (r)egenerate, or (c)ancel? "
         choice=$REPLY
@@ -311,8 +330,11 @@ Please generate a concise, one-line commit message for these changes."
                 fi
                 ;;
             e|E )
-                read_input "Enter your commit message:\n"
-                commit_message=$REPLY
+                temp_file=$(mktemp)
+                rm "$temp_file"
+                echo "$commit_message" > "$temp_file"
+                $EDITOR "$temp_file"
+                commit_message="$(cat $temp_file)"
                 if [ -n "$commit_message" ] && git commit -m "$commit_message"; then
                     echo "Changes committed successfully with your message!"
                     return 0
