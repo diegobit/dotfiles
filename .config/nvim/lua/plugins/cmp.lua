@@ -42,6 +42,10 @@ return {
       luasnip.config.setup {}
 
       cmp.setup {
+        window = {
+          -- overridden by borderline, but will not be shown if this setting is not present
+          completion = { border = 'single' },
+        },
         snippet = {
           expand = function(args)
             luasnip.lsp_expand(args.body)
@@ -70,9 +74,9 @@ return {
 
           -- If you prefer more traditional completion keymaps,
           -- you can uncomment the following lines
-          --['<CR>'] = cmp.mapping.confirm { select = true },
-          --['<Tab>'] = cmp.mapping.select_next_item(),
-          --['<S-Tab>'] = cmp.mapping.select_prev_item(),
+          -- ['<CR>'] = cmp.mapping.confirm { select = true },
+          -- ['<Tab>'] = cmp.mapping.select_next_item(),
+          -- ['<S-Tab>'] = cmp.mapping.select_prev_item(),
 
           -- Manually trigger a completion from nvim-cmp.
           --  Generally you don't need this, because nvim-cmp will display

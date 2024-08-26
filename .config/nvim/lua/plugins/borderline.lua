@@ -5,7 +5,7 @@ return {
   event = 'VeryLazy',
   config = function()
     require('borderline').setup {
-      --  ...
+      border = 'single',
     }
   end,
 }
