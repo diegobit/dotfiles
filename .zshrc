@@ -331,10 +331,10 @@ Only generate the commit message (and optionally the comment), and nothing else.
                 ;;
             e|E )
                 temp_file=$(mktemp)
-                rm "$temp_file"
                 echo "$commit_message" > "$temp_file"
                 $EDITOR "$temp_file"
                 commit_message="$(cat $temp_file)"
+                rm "$temp_file"
                 if [ -n "$commit_message" ] && git commit -m "$commit_message"; then
                     echo "Changes committed successfully with your message!"
                     return 0
