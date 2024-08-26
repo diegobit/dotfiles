@@ -21,6 +21,8 @@ return {
       vim.cmd.hi 'LineNrBelow guifg=#4E567B'
       -- change line highlight background
       vim.cmd.hi 'CursorLine guibg=#232738'
+      -- Change selection color
+      vim.cmd.hi 'Visual guibg=#3a4b80'
     end,
   },
 }
