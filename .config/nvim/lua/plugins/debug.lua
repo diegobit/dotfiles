@@ -22,26 +22,31 @@ return {
     'jay-babu/mason-nvim-dap.nvim',
 
     -- Add your own debuggers here
-    'leoluz/nvim-dap-go',
+    -- 'leoluz/nvim-dap-go',
   },
   keys = function(_, keys)
     local dap = require 'dap'
     local dapui = require 'dapui'
     return {
       -- Basic debugging keymaps, feel free to change to your liking!
+      { '<leader>ds', dap.continue, desc = '[D]ebug: [S]tart/Continue (or F5)' },
       { '<F5>', dap.continue, desc = 'Debug: Start/Continue' },
+      { '<leader>di', dap.step_into, desc = '[D]ebug: Step [I]nto (or F1)' },
       { '<F1>', dap.step_into, desc = 'Debug: Step Into' },
+      { '<leader>dv', dap.step_over, desc = '[D]ebug: Step o[V]er (or F2)' },
       { '<F2>', dap.step_over, desc = 'Debug: Step Over' },
+      { '<leader>do', dap.step_out, desc = '[D]ebug: Step [O]ut (or F3)' },
       { '<F3>', dap.step_out, desc = 'Debug: Step Out' },
-      { '<leader>b', dap.toggle_breakpoint, desc = 'Debug: Toggle Breakpoint' },
+      { '<leader>dt', dap.toggle_breakpoint, desc = '[D]ebug: [T]oggle Breakpoint' },
       {
-        '<leader>B',
+        '<leader>db',
         function()
           dap.set_breakpoint(vim.fn.input 'Breakpoint condition: ')
         end,
-        desc = 'Debug: Set Breakpoint',
+        desc = '[D]ebug: Set [B]reakpoint',
       },
       -- Toggle to see last session result. Without this, you can't see session output in case of unhandled exception.
+      { '<leader>dl', dapui.toggle, desc = '[D]ebug: See [L]ast session result.' },
       { '<F7>', dapui.toggle, desc = 'Debug: See last session result.' },
       unpack(keys),
     }
