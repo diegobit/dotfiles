@@ -83,13 +83,13 @@ bindkey    "^[3;5~"         delete-char
 ##############################
 # Colors
 ##############################
-local _red="\[\e[0;31m\]"
-local _yellow="\[\e[0;33m\]"
-local _blue="\[\e[0;34m\]"
-local _magenta="\[\e[0;35m\]"
-local _white="\[\e[0;37m\]"
-local _reset="\[\e[0m\]"
-local _black="\[\e[0;90m\]"
+# local _red="\e[0;31m"
+# local _yellow="\e[0;33m"
+local _blue="\e[0;34m"
+# local _magenta="\e[0;35m"
+# local _white="\e[0;37m"
+local _reset="\e[0m"
+# local _black="\e[0;90m"
 
 ##############################
 # iterm integration
