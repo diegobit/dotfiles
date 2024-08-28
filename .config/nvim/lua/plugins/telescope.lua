@@ -61,9 +61,12 @@ return {
             i = {
               ['<C-Enter>'] = 'to_fuzzy_refine',
               ['<C-p>'] = require('telescope.actions.layout').toggle_preview,
+              ['<C-d>'] = require('telescope.actions').delete_buffer,
             },
             n = {
               ['<C-p>'] = require('telescope.actions.layout').toggle_preview,
+              ['<C-d>'] = require('telescope.actions').delete_buffer,
+              -- ['dd'] = require('telescope.actions').delete_buffer,
             },
           },
           layout_config = {
