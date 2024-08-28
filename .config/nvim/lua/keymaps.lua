@@ -18,14 +18,10 @@ vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
 
 -- Keybinds to make split navigation easier.
 -- Use CTRL+<hjkl> to switch between windows
-vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
-vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
-vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
-vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
-vim.keymap.set('t', '<C-h>', '<Cmd>wincmd h<CR>', { desc = 'Move focus to the left window' })
-vim.keymap.set('t', '<C-j>', '<Cmd>wincmd j<CR>', { desc = 'Move focus to the lower window' })
-vim.keymap.set('t', '<C-k>', '<Cmd>wincmd k<CR>', { desc = 'Move focus to the upper window' })
-vim.keymap.set('t', '<C-l>', '<Cmd>wincmd l<CR>', { desc = 'Move focus to the right window' })
+vim.keymap.set({ 'n', 't' }, '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
+vim.keymap.set({ 'n', 't' }, '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
+vim.keymap.set({ 'n', 't' }, '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+vim.keymap.set({ 'n', 't' }, '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
 
 -- Move current line / block with Alt-j/k ala vscode.
 vim.keymap.set('n', '<M-j>', ':m .+1<CR>==', { desc = 'Move line down' })
@@ -33,16 +29,15 @@ vim.keymap.set('n', '<M-k>', ':m .-2<CR>==', { desc = 'Move line up' })
 vim.keymap.set('v', '<M-j>', ":m '>+1<CR>gv=gv", { desc = 'Move block down' })
 vim.keymap.set('v', '<M-k>', ":m '<-2<CR>gv=gv", { desc = 'Move block up' })
 
--- Quick exit
-vim.keymap.set('i', '<C-q>', '<Cmd>q<CR>', { desc = 'Quit current buffer' })
-vim.keymap.set('n', '<C-q>', '<Cmd>q<CR>', { desc = 'Quit current buffer' })
+-- Quick exit -- NOTE: you can exit with ZQ
+vim.keymap.set({ 'i', 'n' }, '<C-q>', '<Cmd>bd<CR>', { desc = 'Quit current buffer' })
+-- vim.keymap.set('i', '<C-q>', '<Cmd>q<CR>', { desc = 'Quit nvim' })
+-- vim.keymap.set('n', '<C-q>', '<Cmd>q<CR>', { desc = 'Quit nvim' })
 -- Quick Save file
-vim.keymap.set('i', '<C-s>', '<Cmd>w<CR><Esc>', { desc = 'Save file' })
-vim.keymap.set('n', '<C-s>', '<Cmd>w<CR><Esc>', { desc = 'Save file' })
+vim.keymap.set({ 'i', 'n' }, '<C-s>', '<Cmd>w<CR><Esc>', { desc = 'Save file' })
 
 -- Quick open explorer
-vim.keymap.set('i', '<C-e>', '<Cmd>:Ex<CR><Esc>', { desc = 'Open Netrw file explorer' })
-vim.keymap.set('n', '<C-e>', '<Cmd>:Ex<CR><Esc>', { desc = 'Open Netrw file explorer' })
+vim.keymap.set({ 'i', 'n' }, '<C-e>', '<Cmd>:Ex<CR><Esc>', { desc = 'Open Netrw file explorer' })
 
 -- METHOD 1: don't sent to clipboard, with leader [system clipboard enabled]
 -- vim.keymap.set('n', '<leader>d', '"_d', { desc = 'Delete without yanking' })
@@ -71,14 +66,13 @@ vim.keymap.set('n', '<C-e>', '<Cmd>:Ex<CR><Esc>', { desc = 'Open Netrw file expl
 -- vim.keymap.set('n', 'C', '"_C', { desc = 'Change without yanking' })
 
 -- METHOD 3: send to clipboard with leader [system cliboard disable]
-vim.keymap.set('n', '<leader>d', '"*d', { desc = 'Delete to clipboard ("*d)' })
-vim.keymap.set('v', '<leader>d', '"*d', { desc = 'Delete to clipboard ("*d)' })
-vim.keymap.set('n', '<leader>x', '"*x', { desc = 'Delete char to clipboard ("*x)' })
-vim.keymap.set('v', '<leader>x', '"*x', { desc = 'Delete char to clipboard ("*x)' })
-vim.keymap.set('n', '<leader>c', '"*c', { desc = 'Change to clipboard ("*x)' })
-vim.keymap.set('v', '<leader>c', '"*c', { desc = 'Change to clipboard ("*x)' })
-vim.keymap.set('n', '<leader>y', '"*y', { desc = 'Yank to clipboard ("*y)' })
-vim.keymap.set('v', '<leader>y', '"*y', { desc = 'Yank to clipboard ("*y)' })
+-- vim.keymap.set('n', '<leader>d', '"*d', { desc = 'Delete to clipboard ("*d)' })
+-- vim.keymap.set('v', '<leader>d', '"*d', { desc = 'Delete to clipboard ("*d)' })
+vim.keymap.set({ 'n', 'v' }, '<leader>x', '"*x', { desc = 'Delete char to clipboard ("*x)' })
+-- vim.keymap.set('n', '<leader>c', '"*c', { desc = 'Change to clipboard ("*x)' })
+-- vim.keymap.set('v', '<leader>c', '"*c', { desc = 'Change to clipboard ("*x)' })
+vim.keymap.set({ 'n', 'v' }, '<leader>y', '"*y', { desc = 'Yank to clipboard ("*y)' })
+vim.keymap.set('n', '<leader>Y', '"*Y', { desc = 'Yank to clipboard ("*y)' })
 
 -- Quick access to mbbill/undotree
 vim.keymap.set('n', '<leader>tu', vim.cmd.UndotreeToggle, { noremap = true, silent = true, desc = '[t]oggle [u]ndotree' })
