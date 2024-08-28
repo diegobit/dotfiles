@@ -63,6 +63,8 @@ require('lazy').setup({
   require 'plugins/borderline',
 
   require 'plugins/telescope-tabs',
+
+  require 'plugins/rest',
 }, {
   ui = {
     icons = {},
