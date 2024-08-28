@@ -68,6 +68,7 @@ stow .
 - set up pynvim (for nvim plugins):
   - `pyenv virtualenv pynvim`
   - `pip install pynvim`
+  - `pip install yamllint` (for yaml linter in lint.nvim plugin)
   - (now the `vim.g.python3_host_prog = "..."` in the config works)
 
 ### 3.2 Inside nvim
