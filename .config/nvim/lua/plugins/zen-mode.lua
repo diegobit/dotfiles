@@ -17,5 +17,7 @@ return {
     -- refer to the configuration section below
   },
 
-  vim.keymap.set('n', '<leader>tz', ':ZenMode<CR>', { desc = '[T]oggle [Z]enmode' }),
+  keys = {
+    vim.keymap.set('n', '<leader>tz', ':ZenMode<CR>', { desc = '[T]oggle [Z]enmode' }),
+  },
 }
