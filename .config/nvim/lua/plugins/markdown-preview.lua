@@ -6,4 +6,6 @@ return {
     vim.g.mkdp_filetypes = { 'markdown' }
   end,
   ft = { 'markdown' },
+
+  vim.keymap.set('n', '<leader>tm', '<Cmd>:MarkdownPreview<CR>', { desc = '[T]oggle [M]arkdown Preview' }),
 }

@@ -39,33 +39,7 @@ vim.keymap.set({ 'i', 'n' }, '<C-s>', '<Cmd>w<CR><Esc>', { desc = 'Save file' })
 -- Quick open explorer
 vim.keymap.set({ 'i', 'n' }, '<C-e>', '<Cmd>:Ex<CR><Esc>', { desc = 'Open Netrw file explorer' })
 
--- METHOD 1: don't sent to clipboard, with leader [system clipboard enabled]
--- vim.keymap.set('n', '<leader>d', '"_d', { desc = 'Delete without yanking' })
--- vim.keymap.set('v', '<leader>d', '"_d', { desc = 'Delete without yanking' })
--- vim.keymap.set('v', '<leader>p', '"_dP', { desc = 'Replace without yanking' })
-
--- METHOD 2: decide what yanks and what doesn't [system clipboard enabled]
--- clipboard and yanking. What yanks?
--- Rule of thumb: yanks what visual selects; except for d, because there is already x
---
---      char:   d    D    x    X    c    C
---      mode:  v n  v n  v n  v n  v n  v n
---
--- Yank? YES:            x    x    x    x
---        NO:  x x  x x    x    x    x    x
---
--- vim.keymap.set('n', 'd', '"_d', { desc = 'Delete without yanking' })
--- vim.keymap.set('v', 'd', '"_d', { desc = 'Delete without yanking' })
--- vim.keymap.set('n', 'D', '"_D', { desc = 'Delete char without yanking' })
--- vim.keymap.set('v', 'D', '"_D', { desc = 'Delete char without yanking' })
---
--- vim.keymap.set('n', 'x', '"_x', { desc = 'Delete char without yanking' })
--- vim.keymap.set('n', 'X', '"_x', { desc = 'Delete char without yanking' })
---
--- vim.keymap.set('n', 'c', '"_c', { desc = 'Change without yanking' })
--- vim.keymap.set('n', 'C', '"_C', { desc = 'Change without yanking' })
-
--- METHOD 3: send to clipboard with leader [system cliboard disable]
+-- Send to clipboard with leader [system cliboard disable]
 -- vim.keymap.set('n', '<leader>d', '"*d', { desc = 'Delete to clipboard ("*d)' })
 -- vim.keymap.set('v', '<leader>d', '"*d', { desc = 'Delete to clipboard ("*d)' })
 vim.keymap.set({ 'n', 'v' }, '<leader>x', '"*x', { desc = 'Delete char to clipboard ("*x)' })
@@ -73,14 +47,5 @@ vim.keymap.set({ 'n', 'v' }, '<leader>x', '"*x', { desc = 'Delete char to clipbo
 -- vim.keymap.set('v', '<leader>c', '"*c', { desc = 'Change to clipboard ("*x)' })
 vim.keymap.set({ 'n', 'v' }, '<leader>y', '"*y', { desc = 'Yank to clipboard ("*y)' })
 vim.keymap.set('n', '<leader>Y', '"*Y', { desc = 'Yank to clipboard ("*y)' })
-
--- Quick access to mbbill/undotree
-vim.keymap.set('n', '<leader>tu', vim.cmd.UndotreeToggle, { noremap = true, silent = true, desc = '[t]oggle [u]ndotree' })
-
--- akinsho/toggleterm enable
--- vim.keymap.set('n', '<leader>tu', '<Cmd>ToggleTerm<CR>', { desc = 'Toggle terminal' })
-
--- folke/zen-mode enable
-vim.keymap.set('n', '<leader>tz', ':ZenMode<CR>', { desc = '[t]oggle [z]enmode' })
 
 -- vim: ts=2 sts=2 sw=2 et
