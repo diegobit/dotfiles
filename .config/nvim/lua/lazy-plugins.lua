@@ -14,7 +14,7 @@ require('lazy').setup({
   --
   -- Use `opts = {}` to force a plugin to be loaded.
 
-  require 'plugins/gitsigns',
+  -- require 'plugins/gitsigns',
 
   require 'plugins/which-key',
 
@@ -65,6 +65,8 @@ require('lazy').setup({
   require 'plugins/telescope-tabs',
 
   require 'plugins/rest',
+
+  require 'plugins/vim-fugitive',
 }, {
   ui = {
     icons = {},

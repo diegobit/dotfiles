@@ -16,14 +16,22 @@ return {
       -- Background
       -- vim.cmd.hi 'Normal guibg=#161720'
       -- Comments and line numbers
-      vim.cmd.hi 'Comment guifg=#95606a'
+      vim.cmd.hi 'Comment guifg=#95607e'
       -- vim.cmd.hi 'LineNr  guifg=#95606a'
-      vim.cmd.hi 'LineNrAbove guifg=#4E567B'
-      vim.cmd.hi 'LineNrBelow guifg=#4E567B'
+      -- old line numbers: 4E567B
+      vim.cmd.hi 'LineNrAbove guifg=#5a5c6f'
+      vim.cmd.hi 'LineNrBelow guifg=#5a5c6f'
       -- change line highlight background
       vim.cmd.hi 'CursorLine guibg=#232738'
       -- Change selection color
       vim.cmd.hi 'Visual guibg=#3a4b80'
+
+      -- Change context color for echasnovski/mini.diff overlay
+      vim.cmd.hi 'MiniDiffOverContext guifg=#454c6d'
+      vim.cmd.hi 'MiniDiffSignAdd guifg=#50a077'
+      vim.cmd.hi 'MiniDiffSignChange guifg=#6388c4'
+      vim.cmd.hi 'MiniDiffSignDelete guifg=#b8616f'
+
     end,
   },
 }

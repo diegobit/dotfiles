@@ -9,7 +9,12 @@ return {
       --  - va)  - [V]isually select [A]round [)]paren
       --  - yinq - [Y]ank [I]nside [N]ext [Q]uote
       --  - ci'  - [C]hange [I]nside [']quote
-      require('mini.ai').setup { n_lines = 500 }
+      require('mini.ai').setup { n_lines = 500, event = 'VeryLazy' }
+      require('mini.diff').setup {
+        event = 'VeryLazy',
+        view = { style = 'number' },
+        keys = { vim.keymap.set('n', '<leader>td', require('mini.diff').toggle_overlay, { desc = '[T]oggle [D]iff Overlay' }) },
+      }
 
       -- Add/delete/replace surroundings (brackets, quotes, etc.)
       --
