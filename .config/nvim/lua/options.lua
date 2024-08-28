@@ -62,6 +62,10 @@ vim.o.expandtab = true
 -- number of lines to keep when scrolling out of view
 vim.opt.scrolloff = 6
 
+-- hide tabline
+vim.opt.showtabline = 0
+
 -- python
 vim.g.python3_host_prog = '$PYENV_ROOT/versions/pynvim/bin/python'
+
 -- vim: ts=2 sts=2 sw=2 et
