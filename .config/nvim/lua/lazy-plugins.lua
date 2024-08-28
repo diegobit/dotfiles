@@ -66,6 +66,8 @@ require('lazy').setup({
 
   require 'plugins/rest',
 
+  require 'plugins/oil',
+
   require 'plugins/vim-fugitive',
 }, {
   ui = {
