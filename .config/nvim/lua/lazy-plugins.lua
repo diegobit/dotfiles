@@ -61,6 +61,8 @@ require('lazy').setup({
   require 'plugins/markdown-preview',
 
   require 'plugins/borderline',
+
+  require 'plugins/telescope-tabs',
 }, {
   ui = {
     icons = {},
