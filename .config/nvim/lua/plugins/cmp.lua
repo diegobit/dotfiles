@@ -22,13 +22,24 @@ return {
       'hrsh7th/cmp-path',
       'hrsh7th/cmp-buffer',
       'hrsh7th/cmp-cmdline',
+      'onsails/lspkind.nvim',
     },
     config = function()
       local cmp = require 'cmp'
       local luasnip = require 'luasnip'
       luasnip.config.setup {}
 
+      local lspkind = require 'lspkind'
+      lspkind.init {}
+
       cmp.setup {
+        formatting = {
+          fields = { "abbr", "kind", "menu" },
+          expandable_indicator = true,
+          format = lspkind.cmp_format {
+            mode = 'symbol_text',
+          },
+        },
         window = {
           -- overridden by borderline, but will not be shown if this setting is not present
           completion = { border = 'single' },
