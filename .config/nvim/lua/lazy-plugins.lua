@@ -69,6 +69,8 @@ require('lazy').setup({
   require 'plugins/oil',
 
   require 'plugins/vim-fugitive',
+
+  require 'plugins/vim-flog',
 }, {
   ui = {
     icons = {},
