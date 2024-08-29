@@ -68,6 +68,7 @@ brew install php # for Alfred workflows
 brew install yt-dlp # like youtube-dl
 brew install qlstephen # quicklook files
 brew install --cask jupyter-notebook-viewer
+brew install jq # json tool! Also required for formatting in nvim
 
 # ---------------------------------------------
 # Programming Languages and Frameworks, work
