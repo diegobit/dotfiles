@@ -48,4 +48,7 @@ vim.keymap.set({ 'n', 'v' }, '<leader>x', '"*x', { desc = 'Delete char to clipbo
 vim.keymap.set({ 'n', 'v' }, '<leader>y', '"*y', { desc = 'Yank to clipboard ("*y)' })
 vim.keymap.set('n', '<leader>Y', '"*Y', { desc = 'Yank to clipboard ("*y)' })
 
+-- QuickFix shortcut
+vim.keymap.set('n', '<leader>tq', '<CMD>copen<CR>', { desc = '[T]oggle [Q]uickfix List, (:copen)' })
+
 -- vim: ts=2 sts=2 sw=2 et
