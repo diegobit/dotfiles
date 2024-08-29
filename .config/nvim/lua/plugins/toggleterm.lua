@@ -4,7 +4,8 @@ return {
   'akinsho/toggleterm.nvim',
   version = '*',
   config = true,
-  event = 'VeryLazy',
+  lazy = true,
+  cmd = { 'ToggleTerm', 'ToggleTermSendCurrentLine', 'ToggleTermSendVisualLines', 'ToggleTermSendVisualSelection', 'ToggleTermSetName', 'ToggleTermToggleAll' },
   keys = {
     vim.keymap.set('n', '<leader>tt', '<Cmd>ToggleTerm<CR>', { desc = '[T]oggle [T]erminal' }),
   },
