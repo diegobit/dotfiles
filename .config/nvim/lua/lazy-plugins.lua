@@ -76,6 +76,21 @@ require('lazy').setup({
     icons = {},
     border = 'single',
   },
+  performance = {
+    rtp = {
+      disabled_plugins = {
+        'netrwFileHandlers',
+        'netrwPlugin',
+        'netrwSettings',
+        'perl_provider',
+        'ruby_provider',
+        'node_provider',
+        'python3_provider',
+        'pythonx_provider',
+        'remote_plugins',
+      },
+    },
+  },
 })
 
 -- vim: ts=2 sts=2 sw=2 et
