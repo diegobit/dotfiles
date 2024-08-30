@@ -48,7 +48,7 @@ require('lazy').setup({
 
   -- require 'plugins/harpoon',
 
-  -- require 'plugins/indent_line',
+  require 'plugins/indent-blankline',
 
   -- require 'plugins/debug',
 
