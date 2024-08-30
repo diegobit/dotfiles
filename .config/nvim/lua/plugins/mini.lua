@@ -25,17 +25,27 @@ return {
       require('mini.surround').setup {
         event = 'VeryLazy',
       }
-      -- disable s to avoid the timeout to use s alone
+      -- disable s to avoid the timeout to use s alone (vim-surround)
       vim.keymap.set({ 'n', 'x' }, 's', '<Nop>')
 
       local statusline = require 'mini.statusline'
       statusline.setup { use_icons = vim.g.have_nerd_font }
 
+      -- statusline.section_location = function()
+      --   return '%2l:%-2v'
+      -- end
       ---@diagnostic disable-next-line: duplicate-set-field
-      statusline.section_location = function()
-        return '%2l:%-2v'
+      statusline.section_location = function(args)
+        -- Use virtual column number to allow update when past last column
+        if MiniStatusline.is_truncated(args.trunc_width) then return '%2l:%-2v' end
+        -- Use `virtcol()` to correctly handle multi-byte characters
+        return '%2v:%l/%L'
       end
 
+      -- Disable search count: it's already in the cmdline
+      statusline.section_searchcount = function()
+        return ''
+      end
     end,
   },
 }
