@@ -2,7 +2,6 @@
 
 return {
   'folke/zen-mode.nvim',
-  -- event = 'VeryLazy',
   lazy = true,
   cmd = { 'ZenMode' },
   opts = {

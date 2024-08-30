@@ -1,7 +1,7 @@
 return {
   'mikesmithgh/borderline.nvim',
   enabled = true,
-  lazy = true,
+  event = 'UIEnter',
   config = function()
     require('borderline').setup {
       border = 'single',
