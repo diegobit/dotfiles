@@ -14,16 +14,6 @@ vim.keymap.set("n", "<C-q>", "<Cmd>q<CR>")
 
 vim.opt.runtimepath:append(vim.fn.stdpath("data") .. "/lazy/kitty-scrollback.nvim") -- lazy.nvim
 
--- Lazy.nvim bootstrap
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.uv.fs_stat(lazypath) then
-	local lazyrepo = "https://github.com/folke/lazy.nvim.git"
-	local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
-	if vim.v.shell_error ~= 0 then
-		error("error cloning lazy.nvim:\n" .. out)
-	end
-end ---@diagnostic disable-next-line: undefined-field
-vim.opt.rtp:prepend(lazypath)
 vim.g.loaded_2html_plugin = 1
 vim.g.loaded_getscript = 1
 vim.g.loaded_getscriptPlugin = 1
@@ -54,20 +44,79 @@ vim.g.loaded_netrwFileHandlers = 1
 vim.g.loaded_netrwPlugin = 1
 vim.g.loaded_netrwSettings = 1
 
--- Run lazy.vim and kitty-scrollback
-require("lazy").setup({
-	require("kitty-scrollback").setup({
-		{
-			enabled = true,
-			lazy = true,
-			cmd = { "KittyScrollbackGenerateKittens", "KittyScrollbackCheckHealth" },
-			event = { "User KittyScrollbackLaunch" },
-			version = "^5.0.0",
-		},
-	}),
-})
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_ruby_provider = 0
 vim.g.loaded_node_provider = 0
 vim.g.loaded_python3_provider = 0
 vim.g.loaded_pythonx_provider = 0
+
+-- -- Lazy.nvim bootstrap
+-- local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+-- if not vim.uv.fs_stat(lazypath) then
+-- 	local lazyrepo = "https://github.com/folke/lazy.nvim.git"
+-- 	local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
+-- 	if vim.v.shell_error ~= 0 then
+-- 		error("error cloning lazy.nvim:\n" .. out)
+-- 	end
+-- end ---@diagnostic disable-next-line: undefined-field
+-- vim.opt.rtp:prepend(lazypath)
+--
+-- -- Run lazy.vim and kitty-scrollback
+-- require("lazy").setup({
+-- 	require("kitty-scrollback").setup({
+-- 		{
+-- 			enabled = true,
+-- 			lazy = true,
+-- 			cmd = { "KittyScrollbackGenerateKittens", "KittyScrollbackCheckHealth" },
+-- 			event = { "User KittyScrollbackLaunch" },
+-- 			version = "^5.0.0",
+-- 		},
+-- 	}),
+-- }, {
+-- 	performance = {
+-- 		rtp = {
+-- 			disabled_plugins = {
+-- 				"editorconfig",
+-- 				"osc52",
+-- 				"shada",
+-- 				"spellfile",
+-- 				"tohtml",
+-- 				"tutor",
+-- 				"2html_plugin",
+-- 				"getscript",
+-- 				"getscriptPlugin",
+-- 				"gzip",
+-- 				"logiPat",
+-- 				"man",
+-- 				"matchit",
+-- 				"matchparen",
+-- 				"remote_plugins",
+-- 				"rplugin",
+-- 				"rrhelper",
+-- 				"shada_plugin",
+-- 				"shada_plugin",
+-- 				"spec",
+-- 				"spellfile_plugin",
+-- 				"spellfile_plugin",
+-- 				"tar",
+-- 				"tarPlugin",
+-- 				"tutor_mode_plugin",
+-- 				"vimball",
+-- 				"vimballPlugin",
+-- 				"zip",
+-- 				"zipPlugin",
+-- 				"load_black",
+-- 				"gtags",
+-- 				"gtags_cscope",
+-- 				"netrwFileHandlers",
+-- 				"netrwPlugin",
+-- 				"netrwSettings",
+-- 				"perl_provider",
+-- 				"ruby_provider",
+-- 				"node_provider",
+-- 				"python3_provider",
+-- 				"pythonx_provider",
+-- 			},
+-- 		},
+-- 	},
+-- })
