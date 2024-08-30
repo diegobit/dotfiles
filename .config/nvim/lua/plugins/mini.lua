@@ -3,22 +3,29 @@ return {
     'echasnovski/mini.nvim',
     version = '*',
     config = function()
-      -- Better Around/Inside textobjects
-      --
-      -- Examples:
+      --------------------------------------
+      -- mini.ai: Better Around/Inside textobjects
+      --------------------------------------
       --  - va)  - [V]isually select [A]round [)]paren
       --  - yinq - [Y]ank [I]nside [N]ext [Q]uote
       --  - ci'  - [C]hange [I]nside [']quote
-      require('mini.ai').setup { n_lines = 500, event = 'VeryLazy' }
-      -- replacement of gitsigns and diff
+      require('mini.ai').setup {
+        n_lines = 500,
+        event = 'VeryLazy',
+      }
+
+      --------------------------------------
+      -- mini.diff: replacement of gitsigns and diff
+      --------------------------------------
       require('mini.diff').setup {
         event = 'VeryLazy',
         view = { style = 'sign', signs = { add = '┃', change = '┃', delete = '▁' } },
         keys = { vim.keymap.set('n', '<leader>td', require('mini.diff').toggle_overlay, { desc = '[T]oggle [D]iff Overlay' }) },
       }
 
-      -- Add/delete/replace surroundings (brackets, quotes, etc.)
-      --
+      --------------------------------------
+      -- mini.surround: Add/delete/replace surroundings (brackets, quotes, etc.)
+      --------------------------------------
       -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
       -- - sd'   - [S]urround [D]elete [']quotes
       -- - sr)'  - [S]urround [R]eplace [)] [']
@@ -28,21 +35,28 @@ return {
       -- disable s to avoid the timeout to use s alone (vim-surround)
       vim.keymap.set({ 'n', 'x' }, 's', '<Nop>')
 
+      --------------------------------------
+      -- mini.statusline: Better statusline
+      --------------------------------------
       local statusline = require 'mini.statusline'
       statusline.setup { use_icons = vim.g.have_nerd_font }
 
-      -- statusline.section_location = function()
-      --   return '%2l:%-2v'
-      -- end
+      -- Default logic from source, with different formatting
       ---@diagnostic disable-next-line: duplicate-set-field
       statusline.section_location = function(args)
         -- Use virtual column number to allow update when past last column
-        if MiniStatusline.is_truncated(args.trunc_width) then return '%2l:%-2v' end
+        if MiniStatusline.is_truncated(args.trunc_width) then
+          return '%l│%v'
+          -- return '%v:%-l'
+        end
         -- Use `virtcol()` to correctly handle multi-byte characters
-        return '%2v:%l/%L'
+        -- return '%2v:%l/%L'
+        return '%2l/%L│%2v'
       end
 
+      -- Empty function
       -- Disable search count: it's already in the cmdline
+      ---@diagnostic disable-next-line: duplicate-set-field
       statusline.section_searchcount = function()
         return ''
       end
