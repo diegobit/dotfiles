@@ -1,6 +1,7 @@
 return {
   'MisanthropicBit/decipher.nvim',
   version = '*',
+  event = 'VeryLazy',
   config = function()
     local decipher = require 'decipher'
     decipher.setup {
