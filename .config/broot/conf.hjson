@@ -41,7 +41,7 @@
 	# before as it may not suit anybody even among vim users)
 	#
         modal: true
-	initial_mode: command
+	initial_mode: input
 	
 	###############################################################
 	# Whether to mark the selected line with a triangle
@@ -263,10 +263,10 @@
 			key: ctrl-l
 			internal: "panel_right"
 		}
-		{
-			internal: ":mode_input"
-			key: "i"
-		}
+#{
+	#			internal: ":mode_input"
+	#			key: "i"
+	#		}
 		{
 			internal: "open_stay"
 			key: "o"
