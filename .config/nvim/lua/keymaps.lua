@@ -16,6 +16,25 @@ vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
 vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
 vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
 
+-- Center view when moving vertically by page or half page
+-- The function is for avoiding the flickering due
+local function lazy_keys(keys)
+  keys = vim.api.nvim_replace_termcodes(keys, true, false, true)
+  return function()
+    local old = vim.o.lazyredraw
+    vim.o.lazyredraw = true
+    vim.api.nvim_feedkeys(keys, 'nx', false)
+    vim.o.lazyredraw = old
+  end
+end
+vim.keymap.set({ 'n', 'v' }, '<C-f>', lazy_keys '<C-f>zz', { desc = 'Scroll down screen' })
+vim.keymap.set({ 'n', 'v' }, '<C-b>', lazy_keys '<C-b>zz', { desc = 'Scroll up screen' })
+vim.keymap.set({ 'n', 'v' }, '<C-d>', lazy_keys '<C-d>zz', { desc = 'Scroll down half screen' })
+vim.keymap.set({ 'n', 'v' }, '<C-u>', lazy_keys '<C-u>zz', { desc = 'Scroll up half screen' })
+-- if going to the next search results scrolls the page, scroll AND center
+vim.keymap.set('n', 'n', 'nzz')
+vim.keymap.set('n', 'N', 'Nzz')
+
 -- Keybinds to make split navigation easier.
 -- Use CTRL+<hjkl> to switch between windows
 vim.keymap.set({ 'n', 't' }, '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
