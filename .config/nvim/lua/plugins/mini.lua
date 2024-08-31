@@ -35,6 +35,15 @@ return {
       -- disable s to avoid the timeout to use s alone (vim-surround)
       vim.keymap.set({ 'n', 'x' }, 's', '<Nop>')
 
+      -- Animate scrolling
+      -- local animate = require('mini.animate')
+      -- animate.setup {
+      --   scroll = {
+      --     timing = animate.gen_timing.linear({ duration = 80, unit = 'total' }),
+      --     subscroll = animate.gen_subscroll.equal({ max_output_steps = 5 }),
+      --   }
+      -- }
+
       --------------------------------------
       -- mini.statusline: Better statusline
       --------------------------------------
@@ -45,7 +54,7 @@ return {
       ---@diagnostic disable-next-line: duplicate-set-field
       statusline.section_location = function(args)
         -- Use virtual column number to allow update when past last column
-        if MiniStatusline.is_truncated(args.trunc_width) then
+        if statusline.is_truncated(args.trunc_width) then
           return '%l│%v'
           -- return '%v:%-l'
         end
