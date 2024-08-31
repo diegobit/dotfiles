@@ -11,7 +11,7 @@ return {
           require('conform').format { async = true, lsp_fallback = true }
         end,
         mode = '',
-        desc = '[C]ode [F]ormat',
+        desc = '[F]ormat document',
       },
     },
     opts = {

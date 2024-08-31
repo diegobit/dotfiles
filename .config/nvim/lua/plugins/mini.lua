@@ -20,7 +20,7 @@ return {
       require('mini.diff').setup {
         event = 'VeryLazy',
         view = { style = 'sign', signs = { add = '┃', change = '┃', delete = '▁' } },
-        keys = { vim.keymap.set('n', '<leader>td', require('mini.diff').toggle_overlay, { desc = '[T]oggle [D]iff Overlay' }) },
+        keys = { vim.keymap.set('n', '<leader>td', require('mini.diff').toggle_overlay, { desc = '[D]iff Overlay' }) },
       }
 
       --------------------------------------

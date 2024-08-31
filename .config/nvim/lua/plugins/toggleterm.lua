@@ -7,6 +7,6 @@ return {
   lazy = true,
   cmd = { 'ToggleTerm', 'ToggleTermSendCurrentLine', 'ToggleTermSendVisualLines', 'ToggleTermSendVisualSelection', 'ToggleTermSetName', 'ToggleTermToggleAll' },
   keys = {
-    vim.keymap.set('n', '<leader>tt', '<Cmd>ToggleTerm<CR>', { desc = '[T]oggle [T]erminal' }),
+    vim.keymap.set('n', '<leader>tt', '<Cmd>ToggleTerm<CR>', { desc = '[T]erminal' }),
   },
 }

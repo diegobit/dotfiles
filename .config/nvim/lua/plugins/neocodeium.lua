@@ -16,6 +16,6 @@ return {
     vim.keymap.set('i', '<A-n>', neocodeium.cycle)
     vim.keymap.set('i', '<A-c>', neocodeium.clear)
 
-    vim.keymap.set('n', '<leader>tc', '<Cmd>NeoCodeium disable<CR>', { desc = '[T]oggle neo[C]odeium' })
+    vim.keymap.set('n', '<leader>tc', '<Cmd>NeoCodeium disable<CR>', { desc = 'neo[C]odeium' })
   end,
 }
