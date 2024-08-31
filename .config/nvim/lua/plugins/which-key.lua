@@ -30,6 +30,12 @@ return {
         { '<leader>w', group = '[W]orkspace' },
         { '<leader>t', group = '[T]oggle' },
         { '<leader>g', group = '[G]it Hunk', mode = { 'n', 'v' } },
+        { '<leader>u', group = '[U]tils'},
+
+        -- docs for MisanthropicBit/decipher.nvim
+        { '<leader>uu', group = '[U]RL'},
+        { '<leader>ub', group = '[B]ase64'},
+        { '<leader>ubs', group = '[B]ase64 URL [S]afe'},
       }
     end,
   },

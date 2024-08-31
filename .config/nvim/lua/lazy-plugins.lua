@@ -71,6 +71,8 @@ require('lazy').setup({
   require 'plugins/vim-fugitive',
 
   require 'plugins/vim-flog',
+
+  require 'plugins/decipher',
 }, {
   ui = {
     icons = {},
