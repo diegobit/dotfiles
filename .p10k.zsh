@@ -38,7 +38,7 @@
     vcs                     # git status
     pyenv                   # python environment (https://github.com/pyenv/pyenv)
     background_jobs         # presence of background jobs
-    command_execution_time  # duration of the last command
+    # command_execution_time  # duration of the last command
     gcloud                  # google cloud cli account and project (https://cloud.google.com/)
     kubecontext             # current kubernetes context (https://kubernetes.io/)
     terraform               # terraform workspace (https://www.terraform.io)
