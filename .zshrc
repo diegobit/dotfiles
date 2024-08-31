@@ -209,7 +209,9 @@ alias ls="ls -G"
 alias navi="navi --print"
 alias pa="pyenv activate"
 alias pd="pyenv deactivate"
-alias vi="nvim"
+alias nv="nvim"
+alias llmp="llm -m gemini-1.5-pro-latest"
+alias llmf="llm -m gemini-1.5-flash-latest"
 
 retry() {
   local attempts=1000
