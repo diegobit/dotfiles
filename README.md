@@ -1,6 +1,6 @@
-# My dotfiles
+# dotfiles
 
-This repo contains the dotfiles for my system, plus a script to prepare a new MacOS device.
+This repo contains my dotfiles plus a script to configure a new MacOS device.
 
 ## 1. Install
 
