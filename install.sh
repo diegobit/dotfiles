@@ -42,6 +42,10 @@ broot --set-install-state installed
 brew install lazygit
 brew install fd
 brew install zoxide
+
+# cht.sh
+curl -s https://cht.sh/:cht.sh | sudo tee /usr/local/bin/cht.sh && sudo chmod +x /usr/local/bin/cht.sh
+
 # ---------------------------------------------
 # Neovim
 # ---------------------------------------------
@@ -60,9 +64,6 @@ brew install --cask font-symbols-only-nerd-font # font for kitty
 # ---------------------------------------------
 brew install dust
 brew install tmux
-# navi with cheatsheets
-brew install navi tldr
-navi repo add denisidoro/navi-tldr-pages
 brew install htop
 brew install php # for Alfred workflows
 brew install yt-dlp # like youtube-dl

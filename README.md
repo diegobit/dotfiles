@@ -32,13 +32,7 @@ https://docs.docker.com/engine/reference/commandline/buildx_install/"
 docker buildx install
 ```
 
-### 1.3 To add navi repositories
-
-```
-navi browse
-```
-
-### 1.4 Install Nerd Font for terminal and neovim
+### 1.3 Install Nerd Font for terminal and neovim
 
 - Install either the one from powerlevel: https://github.com/romkatv/powerlevel10k#meslo-nerd-font-patched-for-powerlevel10k
 - or - better - install a Nerd Font: https://www.nerdfonts.com/font-downloads
