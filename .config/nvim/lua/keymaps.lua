@@ -27,20 +27,20 @@ local function lazy_keys(keys)
     vim.o.lazyredraw = old
   end
 end
-vim.keymap.set({ 'n', 'v' }, '<C-f>', lazy_keys '<C-f>zz', { desc = 'Scroll down screen' })
-vim.keymap.set({ 'n', 'v' }, '<C-b>', lazy_keys '<C-b>zz', { desc = 'Scroll up screen' })
-vim.keymap.set({ 'n', 'v' }, '<C-d>', lazy_keys '<C-d>zz', { desc = 'Scroll down half screen' })
-vim.keymap.set({ 'n', 'v' }, '<C-u>', lazy_keys '<C-u>zz', { desc = 'Scroll up half screen' })
+vim.keymap.set({ 'n', 'v' }, '<C-f>', lazy_keys '<C-f>zvzz', { desc = 'Scroll down screen' })
+vim.keymap.set({ 'n', 'v' }, '<C-b>', lazy_keys '<C-b>zvzz', { desc = 'Scroll up screen' })
+vim.keymap.set({ 'n', 'v' }, '<C-d>', lazy_keys '<C-d>zvzz', { desc = 'Scroll down half screen' })
+vim.keymap.set({ 'n', 'v' }, '<C-u>', lazy_keys '<C-u>zvzz', { desc = 'Scroll up half screen' })
 -- if going to the next search results scrolls the page, scroll AND center
-vim.keymap.set('n', 'n', 'nzz')
-vim.keymap.set('n', 'N', 'Nzz')
+vim.keymap.set('n', 'n', 'nzvzz')
+vim.keymap.set('n', 'N', 'Nzvzz')
 
 -- Keybinds to make split navigation easier.
 -- Use CTRL+<hjkl> to switch between windows
-vim.keymap.set({ 'n', 't' }, '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
-vim.keymap.set({ 'n', 't' }, '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
-vim.keymap.set({ 'n', 't' }, '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
-vim.keymap.set({ 'n', 't' }, '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
+-- vim.keymap.set({ 'n', 't' }, '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
+-- vim.keymap.set({ 'n', 't' }, '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
+-- vim.keymap.set({ 'n', 't' }, '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+-- vim.keymap.set({ 'n', 't' }, '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
 
 -- Move current line / block with Alt-j/k ala vscode.
 vim.keymap.set('n', '<M-j>', ':m .+1<CR>==', { desc = 'Move line down' })
