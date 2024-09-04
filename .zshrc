@@ -200,7 +200,33 @@ alias ls="ls -G"
 alias navi="navi --print"
 alias pa="pyenv activate"
 alias pd="pyenv deactivate"
-alias nv="nvim"
+nv() {
+    target="$1"
+    # no argument, just cd .
+    if [[ -z "$target" ]]; then
+        nvim .
+    # if arg is a dir, cd into it
+    elif [[ -d "$target" ]]; then
+        cd "$target"
+        nvim .
+    # if arg is a file, cd into either: git root, or dirname
+    elif [[ -f "$target" ]]; then
+        d=$(dirname "$target")
+        cd "$d"
+        git_root=$(git rev-parse --show-toplevel 2> /dev/null)
+        if [ $? -eq 0 ]; then
+            cd "$git_root"
+        fi
+        nvim "$target"
+    else
+      echo "Error: '$target' is not a file or directory." >&2
+      exit 1
+    fi
+}
+nvn() {
+    cd ~/note
+    nvim .
+}
 alias llmp="llm -m gemini-1.5-pro-latest"
 alias llmf="llm -m gemini-1.5-flash-latest"
 
