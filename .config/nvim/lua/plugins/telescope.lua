@@ -94,13 +94,13 @@ return {
 
       -- See `:help telescope.builtin`
       local builtin = require 'telescope.builtin'
-      vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[F]iles by name' })
-      vim.keymap.set('n', '<leader>sF', builtin.git_files, { desc = '[F]iles on Git by name' })
-      vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = 'grep /w current [W]ord' })
+      vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[F]iles by Name' })
+      vim.keymap.set('n', '<leader>sF', builtin.git_files, { desc = '[F]iles on Git by Name' })
+      vim.keymap.set('n', '<leader>s*', builtin.grep_string, { desc = 'Grep Word in Project Files' })
+      vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[G]rep in Project Piles' })
       vim.keymap.set('n', '<leader>sG', function()
         builtin.live_grep { additional_args = { '-uu' } }
-      end, { desc = '[s]earch [G]rep in All Files w/ hidden' })
-      vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[g]rep in All Files' })
+      end, { desc = '[G]rep in Project Files (w/ Hidden)' })
       vim.keymap.set('n', '<leader>sc', builtin.builtin, { desc = 'Telescope [C]ommands' })
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[H]elp' })
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[K]eymaps' })
@@ -109,35 +109,31 @@ return {
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = 'Recent Files ("." for repeat)' })
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] List existing buffers' })
 
-      -- Show all diagnostics on current line in floating window
+      -- Show all diagnostics on current line in floating window (done natively with `<C-w>d`)
       -- vim.api.nvim_set_keymap('n', '<Leader>sd', ':lua vim.diagnostic.open_float()<CR>', { noremap = true, silent = true, desc = '[show] line [d]iagnostics' })
-      -- Go to next diagnostic (if there are multiple on the same line, only shows
-      -- one at a time in the floating window)
+      -- Go to next diagnostic (if there are multiple on the same line, only shows one at a time in the floating window)
+      -- and open the floating window (unlike `[d`)
       vim.api.nvim_set_keymap('n', '<Leader>n', ':lua vim.diagnostic.goto_next()<CR>', { noremap = true, silent = true })
-      -- Go to prev diagnostic (if there are multiple on the same line, only shows
-      -- one at a time in the floating window)
+      -- Go to prev diagnostic (if there are multiple on the same line, only shows one at a time in the floating window)
+      -- and open the floating window (unlike `[d`)
       vim.api.nvim_set_keymap('n', '<Leader>p', ':lua vim.diagnostic.goto_prev()<CR>', { noremap = true, silent = true })
-      -- Slightly advanced example of overriding default behavior and theme
       vim.keymap.set('n', '<leader>/', function()
-        -- You can pass additional configuration to Telescope to change the theme, layout, etc.
         builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
           previewer = false,
         })
       end, { desc = '[/] Fuzzily search in current buffer' })
 
-      -- It's also possible to pass additional configuration options.
-      --  See `:help telescope.builtin.live_grep()` for information about particular keys
       vim.keymap.set('n', '<leader>s/', function()
         builtin.live_grep {
           grep_open_files = true,
           prompt_title = 'Live Grep in Open Files',
         }
-      end, { desc = '[/] grep in Open Files' })
+      end, { desc = '[/] Grep in Open Files' })
 
       -- Shortcut for searching your Neovim configuration files
       vim.keymap.set('n', '<leader>sn', function()
         builtin.find_files { cwd = vim.fn.stdpath 'config' }
-      end, { desc = '[N]eovim files' })
+      end, { desc = '[N]eovim Files' })
     end,
   },
 }
