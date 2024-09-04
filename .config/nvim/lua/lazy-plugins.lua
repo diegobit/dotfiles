@@ -15,7 +15,6 @@ require('lazy').setup({
   -- Use `opts = {}` to force a plugin to be loaded.
 
   -- require 'plugins/gitsigns',
-
   require 'plugins/which-key',
 
   require 'plugins/telescope',
@@ -60,7 +59,7 @@ require('lazy').setup({
 
   require 'plugins/markdown-preview',
 
-  require 'plugins/borderline',
+  -- require 'plugins/borderline',
 
   require 'plugins/telescope-tabs',
 
@@ -73,6 +72,10 @@ require('lazy').setup({
   require 'plugins/vim-flog',
 
   require 'plugins/decipher',
+
+  require 'plugins/vim-be-good',
+
+  -- require 'plugins/tabby',
 }, {
   ui = {
     icons = {},

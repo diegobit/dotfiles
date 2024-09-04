@@ -34,7 +34,7 @@ return {
 
       cmp.setup {
         formatting = {
-          fields = { "abbr", "kind", "menu" },
+          fields = { 'abbr', 'kind', 'menu' },
           expandable_indicator = true,
           format = lspkind.cmp_format {
             mode = 'symbol_text',
@@ -43,6 +43,7 @@ return {
         window = {
           -- overridden by borderline, but will not be shown if this setting is not present
           completion = { border = 'single' },
+          documentation = { border = 'single' },
         },
         snippet = {
           expand = function(args)

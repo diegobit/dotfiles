@@ -6,6 +6,17 @@ return {
     local decipher = require 'decipher'
     decipher.setup {
       vim.keymap.set({ 'n', 'v' }, '<leader>ube', function()
+      float = {
+        border = {
+          { '┌', 'FloatBorder' },
+          { '─', 'FloatBorder' },
+          { '┐', 'FloatBorder' },
+          { '│', 'FloatBorder' },
+          { '┘', 'FloatBorder' },
+          { '─', 'FloatBorder' },
+          { '└', 'FloatBorder' },
+          { '│', 'FloatBorder' },
+        },
         decipher.encode_selection 'base64'
       end, { noremap = true, silent = true, desc = '[B]ase64 [E]ncode' }),
       vim.keymap.set({ 'n', 'v' }, '<leader>ubd', function()
