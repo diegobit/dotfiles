@@ -59,9 +59,6 @@ return {
         mapping = cmp.mapping.preset.insert {
           ['<C-n>'] = cmp.mapping.select_next_item(),
           ['<C-p>'] = cmp.mapping.select_prev_item(),
-          -- Scroll the documentation window [b]ack / [f]orward
-          ['<C-b>'] = cmp.mapping.scroll_docs(-4),
-          ['<C-f>'] = cmp.mapping.scroll_docs(4),
           ['<C-y>'] = cmp.mapping.confirm { select = true },
           ['<C-Space>'] = cmp.mapping.complete {},
 
@@ -87,22 +84,24 @@ return {
           -- ['<Tab>'] = cmp.mapping.select_next_item(),
           -- ['<S-Tab>'] = cmp.mapping.select_prev_item(),
 
-          -- Think of <c-l> as moving to the right of your snippet expansion.
-          --  So if you have a snippet that's like:
-          --  function $name($args)
-          --    $body
-          --  end
-          --
-          -- <c-l> will move you to the right of each of the expansion locations.
-          -- <c-h> is backwards
-          ['<C-l>'] = cmp.mapping(function()
+          -- move you forward/backward of each of the expansion locations.
+          -- So if you have a snippet that's like:
+          --   function $name($args)
+          --     $body
+          --   end
+          -- name<->args<->body
+          ['<C-f>'] = cmp.mapping(function()
             if luasnip.expand_or_locally_jumpable() then
               luasnip.expand_or_jump()
+            else
+              cmp.mapping.scroll_docs(4)
             end
           end, { 'i', 's' }),
-          ['<C-h>'] = cmp.mapping(function()
+          ['<C-b>'] = cmp.mapping(function()
             if luasnip.locally_jumpable(-1) then
               luasnip.jump(-1)
+            else
+              cmp.mapping.scroll_docs(-4)
             end
           end, { 'i', 's' }),
 
