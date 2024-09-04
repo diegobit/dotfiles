@@ -27,15 +27,14 @@ return {
         { '<leader>d', group = '[D]ebug' },
         { '<leader>r', group = '[R]ename' },
         { '<leader>s', group = '[S]earch' },
-        { '<leader>w', group = '[W]orkspace' },
+        -- { '<leader>w', group = '[W]orkspace' },
         { '<leader>t', group = '[T]oggle' },
         { '<leader>g', group = '[G]it Hunk', mode = { 'n', 'v' } },
-        { '<leader>u', group = '[U]tils'},
 
         -- docs for MisanthropicBit/decipher.nvim
-        { '<leader>uu', group = '[U]RL'},
-        { '<leader>ub', group = '[B]ase64'},
-        { '<leader>ubs', group = '[B]ase64 URL [S]afe'},
+        { 'gu', group = '[U]RL De/Encode', mode = { 'n', 'v' } },
+        { 'gb', group = '[B]ase64 De/Encode', mode = { 'n', 'v' } },
+        { 'gbs', group = '[B]ase64 URL [S]afe De/Encode', mode = { 'n', 'v' } },
       }
     end,
   },
