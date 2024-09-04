@@ -37,7 +37,7 @@ brew install zsh-syntax-highlighting
 brew install romkatv/powerlevel10k/powerlevel10k
 brew install ripgrep
 brew install fzf
-brew install broot
+brew install yazi
 broot --set-install-state installed
 brew install lazygit
 brew install fd
