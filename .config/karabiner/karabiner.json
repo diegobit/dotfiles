@@ -975,8 +975,7 @@
                                 "from": {
                                     "key_code": "w",
                                     "modifiers": {
-                                        "mandatory": ["control"],
-                                        "optional": ["any"]
+                                        "mandatory": ["left_control"]
                                     }
                                 },
                                 "to": [
