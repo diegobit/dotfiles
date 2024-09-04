@@ -1316,7 +1316,7 @@
                     "to": [{ "key_code": "f12" }]
                 }
             ],
-            "name": "MacBook and External keyboards",
+            "name": "normal",
             "selected": true,
             "simple_modifications": [
                 {
