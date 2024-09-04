@@ -48,6 +48,9 @@ vim.keymap.set('n', '<M-k>', ':m .-2<CR>==', { desc = 'Move line up' })
 vim.keymap.set('v', '<M-j>', ":m '>+1<CR>gv=gv", { desc = 'Move block down' })
 vim.keymap.set('v', '<M-k>', ":m '<-2<CR>gv=gv", { desc = 'Move block up' })
 
+-- canc/delete_forward
+vim.keymap.set('i', '<C-l>', "<Del>", { desc = 'Delete forward' })
+
 -- Quick exit -- NOTE: you can exit with ZQ (:q!) or ZZ (:x)
 -- vim.keymap.set({ 'i', 'n' }, '<C-q>', '<Cmd>bd<CR>', { desc = 'Quit current buffer' })
 -- vim.keymap.set('i', '<C-q>', '<Cmd>q<CR>', { desc = 'Quit nvim' })
