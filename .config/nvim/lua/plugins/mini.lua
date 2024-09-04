@@ -70,12 +70,12 @@ return {
         return ''
       end
 
-      -- Add tab number to statusline. section_filename logic from source
       local function tab_text(is_truncated)
         local title = is_truncated and '' or 'Tab:'
         local tab_max = vim.fn.tabpagenr '$'
         if tab_max > 1 then
-          return '[' .. title .. vim.fn.tabpagenr() .. '/' .. tab_max .. '] '
+          return '[' .. title .. vim.fn.tabpagenr() .. '] '
+          --     return '[' .. title .. vim.fn.tabpagenr() .. '/' .. tab_max .. '] '
         else
           return ''
         end
