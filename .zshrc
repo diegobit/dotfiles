@@ -57,6 +57,9 @@ HISTFILE=~/.zsh_histfile
 HISTSIZE=25000 # size memory. Do not discard least recent from memory until exit
 SAVEHIST=20000 # file size
 setopt INC_APPEND_HISTORY EXTENDED_HISTORY HIST_FIND_NO_DUPS AUTO_CD NOTIFY 
+bindkey -v
+bindkey ^R history-incremental-search-backward
+bindkey ^S history-incremental-search-forward
 #bindkey -e # Emacs key bindings
 # for allowing canc to delete forward char
 bindkey    "^[[3~"          delete-char
