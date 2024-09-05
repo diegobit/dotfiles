@@ -55,11 +55,7 @@ require('lazy').setup({
 
   require 'plugins/lint',
 
-  -- require 'plugins/nvim-possession'
-
   require 'plugins/markdown-preview',
-
-  -- require 'plugins/borderline',
 
   require 'plugins/telescope-tabs',
 
@@ -74,8 +70,6 @@ require('lazy').setup({
   require 'plugins/decipher',
 
   require 'plugins/vim-be-good',
-
-  -- require 'plugins/tabby',
 }, {
   ui = {
     icons = {},
