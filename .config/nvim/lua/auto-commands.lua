@@ -26,4 +26,14 @@ vim.api.nvim_create_autocmd('FileType', {
   end,
 })
 
+-- Customize mouse right click menu
+vim.api.nvim_create_autocmd('VimEnter', {
+  callback = function()
+    vim.cmd [[
+      aunmenu PopUp.How-to\ disable\ mouse
+      aunmenu PopUp.-1-
+    ]]
+  end,
+})
+
 -- vim: ts=2 sts=2 sw=2 et
