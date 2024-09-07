@@ -134,16 +134,16 @@ source '/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.in
 #source '/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc'
 
 ##############################
-# ZSH SYNTAX HIGHLIGHT
-##############################
-export ZSH_HIGHLIGHT_HIGHLIGHTERS_DIR=${HOMEBREW_PREFIX}/share/zsh-syntax-highlighting/highlighters
-source ${brewHome}/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-
-##############################
 # AUTOSUGGESTIONS
 ##############################
 source ${brewHome}/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#888888" #8495a0 #9379a0
+
+##############################
+# ZSH SYNTAX HIGHLIGHT
+##############################
+export ZSH_HIGHLIGHT_HIGHLIGHTERS_DIR=${HOMEBREW_PREFIX}/share/zsh-syntax-highlighting/highlighters
+source ${brewHome}/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 ##############################
 # FUZZY FINDER FZF
