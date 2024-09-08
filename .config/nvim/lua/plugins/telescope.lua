@@ -67,8 +67,8 @@ return {
       -- files
       -- vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[F]iles by Name' })
       -- vim.keymap.set('n', '<leader>sF', builtin.git_files, { desc = '[F]iles on Git by Name' })
-      vim.keymap.set('n', '<leader>o', builtin.find_files, { desc = '[O]pen File by Name' })
-      vim.keymap.set('n', '<leader>O', builtin.git_files, { desc = '[O]pen File on Git by Name' })
+      vim.keymap.set('n', '<leader>f', builtin.find_files, { desc = 'Find [F]ile by Name' })
+      vim.keymap.set('n', '<leader>F', builtin.git_files, { desc = 'Find [F]ile on Git by Name' })
       vim.keymap.set('n', '<leader>sr', builtin.oldfiles, { desc = '[R]ecently opened Files' })
       vim.keymap.set('n', '<leader>sn', function()
         builtin.find_files { cwd = vim.fn.stdpath 'config' }
