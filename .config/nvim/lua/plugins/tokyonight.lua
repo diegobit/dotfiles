@@ -38,6 +38,10 @@ return {
       vim.cmd.hi 'MiniDiffSignAdd guifg=#50a077'
       vim.cmd.hi 'MiniDiffSignChange guifg=#6388c4'
       vim.cmd.hi 'MiniDiffSignDelete guifg=#b8616f'
+
+      -- Change color for lukas-reineke/indent-blankline.nvim
+      vim.cmd.hi 'IblIndent guifg=#2b2d3c'
+      vim.cmd.hi 'IblScope guifg=#465e91'
     end,
   },
 }

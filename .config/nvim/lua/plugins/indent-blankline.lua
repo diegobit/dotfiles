@@ -9,7 +9,7 @@ return {
         char = '▏',
       },
       scope = {
-        show_start = false,
+        show_start = true,
         show_end = false,
       },
     }
