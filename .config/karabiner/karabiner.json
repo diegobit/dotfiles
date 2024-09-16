@@ -1172,6 +1172,7 @@
                         "product_id": 636,
                         "vendor_id": 1452
                     },
+                    "manipulate_caps_lock_led": false,
                     "simple_modifications": [
                         {
                             "from": { "key_code": "non_us_backslash" },
@@ -1267,6 +1268,7 @@
                         "product_id": 16386,
                         "vendor_id": 12625
                     },
+                    "manipulate_caps_lock_led": false,
                     "simple_modifications": [
                         {
                             "from": { "key_code": "left_command" },
