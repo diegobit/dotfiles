@@ -931,7 +931,7 @@
                         ]
                     },
                     {
-                        "description": "VIM insert mode [not kitty]: C-h=backspace, C-u=delete to beginning of line, C-w=delete prev word, C-l=canc",
+                        "description": "VIM insert mode [not kitty]: C-h=backspace, C-u=delete to beginning of line, C-w=delete prev word, C-l=canc, C-j=enter",
                         "manipulators": [
                             {
                                 "conditions": [
@@ -1016,6 +1016,25 @@
                                     }
                                 },
                                 "to": [{ "key_code": "delete_forward" }],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "net.kovidgoyal.kitty"
+                                        ],
+                                        "type": "frontmost_application_unless"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "j",
+                                    "modifiers": {
+                                        "mandatory": ["control"],
+                                        "optional": ["left_shift", "left_option"]
+                                    }
+                                },
+                                "to": [{ "key_code": "return_or_enter" }],
                                 "type": "basic"
                             }
                         ]
