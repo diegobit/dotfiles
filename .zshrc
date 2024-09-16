@@ -15,8 +15,8 @@ source ~/.p10k.zsh
 ##############################
 # Plugins for lazy loading
 ##############################
-source ~/Progetti/zsh_plugins/zsh-lazyload/zsh-lazyload.zsh
-source ~/Progetti/zsh_plugins/evalcache/evalcache.plugin.zsh
+source ~/Dev/zsh_plugins/zsh-lazyload/zsh-lazyload.zsh
+source ~/Dev/zsh_plugins/evalcache/evalcache.plugin.zsh
 
 ##############################
 # PATH
@@ -181,7 +181,7 @@ function yy() {
 ##############################
 # Aliases and functions
 ##############################
-export ait=$HOME/Progetti/AIT
+export ait=$HOME/Dev/AIT
 alias .="open ."
 alias ..="cd .."
 alias ...="cd ..; cd .."
@@ -224,7 +224,7 @@ nv() {
     fi
 }
 nvn() {
-    cd ~/note
+    cd ~/notes
     nvim .
 }
 alias llmp="llm -m gemini-1.5-pro-latest"

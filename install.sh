@@ -132,14 +132,14 @@ git config --global core.excludesfile ~/.gitignore_global
 # ---------------------------------------------
 # Initialize a few things
 # ---------------------------------------------
-echo "Making a Projects folder in ~/Progetti if it doesn't already exist"
-mkdir -p "$HOME/Progetti"
-echo "Making a Projects folder in ~/Documents/Progetti if it doesn't already exist"
-mkdir -p "$HOME/Documents/Progetti"
-echo "Making a Playground folder in ~/Progetti/Playgrounds if it doesn't already exist"
-mkdir -p "$HOME/Progetti/plg"
-echo "Making link to notes"
-ln -s "$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/Note" "$HOME/note"
+echo "Making a Dev folder if it doesn't already exist"
+mkdir -p "$HOME/Dev"
+echo "Making it also inside Documents for clous synched ones"
+mkdir -p "$HOME/Documents/Dev"
+echo "Making a Playground folder"
+mkdir -p "$HOME/Dev/plg"
+echo "Link the iCloud Obsidian dir to the home dir"
+ln -s "$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/Note" "$HOME/notes"
 
 # ---------------------------------------------
 # Manual actions
