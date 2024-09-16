@@ -946,7 +946,7 @@
                                     "key_code": "h",
                                     "modifiers": {
                                         "mandatory": ["control"],
-                                        "optional": ["any"]
+                                        "optional": ["left_option"]
                                     }
                                 },
                                 "to": [{ "key_code": "delete_or_backspace" }],
@@ -963,10 +963,7 @@
                                 ],
                                 "from": {
                                     "key_code": "u",
-                                    "modifiers": {
-                                        "mandatory": ["control"],
-                                        "optional": ["any"]
-                                    }
+                                    "modifiers": { "mandatory": ["control"] }
                                 },
                                 "to": [
                                     {
@@ -987,9 +984,7 @@
                                 ],
                                 "from": {
                                     "key_code": "w",
-                                    "modifiers": {
-                                        "mandatory": ["left_control"]
-                                    }
+                                    "modifiers": { "mandatory": ["left_control"] }
                                 },
                                 "to": [
                                     {
@@ -1012,7 +1007,7 @@
                                     "key_code": "l",
                                     "modifiers": {
                                         "mandatory": ["control"],
-                                        "optional": ["any"]
+                                        "optional": ["left_option"]
                                     }
                                 },
                                 "to": [{ "key_code": "delete_forward" }],
