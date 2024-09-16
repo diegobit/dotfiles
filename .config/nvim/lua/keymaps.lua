@@ -42,17 +42,21 @@ vim.keymap.set('n', 'N', 'Nzvzz')
 -- vim.keymap.set({ 'n', 't' }, '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 -- vim.keymap.set({ 'n', 't' }, '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
 
----- Move current line / block with Alt-j/k ala vscode. (Use these if macos_option_as_alt is true)
+---- Move current line / block with Alt-j/k (Use these if macos_option_as_alt is true)
 -- vim.keymap.set('n', '<M-j>', ':m .+1<CR>==', { desc = 'Move line down' })
 -- vim.keymap.set('n', '<M-k>', ':m .-2<CR>==', { desc = 'Move line up' })
 -- vim.keymap.set('v', '<M-j>', ":m '>+1<CR>gv=gv", { desc = 'Move block down' })
 -- vim.keymap.set('v', '<M-k>', ":m '<-2<CR>gv=gv", { desc = 'Move block up' })
 ---- The same, but if macos_option_as_alt is `no` - use the special chars of your keyboard layout
-vim.keymap.set('n', '∆', ':m .+1<CR>==', { desc = 'Move line down' })
-vim.keymap.set('n', '˚', ':m .-2<CR>==', { desc = 'Move line up' })
-vim.keymap.set('v', '∆', ":m '>+1<CR>gv=gv", { desc = 'Move block down' })
-vim.keymap.set('v', '˚', ":m '<-2<CR>gv=gv", { desc = 'Move block up' })
-
+-- vim.keymap.set('n', '∆', ':m .+1<CR>==', { desc = 'Move line down' })
+-- vim.keymap.set('n', '˚', ':m .-2<CR>==', { desc = 'Move line up' })
+-- vim.keymap.set('v', '∆', ":m '>+1<CR>gv=gv", { desc = 'Move block down' })
+-- vim.keymap.set('v', '˚', ":m '<-2<CR>gv=gv", { desc = 'Move block up' })
+---- The same, but with arrows. Useful if alt+jk are used by something else, eg. aerospace
+-- vim.keymap.set('n', '<M-down>', ':m .+1<CR>==', { desc = 'Move line down' })
+-- vim.keymap.set('n', '<M-up>', ':m .-2<CR>==', { desc = 'Move line up' })
+-- vim.keymap.set('v', '<M-down>', ":m '>+1<CR>gv=gv", { desc = 'Move block down' })
+-- vim.keymap.set('v', '<M-up>', ":m '<-2<CR>gv=gv", { desc = 'Move block up' })
 -- canc/delete_forward
 vim.keymap.set('i', '<C-l>', "<Del>", { desc = 'Delete forward' })
 
