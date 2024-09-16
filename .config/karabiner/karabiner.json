@@ -6,6 +6,19 @@
                 "parameters": { "basic.simultaneous_threshold_milliseconds": 750 },
                 "rules": [
                     {
+                        "description": "Disable CMD+H (hide window)",
+                        "manipulators": [
+                            {
+                                "from": {
+                                    "key_code": "h",
+                                    "modifiers": { "mandatory": ["command"] }
+                                },
+                                "to": [{ "key_code": "out" }],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
                         "description": "CAPS_LOCK LAYER: caps_lock -> ctrl. Send escape when pressed alone [300ms]",
                         "manipulators": [
                             {
