@@ -197,7 +197,6 @@ alias ip="ifconfig -a | perl -nle'/(\d+\.\d+\.\d+\.\d+)/ && print $1'; dig +shor
 alias l="ls -lah"
 alias lg="lazygit"
 alias ls="ls -G"
-alias navi="navi --print"
 alias pa="pyenv activate"
 alias pd="pyenv deactivate"
 nv() {

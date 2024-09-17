@@ -66,7 +66,7 @@ vim.opt.scrolloff = 6
 vim.opt.showtabline = 0
 
 -- border for diagnostics
-vim.diagnostic.config { float = { border = "single" }, }
+vim.diagnostic.config { float = { border = 'single' } }
 
 -- python
 vim.g.python3_host_prog = '$PYENV_ROOT/versions/pynvim/bin/python'
