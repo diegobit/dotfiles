@@ -199,9 +199,10 @@ alias lg="lazygit"
 alias ls="ls -G"
 alias pa="pyenv activate"
 alias pd="pyenv deactivate"
-nv() {
+alias nv="nvim"
+nvd() {
     target="$1"
-    # no argument, just cd .
+    # no argument, just open nvim in current dir
     if [[ -z "$target" ]]; then
         nvim .
     # if arg is a dir, cd into it
@@ -211,16 +212,37 @@ nv() {
     # if arg is a file, cd into either: git root, or dirname
     elif [[ -f "$target" ]]; then
         d=$(dirname "$target")
+        target=$(basename $target)
         cd "$d"
-        git_root=$(git rev-parse --show-toplevel 2> /dev/null)
-        if [ $? -eq 0 ]; then
-            cd "$git_root"
-        fi
         nvim "$target"
     else
       echo "Error: '$target' is not a file or directory." >&2
       exit 1
     fi
+}
+nvg() {
+    target="$1"
+    # if arg is a dir, cd into it
+    if [[ -z "$target" ]]; then
+        :
+    elif [[ -d "$target" ]]; then
+        cd "$target"
+    # if arg is a file, cd into either: git root, or dirname
+    elif [[ -f "$target" ]]; then
+        d=$(dirname "$target")
+        target=$(readlink -f $target)
+        cd "$d"
+    else
+      echo "Error: '$target' is not a file or directory." >&2
+      exit 1
+    fi
+
+    git_root=$(git rev-parse --show-toplevel 2> /dev/null)
+    if [ $? -eq 0 ]; then
+        cd "$git_root"
+    fi
+
+    nvim "$target"
 }
 nvn() {
     cd ~/notes
