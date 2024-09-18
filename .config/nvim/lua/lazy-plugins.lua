@@ -70,6 +70,8 @@ require('lazy').setup({
   require 'plugins/decipher',
 
   require 'plugins/vim-be-good',
+
+  require 'plugins/bg',
 }, {
   ui = {
     icons = {},
