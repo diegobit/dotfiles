@@ -142,5 +142,7 @@ ctrl-shift-cmd-alt-m = 'move-workspace-to-monitor --wrap-around next'
 #     - E1=Main, E2=secondary, B=third: 
 #       - workspace 1 is assigned to B
 #       - workspace 2 gets assigned to E2
-B = ['^Built-in Retina Display$']
-E = ['secondary', 2]
+# B = ['^Built-in Retina Display$']
+B = 'secondary'
+E = 3
+
