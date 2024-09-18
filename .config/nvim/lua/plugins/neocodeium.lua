@@ -17,7 +17,7 @@ return {
     vim.keymap.set('i', '<C-space>l', neocodeium.accept_line)
     vim.keymap.set('i', '<C-space>w', neocodeium.accept_word)
     vim.keymap.set('i', '<C-space>n', neocodeium.cycle)
-    vim.keymap.set('i', '<C-space>N', function()
+    vim.keymap.set('i', '<C-space>p', function()
       neocodeium.cycle(-1)
     end)
     vim.keymap.set('i', '<C-space>c', neocodeium.clear)
