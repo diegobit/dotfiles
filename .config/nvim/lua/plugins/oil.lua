@@ -12,7 +12,7 @@ return {
         ['<C-h>'] = false,
         ['<C-l>'] = false,
         ['<C-s>'] = { 'actions.select', opts = { horizontal = true, vertical = false }, desc = 'Open the entry in a horizontal split' },
-        ['<C-v>'] = { 'actions.select', opts = { vertical = true }, desc = 'Open the entry in a vertical split' },
+        ['<C-enter>'] = { 'actions.select', opts = { vertical = true }, desc = 'Open the entry in a vertical split' },
         ['<C-r>'] = { 'actions.refresh', desc = 'Refresh the tree' },
       },
       view_options = {
