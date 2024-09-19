@@ -74,6 +74,8 @@ require('lazy').setup({
   require 'plugins/bg',
 
   require 'plugins/bullets',
+
+  require 'plugins/outline',
 }, {
   ui = {
     icons = {},
