@@ -179,3 +179,19 @@ run = 'layout floating'
 [[on-window-detected]]
 if.app-id = 'com.keepassium.ios'
 run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'net.freemacsoft.AppCleaner'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.apple.AddressBook'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.apple.FaceTime'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.apple.PhotoBooth'
+run = 'layout floating'
