@@ -97,7 +97,7 @@ ctrl-shift-cmd-right = 'join-with right'
 ctrl-shift-cmd-backspace = 'flatten-workspace-tree'
 
 ### RESIZE ###
-ctrl-shift-cmd-0 = 'balance-sizes'
+ctrl-shift-cmd-backslash = 'balance-sizes'
 ctrl-shift-cmd-minus = 'resize smart -100'
 ctrl-shift-cmd-equal = 'resize smart +100'
 
