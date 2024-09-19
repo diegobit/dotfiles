@@ -130,7 +130,8 @@ ctrl-shift-cmd-tab = 'workspace-back-and-forth'
 
 ### SECONDARY DISPLAY ###
 ctrl-shift-cmd-m = 'focus-monitor --wrap-around next'
-ctrl-shift-cmd-alt-m = 'move-workspace-to-monitor --wrap-around next'
+ctrl-shift-cmd-alt-m = 'move-node-to-monitor --wrap-around next'
+ctrl-shift-cmd-alt-w = 'move-workspace-to-monitor --wrap-around next'
 
 [workspace-to-monitor-force-assignment]
 # GIVEN: Built-in=B, External=E
