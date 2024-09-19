@@ -1,20 +1,25 @@
----- Default keymaps:
--- let g:bullets_custom_mappings = [
---   ['imap', '<cr>', '<Plug>(bullets-newline)'],
---   ['inoremap', '<C-cr>', '<cr>'],
---
---   ['nmap', 'o', '<Plug>(bullets-newline)'],
---
---   ['vmap', 'gN', '<Plug>(bullets-renumber)'],
---   ['nmap', 'gN', '<Plug>(bullets-renumber)'],
---
---   ['nmap', '<leader>x', '<Plug>(bullets-toggle-checkbox)'],
---
---   ['imap', '<C-t>', '<Plug>(bullets-demote)'],
---   ['nmap', '>>', '<Plug>(bullets-demote)'],
---   ['vmap', '>', '<Plug>(bullets-demote)'],
---   ['imap', '<C-d>', '<Plug>(bullets-promote)'],
---   ['nmap', '<<', '<Plug>(bullets-promote)'],
---   ['vmap', '<', '<Plug>(bullets-promote)'],
--- ]
-return { 'bullets-vim/bullets.vim', event = 'VeryLazy' }
+
+return {
+  'bullets-vim/bullets.vim',
+  event = 'VeryLazy',
+  config = function()
+    vim.g.bullets_set_mappings = 0
+
+    vim.keymap.set('i', '<CR>', '<Plug>(bullets-newline)')
+    vim.keymap.set('i', '<C-CR>', '<CR>')
+
+    vim.keymap.set('n', 'o', '<Plug>(bullets-newline)')
+
+    vim.keymap.set({ 'n', 'v' }, 'gN', '<Plug>(bullets-renumber)', { desc = 'Renumber' })
+
+    vim.keymap.set('n', 'gx', '<Plug>(bullets-toggle-checkbox)', { desc = 'Toggle checkbox' })
+
+    vim.keymap.set('i', '<C-t>', '<Plug>(bullets-demote)')
+    vim.keymap.set('n', '>>', '<Plug>(bullets-demote)', { desc = 'Demote bullet' })
+    vim.keymap.set('v', '>', '<Plug>(bullets-demote)')
+    vim.keymap.set('i', '<C-d>', '<Plug>(bullets-promote)')
+    vim.keymap.set('n', '<<', '<Plug>(bullets-promote)', { desc = 'Promote bullet' })
+    vim.keymap.set('v', '<', '<Plug>(bullets-promote)')
+  end,
+}
+
