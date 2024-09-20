@@ -35,7 +35,7 @@ vim.keymap.set({ 'n', 'v' }, '<C-u>', lazy_keys '<C-u>zvzz', { desc = 'Scroll up
 vim.keymap.set('n', 'n', 'nzvzz')
 vim.keymap.set('n', 'N', 'Nzvzz')
 
--- Keybinds to make split navigation easier.
+---- Keybinds to make split navigation easier.
 -- Use CTRL+<hjkl> to switch between windows
 -- vim.keymap.set({ 'n', 't' }, '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
 -- vim.keymap.set({ 'n', 't' }, '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
@@ -57,27 +57,16 @@ vim.keymap.set('n', 'N', 'Nzvzz')
 -- vim.keymap.set('n', '<M-up>', ':m .-2<CR>==', { desc = 'Move line up' })
 -- vim.keymap.set('v', '<M-down>', ":m '>+1<CR>gv=gv", { desc = 'Move block down' })
 -- vim.keymap.set('v', '<M-up>', ":m '<-2<CR>gv=gv", { desc = 'Move block up' })
--- canc/delete_forward
+
+-- Canc / delete_forward
 vim.keymap.set('i', '<C-l>', "<Del>", { desc = 'Delete forward' })
 
 -- Quick exit -- NOTE: you can exit with ZQ (:q!) or ZZ (:x)
--- vim.keymap.set({ 'i', 'n' }, '<C-q>', '<Cmd>bd<CR>', { desc = 'Quit current buffer' })
--- vim.keymap.set('i', '<C-q>', '<Cmd>q<CR>', { desc = 'Quit nvim' })
--- vim.keymap.set('n', '<C-q>', '<Cmd>q<CR>', { desc = 'Quit nvim' })
--- Quick Save file
--- vim.keymap.set({ 'i', 'n' }, '<C-s>', '<Cmd>w<CR><Esc>', { desc = 'Save file' })
 
--- Quick open explorer
--- vim.keymap.set({ 'i', 'n' }, '<C-e>', '<Cmd>:Ex<CR><Esc>', { desc = 'Open Netrw file explorer' })
-
--- Send to clipboard with leader [system cliboard disable]
--- vim.keymap.set('n', '<leader>d', '"*d', { desc = 'Delete to clipboard ("*d)' })
--- vim.keymap.set('v', '<leader>d', '"*d', { desc = 'Delete to clipboard ("*d)' })
-vim.keymap.set({ 'n', 'v' }, '<leader>x', '"*x', { desc = 'Delete char to clipboard ("*x)' })
--- vim.keymap.set('n', '<leader>c', '"*c', { desc = 'Change to clipboard ("*x)' })
--- vim.keymap.set('v', '<leader>c', '"*c', { desc = 'Change to clipboard ("*x)' })
-vim.keymap.set({ 'n', 'v' }, '<leader>y', '"*y', { desc = 'Yank to clipboard ("*y)' })
-vim.keymap.set('n', '<leader>Y', '"*Y', { desc = 'Yank to clipboard ("*y)' })
+-- Enable macos copy paste shortcuts, for those sad moments where you are using the mouse
+vim.keymap.set({ 'i', 'n', 'v' }, '<D-s>', '<Cmd>up<CR><Esc>', { desc = 'Save file' })
+vim.keymap.set({ 'n', 'v' }, '<D-c>', '"*y', { desc = 'Yank to system clipboard' })
+vim.keymap.set({ 'n', 'v' }, '<D-x>', '"*d', { desc = 'Delete and write to system clipboard' })
 
 -- QuickFix shortcut
 vim.keymap.set('n', '<leader>tq', '<CMD>copen<CR>', { desc = '[Q]uickfix List, (:copen)' })
