@@ -51,6 +51,7 @@ curl -s https://cht.sh/:cht.sh | sudo tee /usr/local/bin/cht.sh && sudo chmod +x
 # ---------------------------------------------
 brew install neovim
 brew install luarocks
+npm i -g jshint # for javascript linting in nvim
 
 # ---------------------------------------------
 # Fonts

@@ -29,6 +29,7 @@ return {
       --
       -- You can disable the default linters by setting their filetypes to nil:
       lint.linters_by_ft['yaml'] = { 'yamllint' }
+      lint.linters_by_ft['javascript'] = { 'jshint' }
       lint.linters_by_ft['clojure'] = nil
       lint.linters_by_ft['inko'] = nil
       lint.linters_by_ft['janet'] = nil
