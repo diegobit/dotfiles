@@ -195,3 +195,12 @@ run = 'layout floating'
 [[on-window-detected]]
 if.app-id = 'com.apple.PhotoBooth'
 run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.tinyspeck.slackmacgap'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.apple.finder'
+run = 'layout floating'
+
