@@ -69,7 +69,7 @@ vim.keymap.set({ 'n', 'v' }, '<D-c>', '"*y', { desc = 'Yank to system clipboard'
 vim.keymap.set({ 'n', 'v' }, '<D-x>', '"*d', { desc = 'Delete and write to system clipboard' })
 
 -- QuickFix shortcut
-vim.keymap.set('n', '<leader>tq', '<CMD>copen<CR>', { desc = '[Q]uickfix List, (:copen)' })
+-- vim.keymap.set('n', '<leader>tq', '<CMD>copen<CR>', { desc = '[Q]uickfix List (:copen)' })
 vim.keymap.set('n', '[q', '<CMD>cprev<CR>', { desc = 'Previous quickfix entry (:cp)' })
 vim.keymap.set('n', ']q', '<CMD>cnext<CR>', { desc = 'Next quickfix entry (:cn)' })
 
