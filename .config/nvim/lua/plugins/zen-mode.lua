@@ -11,11 +11,10 @@ return {
     },
     plugins = {
       options = {
-        laststatus = 3,
+        -- laststatus = 3,
+        cmdheight = 0
       },
     },
-    -- or leave it empty to use the default settings
-    -- refer to the configuration section below
   },
 
   keys = {
