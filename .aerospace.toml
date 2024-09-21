@@ -97,9 +97,18 @@ ctrl-shift-cmd-right = 'join-with right'
 ctrl-shift-cmd-backspace = 'flatten-workspace-tree'
 
 ### RESIZE ###
-ctrl-shift-cmd-backslash = 'balance-sizes'
-ctrl-shift-cmd-minus = 'resize smart -100'
-ctrl-shift-cmd-equal = 'resize smart +100'
+# similar to vim windows: <C-w> plus '-', '+', '<' or '>'
+# the difference is that, there, to do '+', '<' or '>' we use also shift.
+# We cannot add shift to hyper!
+ctrl-shift-cmd-0 = 'balance-sizes' # cannot use '=', backslash is maximise in nvim
+ctrl-shift-cmd-minus = 'resize height -100'
+ctrl-shift-cmd-equal = 'resize height +100'
+ctrl-shift-cmd-comma = 'resize width -100'
+ctrl-shift-cmd-period = 'resize width +100'
+# Old commands: smart changes respect to parent. I prefer to do it manually
+# because nvim and kitty don't have it
+# ctrl-shift-cmd-minus = 'resize smart -100'
+# ctrl-shift-cmd-equal = 'resize smart +100'
 
 ### WORKSPACE ###
 # Main screen uses bottom row: 'z' to '/'
