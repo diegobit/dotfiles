@@ -74,7 +74,15 @@ return {
         builtin.find_files { cwd = vim.fn.stdpath 'config' }
       end, { desc = '[N]eovim Files' })
       -- grep
-      vim.keymap.set('n', '<leader>*', builtin.grep_string, { desc = 'Grep Word in Project Files' })
+      vim.keymap.set('n', '<leader>sw', function()
+        local word = vim.fn.expand("<cword>")
+        builtin.grep_string({ search = word })
+      end, { desc = 'Grep word in Project Files' })
+      vim.keymap.set('n', '<leader>sW', function()
+        local word = vim.fn.expand("<cWORD>")
+        builtin.grep_string({ search = word })
+      end, { desc = 'Grep WORD in Project Files' })
+      -- vim.keymap.set('n', '<leader>*', builtin.grep_string, { desc = 'Grep Selection in Project Files' })
       vim.keymap.set('n', '<leader>g', builtin.live_grep, { desc = '[G]rep in Project Files' })
       vim.keymap.set('n', '<leader>G', function()
         builtin.live_grep { additional_args = { '-uu' }, prompt_title = 'Live Grep (w/ Hidden)' }
@@ -87,7 +95,7 @@ return {
           previewer = false,
         })
       end, { desc = 'Fuzzy search in Current Buffer' })
-      vim.keymap.set('n', '<leader>B', function()
+      vim.keymap.set('n', '<leader>sb', function()
         builtin.live_grep {
           grep_open_files = true,
           prompt_title = 'Live Grep in Open [B]uffers',
