@@ -41,6 +41,23 @@ vim.api.nvim_create_autocmd({ "VimLeave", "VimSuspend" }, {
     end,
 })
 
+---- example custom lint check for rust
+-- vim.api.nvim_create_autocmd('FileType', {
+--   pattern = 'rust',
+--   callback = function()
+--     local ra_flycheck = function()
+--       local clients = vim.lsp.get_clients {
+--         name = 'rust_analyzer',
+--       }
+--       for _, client in ipairs(clients) do
+--         local params = vim.lsp.util.make_text_document_params()
+--         client.notify('rust-analyzer/runFlycheck', params)
+--       end
+--     end
+--     vim.keymap.set({ 'n' }, '<leader>cl', ra_flycheck, { desc = '[C]heck [L]int' })
+--   end,
+-- })
+
 -- Customize mouse right click menu
 vim.api.nvim_create_autocmd('VimEnter', {
   callback = function()

@@ -40,6 +40,7 @@ vim.opt.updatetime = 250
 -- Decrease mapped sequence wait time
 -- Displays which-key popup sooner
 vim.opt.timeoutlen = 300
+-- vim.opt.ttimeoutlen = 10
 
 -- Configure how new splits should be opened
 vim.opt.splitright = true
