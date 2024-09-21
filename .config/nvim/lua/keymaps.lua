@@ -70,5 +70,7 @@ vim.keymap.set({ 'n', 'v' }, '<D-x>', '"*d', { desc = 'Delete and write to syste
 
 -- QuickFix shortcut
 vim.keymap.set('n', '<leader>tq', '<CMD>copen<CR>', { desc = '[Q]uickfix List, (:copen)' })
+vim.keymap.set('n', '[q', '<CMD>cprev<CR>', { desc = 'Previous quickfix entry (:cp)' })
+vim.keymap.set('n', ']q', '<CMD>cnext<CR>', { desc = 'Next quickfix entry (:cn)' })
 
 -- vim: ts=2 sts=2 sw=2 et
