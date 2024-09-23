@@ -25,14 +25,13 @@ return {
       require('which-key').add {
         { '<leader>c', group = '[C]ode' },
         -- { '<leader>d', group = '[D]ebug' },
-        { '<leader>r', group = '[R]ename' },
         { '<leader>s', group = '[S]earch' },
         { '<leader>t', group = '[T]oggle' },
 
         -- docs for MisanthropicBit/decipher.nvim
-        { 'gu', group = '[U]RL De/Encode', mode = { 'n', 'v' } },
-        { 'gb', group = '[B]ase64 De/Encode', mode = { 'n', 'v' } },
-        { 'gbs', group = '[B]ase64 URL [S]afe De/Encode', mode = { 'n', 'v' } },
+        { 'g/', group = 'URL encoding', mode = { 'n', 'v' } },
+        { 'gb', group = 'Base64 encoding', mode = { 'n', 'v' } },
+        { 'gbs', group = 'URL Safe', mode = { 'n', 'v' } },
       }
     end,
   },
