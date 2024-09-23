@@ -39,37 +39,37 @@ return {
       '<leader>td',
       '<cmd>Trouble diagnostics toggle<cr>',
       desc = '[D]iagnostics (Trouble)',
-      mode = 'n'
+      mode = 'n',
     },
     {
       '<leader>tD',
       '<cmd>Trouble diagnostics toggle filter.buf=0<cr>',
       desc = 'Buffer [D]iagnostics (Trouble)',
-      mode = 'n'
+      mode = 'n',
     },
     {
       '<leader>ts',
       '<cmd>Trouble symbols toggle focus=false<cr>',
       desc = '[S]ymbols (Trouble)',
-      mode = 'n'
+      mode = 'n',
     },
     {
       '<leader>tl',
       '<cmd>Trouble lsp toggle focus=false win.position=right<cr>',
       desc = '[L]SP defs/refs/... (Trouble)',
-      mode = 'n'
+      mode = 'n',
     },
     {
       '<leader>tL',
       '<cmd>Trouble loclist toggle<cr>',
       desc = '[L]ocation List (Trouble)',
-      mode = 'n'
+      mode = 'n',
     },
     {
       '<leader>tq',
       '<cmd>Trouble qflist toggle<cr>',
       desc = '[Q]uickfix List (Trouble)',
-      mode = 'n'
+      mode = 'n',
     },
   },
 }
