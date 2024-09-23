@@ -60,7 +60,7 @@ return {
           ['<C-n>'] = cmp.mapping.select_next_item(),
           ['<C-p>'] = cmp.mapping.select_prev_item(),
           ['<C-y>'] = cmp.mapping.confirm { select = true },
-          ['<C-Space>'] = cmp.mapping.complete {},
+          -- ['<C-Space>'] = cmp.mapping.complete {},
 
           ['<C-k>'] = cmp.mapping {
             i = function()
@@ -90,20 +90,18 @@ return {
           --     $body
           --   end
           -- name<->args<->body
-          ['<C-f>'] = cmp.mapping(function()
-            if luasnip.expand_or_locally_jumpable() then
-              luasnip.expand_or_jump()
-            else
-              cmp.mapping.scroll_docs(4)
-            end
-          end, { 'i', 's' }),
           ['<C-b>'] = cmp.mapping(function()
-            if luasnip.locally_jumpable(-1) then
-              luasnip.jump(-1)
-            else
-              cmp.mapping.scroll_docs(-4)
-            end
-          end, { 'i', 's' }),
+            luasnip.jump(-1)
+          end, { 'i' }),
+          ['<C-f>'] = cmp.mapping(function()
+            luasnip.jump(1)
+          end, { 'i' }),
+          ['<C-d>'] = cmp.mapping(function()
+            cmp.mapping.scroll_docs(4)
+          end, { 'i' }),
+          ['<C-u>'] = cmp.mapping(function()
+            cmp.mapping.scroll_docs(-4)
+          end, { 'i' }),
 
           -- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
           --    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
