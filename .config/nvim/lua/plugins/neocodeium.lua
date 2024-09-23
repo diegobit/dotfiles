@@ -11,24 +11,23 @@ return {
       silent = true,
     }
 
-    -- Keymaps based on CTRL, to not conflict with alt used to input special chars
     -- WARN: <C-[> cannot be remapped! Remapping it means remapping <Esc> !
-    vim.keymap.set('i', '<C-space>y', neocodeium.accept)
-    vim.keymap.set('i', '<C-space>l', neocodeium.accept_line)
-    vim.keymap.set('i', '<C-space>w', neocodeium.accept_word)
-    vim.keymap.set('i', '<C-space>n', neocodeium.cycle)
+    vim.keymap.set('i', '<C-space>y', neocodeium.accept, { desc = 'Accept suggestion (Neocodeium)' })
+    vim.keymap.set('i', '<C-space>l', neocodeium.accept_line, { desc = 'Accept line (Neocodeium)' })
+    vim.keymap.set('i', '<C-space>w', neocodeium.accept_word, { desc = 'Accept word (Neocodeium)' })
+    vim.keymap.set('i', '<C-space>n', neocodeium.cycle, { desc = 'Next suggestion (Neocodeium)' })
     vim.keymap.set('i', '<C-space>p', function()
       neocodeium.cycle(-1)
-    end)
-    vim.keymap.set('i', '<C-space>c', neocodeium.clear)
+    end, { desc = 'Previous suggestion (Neocodeium)' })
+    -- similar to nvim cmp! show/hide
+    vim.keymap.set('i', '<C-space>k', function()
+      if neocodeium.visible() then
+        neocodeium.clear()
+      else
+        neocodeium.cycle_or_complete()
+      end
+    end, { desc = 'Show/hide suggestion (Neocodeium)' })
 
-    -- Keymaps based on Alt, to be intuitive, but just using a different modifier
-    -- vim.keymap.set('i', '<A-y>', neocodeium.accept)
-    -- vim.keymap.set('i', '<A-w>', neocodeium.accept_word)
-    -- vim.keymap.set('i', '<A-l>', neocodeium.accept_line)
-    -- vim.keymap.set('i', '<A-n>', neocodeium.cycle)
-    -- vim.keymap.set('i', '<A-c>', neocodeium.clear)
-
-    vim.keymap.set('n', '<leader>tc', '<Cmd>NeoCodeium disable<CR>', { desc = 'neo[C]odeium' })
+    vim.keymap.set('n', '<C-space>ta', '<Cmd>NeoCodeium disable<CR>', { desc = '[A]I suggestions (Neocodeium)' })
   end,
 }
