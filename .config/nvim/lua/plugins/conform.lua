@@ -6,12 +6,14 @@ return {
     cmd = { 'ConformInfo' },
     keys = {
       {
-        '<leader>cf',
+        -- It exists gw to format, so let's use gW
+        'gW',
+        -- '<leader>f',
         function()
           require('conform').format { async = true, lsp_fallback = true }
         end,
-        mode = { 'n' },
-        desc = '[F]ormat document',
+        mode = { 'n', 'v' },
+        desc = 'Format (conform)',
       },
     },
     opts = {
