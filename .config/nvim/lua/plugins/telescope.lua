@@ -24,8 +24,11 @@ return {
       --
       -- [[ Configure Telescope ]]
       -- See `:help telescope` and `:help telescope.setup()`
+      local file_ignore_patterns = { 'node_modules', '.git' }
+
       require('telescope').setup {
         defaults = {
+          file_ignore_patterns = file_ignore_patterns,
           mappings = {
             i = {
               ['<C-Enter>'] = 'to_fuzzy_refine',
@@ -65,27 +68,30 @@ return {
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[H]elp' })
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[K]eymaps' })
       -- files
-      -- vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[F]iles by Name' })
-      -- vim.keymap.set('n', '<leader>sF', builtin.git_files, { desc = '[F]iles on Git by Name' })
-      vim.keymap.set('n', '<leader>f', builtin.find_files, { desc = 'Find [F]ile by Name' })
-      vim.keymap.set('n', '<leader>F', builtin.git_files, { desc = 'Find [F]ile on Git by Name' })
+      -- vim.keymap.set('n', '<leader>f', builtin.find_files, { desc = 'Find [F]ile by Name' })
+      vim.keymap.set('n', '<leader>F', builtin.git_files, { desc = 'Find git [F]ile by Name' })
+      -- vim.api.nvim_set_keymap('n', '<Leader>F', ':lua require"telescope.builtin".find_files({ hidden = true })<CR>', {noremap = true, silent = true, desc = 'Find [F]ile by name (w/ hidden)'})
+      vim.keymap.set('n', '<Leader>f', function()
+        require('telescope.builtin').find_files { hidden = true }
+      end, { desc = 'Find [F]ile by Name' })
+
       vim.keymap.set('n', '<leader>sr', builtin.oldfiles, { desc = '[R]ecently opened Files' })
       vim.keymap.set('n', '<leader>sn', function()
         builtin.find_files { cwd = vim.fn.stdpath 'config' }
       end, { desc = '[N]eovim Files' })
       -- grep
       vim.keymap.set('n', '<leader>sw', function()
-        local word = vim.fn.expand("<cword>")
-        builtin.grep_string({ search = word })
+        local word = vim.fn.expand '<cword>'
+        builtin.grep_string { search = word }
       end, { desc = 'Grep word in Project Files' })
       vim.keymap.set('n', '<leader>sW', function()
-        local word = vim.fn.expand("<cWORD>")
-        builtin.grep_string({ search = word })
+        local word = vim.fn.expand '<cWORD>'
+        builtin.grep_string { search = word }
       end, { desc = 'Grep WORD in Project Files' })
       -- vim.keymap.set('n', '<leader>*', builtin.grep_string, { desc = 'Grep Selection in Project Files' })
-      vim.keymap.set('n', '<leader>g', builtin.live_grep, { desc = '[G]rep in Project Files' })
-      vim.keymap.set('n', '<leader>G', function()
-        builtin.live_grep { additional_args = { '-uu' }, prompt_title = 'Live Grep (w/ Hidden)' }
+      vim.keymap.set('n', '<leader>G', builtin.live_grep, { desc = '[G]rep in Project Files' })
+      vim.keymap.set('n', '<leader>g', function()
+        builtin.live_grep { file_ignore_patterns = file_ignore_patterns, additional_args = { '-uu' }, prompt_title = 'Live Grep (w/ Hidden)' }
       end, { desc = '[G]rep in Project Files (w/ Hidden)' })
       vim.keymap.set('n', '<leader>.', builtin.resume, { desc = 'Resume last search' })
       -- vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] List opened Buffers' })
@@ -108,8 +114,8 @@ return {
       --  `]d`/`[d` to go to next/prev diagnostic (w/o opening floating window)
       --  `<C-w>d` to open floating window
       -- Let's add a keymap to navigate AND open the floating window
-      vim.api.nvim_set_keymap('n', '[D', ':lua vim.diagnostic.goto_prev()<CR>', { noremap = true, silent = true, desc = 'Jump and show previous diagnostic)'})
-      vim.api.nvim_set_keymap('n', ']D', ':lua vim.diagnostic.goto_next()<CR>', { noremap = true, silent = true, desc = 'Jump and show next diagnostic'})
+      vim.api.nvim_set_keymap('n', '[D', ':lua vim.diagnostic.goto_prev()<CR>', { noremap = true, silent = true, desc = 'Jump and show previous diagnostic)' })
+      vim.api.nvim_set_keymap('n', ']D', ':lua vim.diagnostic.goto_next()<CR>', { noremap = true, silent = true, desc = 'Jump and show next diagnostic' })
     end,
   },
 }
