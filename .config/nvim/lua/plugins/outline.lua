@@ -1,5 +1,6 @@
 return {
   'hedyhli/outline.nvim',
+  version = '*',
   lazy = true,
   cmd = { 'Outline', 'OutlineOpen' },
   keys = { -- Example mapping to toggle outline

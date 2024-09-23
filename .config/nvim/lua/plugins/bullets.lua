@@ -3,6 +3,7 @@ return {
   'bullets-vim/bullets.vim',
   event = 'VeryLazy',
   config = function()
+  version = '*',
     vim.g.bullets_set_mappings = 0
 
     vim.keymap.set('i', '<CR>', '<Plug>(bullets-newline)')

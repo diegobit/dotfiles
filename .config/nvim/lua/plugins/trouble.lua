@@ -3,6 +3,7 @@ return {
   opts = {
     symbols = {
       desc = 'document symbols',
+      version = '*',
       mode = 'lsp_document_symbols',
       focus = false,
       win = { position = 'right' },
