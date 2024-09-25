@@ -74,4 +74,6 @@ vim.keymap.set({ 'n', 'v' }, '<D-a>', 'ggVG', { desc = 'Select all' })
 vim.keymap.set('n', '[q', '<CMD>cprev<CR>', { desc = 'Previous quickfix entry (:cp)' })
 vim.keymap.set('n', ']q', '<CMD>cnext<CR>', { desc = 'Next quickfix entry (:cn)' })
 
+vim.keymap.del("n", "gx")
+
 -- vim: ts=2 sts=2 sw=2 et
