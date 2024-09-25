@@ -67,6 +67,7 @@ vim.keymap.set('i', '<C-l>', "<Del>", { desc = 'Delete forward' })
 vim.keymap.set({ 'i', 'n', 'v' }, '<D-s>', '<Cmd>up<CR><Esc>', { desc = 'Save file' })
 vim.keymap.set({ 'n', 'v' }, '<D-c>', '"*y', { desc = 'Yank to system clipboard' })
 vim.keymap.set({ 'n', 'v' }, '<D-x>', '"*d', { desc = 'Delete and write to system clipboard' })
+vim.keymap.set({ 'n', 'v' }, '<D-a>', 'ggVG', { desc = 'Select all' })
 
 -- QuickFix shortcut
 -- vim.keymap.set('n', '<leader>tq', '<CMD>copen<CR>', { desc = '[Q]uickfix List (:copen)' })
