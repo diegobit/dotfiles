@@ -22,5 +22,50 @@ return {
       skip_confirm_for_simple_edits = true,
     }
     vim.keymap.set('n', '-', '<CMD>Oil<CR>', { desc = 'Open parent directory' })
+
+    -- Replace Netrw commands
+    local explore = function()
+      require('oil').open()
+    end
+
+    local vexplore = function(opts)
+      local size = tonumber(opts.args)
+      -- local current_win = vim.api.nvim_get_current_win()
+      vim.cmd 'vsplit'
+      -- vim.cmd 'wincmd H'
+      if size ~= nil then
+        vim.cmd('vertical resize ' .. size)
+      end
+      require('oil').open()
+      -- vim.api.nvim_set_current_win(current_win)
+    end
+
+    local sexplore = function(opts)
+      local size = tonumber(opts.args)
+      -- local current_win = vim.api.nvim_get_current_win()
+      vim.cmd 'split'
+      -- vim.cmd 'wincmd K'
+      if size ~= nil then
+        vim.cmd('horizontal resize ' .. size)
+      end
+      require('oil').open()
+      -- vim.api.nvim_set_current_win(current_win)
+    end
+
+    vim.api.nvim_create_user_command('Ex', explore, {})
+    vim.api.nvim_create_user_command('Explore', explore, {})
+
+    vim.api.nvim_create_user_command('Vex', vexplore, {})
+    vim.api.nvim_create_user_command('Vexplore', vexplore, {})
+
+    vim.api.nvim_create_user_command('Sex', sexplore, {})
+    vim.api.nvim_create_user_command('Sexplore', sexplore, {})
+
+    vim.keymap.set('n', '<leader>sf', function()
+      require('telescope.builtin').find_files {
+        cwd = require('oil').get_current_dir(),
+        hidden = true
+      }
+    end, { desc = '[F]ind files in explorer cwd (Oil)' })
   end,
 }
