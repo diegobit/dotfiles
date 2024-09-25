@@ -90,10 +90,11 @@ return {
           --     $body
           --   end
           -- name<->args<->body
-          ['<C-b>'] = cmp.mapping(function()
+          -- ';'/',' similar to how you navigate next/prev search after 'f'
+          ['<C-,>'] = cmp.mapping(function()
             luasnip.jump(-1)
           end, { 'i' }),
-          ['<C-f>'] = cmp.mapping(function()
+          ['<C-;>'] = cmp.mapping(function()
             luasnip.jump(1)
           end, { 'i' }),
           ['<C-d>'] = cmp.mapping(function()
