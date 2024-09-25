@@ -58,6 +58,7 @@ brew install borders
 brew install neovim
 brew install luarocks
 npm i -g jshint # for javascript linting in nvim
+brew install tflint # terraform lint
 
 # ---------------------------------------------
 # Fonts
