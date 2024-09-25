@@ -210,6 +210,7 @@
     "material-icon-theme.opacity": 0.8,
     "material-icon-theme.saturation": 0.9,
     // "python.defaultInterpreterPath": "/Users/diego/.pyenv/versions/bertbar/bin/python",
+    // "python.defaultInterpreterPath": "$HOME/.pyenv/versions/pyvscode/bin/python",
     "notebook.cellToolbarLocation": {
         "default": "right",
         "jupyter-notebook": "left"
@@ -218,16 +219,18 @@
     "notebook.output.lineHeight": 17,
     "notebook.stickyScroll.enabled": true,
     "partialDiff.enableTelemetry": false,
-    "python.languageServer": "Default",
+    // "python.languageServer": "Default",
     "python.terminal.activateEnvironment": false,
     "redhat.telemetry.enabled": false,
     "ruff.configuration": "~/.config/ruff/ruff.toml",
-    "ruff.nativeServer": "on",
+    "ruff.nativeServer": "auto",
+    "ruff.importStrategy": "useBundled",
     "security.workspace.trust.banner": "never",
     "security.workspace.trust.untrustedFiles": "open",
     "symbols.hidesExplorerArrows": false,
     "telemetry.telemetryLevel": "all",
     "terminal.integrated.cursorBlinking": true,
+    "vim.smartRelativeLine": true,
     "terminal.integrated.cursorStyle": "line",
     "terminal.integrated.drawBoldTextInBrightColors": false,
     "terminal.integrated.fontFamily": "MesloLGS-NF-Regular",
@@ -274,7 +277,6 @@
     "window.customTitleBarVisibility": "windowed",
     "notebook.lineNumbers": "on",
     "editor.minimap.enabled": false,
-    "workbench.productIconTheme": "fluent-icons",
     "betterGitLineBlame.showStatusBarItem": true,
     "betterGitLineBlame.showInlineAnnotations": false,
     "vim.easymotion": true,
@@ -310,5 +312,7 @@
     },
     "extensions.experimental.affinity": {
         "vscodevim.vim": 1
-    }
+    },
+    "cloudcode.duetAI.project": "plg-chatbot",
+    "diffEditor.codeLens": true
 }

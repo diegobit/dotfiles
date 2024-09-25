@@ -248,6 +248,11 @@ nvn() {
     cd ~/notes
     nvim .
 }
+yyn() {
+    cd ~/notes
+    yy
+}
+
 alias llmp="llm -m gemini-1.5-pro-latest"
 alias llmf="llm -m gemini-1.5-flash-latest"
 

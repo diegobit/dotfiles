@@ -31,6 +31,7 @@ return {
       lint.linters_by_ft['yaml'] = { 'yamllint' }
       lint.linters_by_ft['javascript'] = { 'jshint' }
       lint.linters_by_ft['clojure'] = nil
+      lint.linters_by_ft['bash'] = nil
       lint.linters_by_ft['inko'] = nil
       lint.linters_by_ft['janet'] = nil
       lint.linters_by_ft['json'] = nil
@@ -39,7 +40,7 @@ return {
       lint.linters_by_ft['ruby'] = nil
       lint.linters_by_ft['text'] = nil
       lint.linters_by_ft['markdown'] = nil
-      lint.linters_by_ft['dockerfile'] = nil
+      lint.linters_by_ft['dockerfile'] = { 'hadolint' }
       lint.linters_by_ft['terraform'] = { 'tflint' }
 
       -- Create autocommand which carries out the actual linting

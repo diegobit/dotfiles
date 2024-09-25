@@ -10,11 +10,6 @@
         "when": "editorTextFocus && !editorReadonly"
     },
     {
-        "key": "ctrl+d",
-        "command": "editor.action.deleteLines",
-        "when": "editorTextFocus && !editorReadonly"
-    },
-    {
         "key": "shift+cmd+o",
         "command": "-editor.action.deleteLines",
         "when": "editorTextFocus && !editorReadonly"
@@ -601,11 +596,6 @@
         "when": "terminalFocus && terminalHasBeenCreated"
     },
     {
-        "key": "cmd+h",
-        "command": "editor.action.accessibleViewGoToSymbol",
-        "when": "accessibilityHelpIsShown && accessibleViewGoToSymbolSupported || accessibleViewGoToSymbolSupported && accessibleViewIsShown"
-    },
-    {
         "key": "shift+cmd+o",
         "command": "-editor.action.accessibleViewGoToSymbol",
         "when": "accessibilityHelpIsShown && accessibleViewGoToSymbolSupported || accessibleViewGoToSymbolSupported && accessibleViewIsShown"
@@ -1085,14 +1075,6 @@
         "command": "-workbench.action.switchWindow"
     },
     {
-        "key": "ctrl+w",
-        "command": "workbench.action.focusNextGroup"
-    },
-    {
-        "key": "ctrl+shift+w",
-        "command": "workbench.action.focusPreviousGroup"
-    },
-    {
         "key": "cmd+n",
         "command": "welcome.showNewFileEntries"
     },
@@ -1109,7 +1091,7 @@
         "command": "-workbench.action.files.newUntitledFile"
     },
     {
-        "key": "ctrl+space",
+        "key": "ctrl+k",
         "command": "editor.action.triggerSuggest",
         "when": "editorHasCompletionItemProvider && textInputFocus && !editorReadonly && !suggestWidgetVisible"
     },
@@ -1214,11 +1196,12 @@
         "when": "editorTextFocus && !editorReadonly"
     },
     {
-        "key": "alt+l",
-        "command": "editor.action.inlineSuggest.acceptNextLine"
+        "key": "ctrl+space l",
+        "command": "editor.action.inlineSuggest.acceptNextLine",
+        "when": "inlineSuggestionVisible && !editorReadonly"
     },
     {
-        "key": "alt+n",
+        "key": "ctrl+space n",
         "command": "editor.action.inlineSuggest.showNext",
         "when": "inlineSuggestionVisible && !editorReadonly"
     },
@@ -1228,7 +1211,7 @@
         "when": "inlineSuggestionVisible && !editorReadonly"
     },
     {
-        "key": "shift+alt+n",
+        "key": "ctrl+space p",
         "command": "editor.action.inlineSuggest.showPrevious",
         "when": "inlineSuggestionVisible && !editorReadonly"
     },
@@ -1238,22 +1221,19 @@
         "when": "inlineSuggestionVisible && !editorReadonly"
     },
     {
-        "key": "alt+y",
-        "command": "editor.action.inlineSuggest.commit"
+        "key": "ctrl+space y",
+        "command": "editor.action.inlineSuggest.commit",
+        "when": "inlineSuggestionVisible"
     },
     {
-        "key": "alt+w",
-        "command": "editor.action.inlineSuggest.acceptNextWord"
+        "key": "ctrl+space w",
+        "command": "editor.action.inlineSuggest.acceptNextWord",
+        "when": "inlineSuggestionVisible && !editorReadonly"
     },
     {
         "key": "ctrl+y",
         "command": "-extension.vim_ctrl+y",
         "when": "editorTextFocus && vim.active && vim.use<C-y> && !inDebugRepl"
-    },
-    {
-        "key": "ctrl+shift+y",
-        "command": "acceptAlternativeSelectedSuggestion",
-        "when": "suggestWidgetHasFocusedSuggestion && suggestWidgetVisible && textInputFocus"
     },
     {
         "key": "shift+tab",
@@ -1274,11 +1254,6 @@
         "key": "tab",
         "command": "-acceptSelectedSuggestion",
         "when": "suggestWidgetHasFocusedSuggestion && suggestWidgetVisible && textInputFocus"
-    },
-    {
-        "key": "alt+y",
-        "command": "_cloudcode.duetAI.codelens.accept",
-        "when": "authLoggedIn && cloudcode.duetAI.documentMatch && config.cloudcode.duetAI.enable && inGeminiDiffView && isInDiffEditor"
     },
     {
         "key": "alt+a",
@@ -1304,11 +1279,6 @@
         "key": "cmd+i",
         "command": "-cloudcode.duetAI.showinEditor",
         "when": "authLoggedIn && config.cloudcode.duetAI.enable && editorTextFocus && shouldRegisterInEditorCommand && !inGeminiDiffView && !isInDiffEditor"
-    },
-    {
-        "key": "alt+y",
-        "command": "codeium.diffActionAccept",
-        "when": "editorTextFocus && !inlineSuggestionsVisible"
     },
     {
         "key": "alt+a",
@@ -1372,5 +1342,144 @@
         "key": "ctrl+q",
         "command": "workbench.action.closeGroup",
         "when": "activeEditorGroupEmpty && multipleEditorGroups"
+    },
+    {
+        "key": "ctrl+d",
+        "command": "-deleteRight",
+        "when": "textInputFocus"
+    },
+    {
+        "key": "ctrl+f",
+        "command": "-cursorRight",
+        "when": "textInputFocus"
+    },
+    {
+        "key": "ctrl+space n",
+        "command": "codeium.showNextCompletion",
+        "when": "inlineSuggestionVisible && !editorReadonly"
+    },
+    {
+        "key": "alt+]",
+        "command": "-codeium.showNextCompletion"
+    },
+    {
+        "key": "ctrl+space p",
+        "command": "codeium.showPreviousCompletion",
+        "when": "inlineSuggestionVisible && !editorReadonly"
+    },
+    {
+        "key": "alt+[",
+        "command": "-codeium.showPreviousCompletion"
+    },
+    {
+        "key": "cmd+i",
+        "command": "-editor.action.triggerSuggest",
+        "when": "editorHasCompletionItemProvider && textInputFocus && !editorReadonly && !suggestWidgetVisible"
+    },
+    {
+        "key": "alt+escape",
+        "command": "-editor.action.triggerSuggest",
+        "when": "editorHasCompletionItemProvider && textInputFocus && !editorReadonly && !suggestWidgetVisible"
+    },
+    {
+        "key": "ctrl+k",
+        "command": "-deleteAllRight",
+        "when": "textInputFocus && !editorReadonly"
+    },
+    {
+        "key": "ctrl+space c",
+        "command": "editor.action.inlineSuggest.hide",
+        "when": "inlineSuggestionVisible"
+    },
+    {
+        "key": "escape",
+        "command": "-editor.action.inlineSuggest.hide",
+        "when": "inlineSuggestionVisible"
+    },
+    {
+        "key": "ctrl+k",
+        "command": "editor.action.inlineSuggest.trigger",
+        "when": "editorTextFocus && !editorHasSelection && !inlineSuggestionsVisible"
+    },
+    {
+        "key": "alt+\\",
+        "command": "-editor.action.inlineSuggest.trigger",
+        "when": "editorTextFocus && !editorHasSelection && !inlineSuggestionsVisible"
+    },
+    {
+        "key": "ctrl+space y",
+        "command": "codeium.diffActionAccept",
+        "when": "editorTextFocus && !inlineSuggestionsVisible"
+    },
+    {
+        "key": "ctrl+space f",
+        "command": "codeium.diffActionFollowup",
+        "when": "editorTextFocus && !inlineSuggestionsVisible"
+    },
+    {
+        "key": "alt+f",
+        "command": "-codeium.diffActionFollowup",
+        "when": "editorTextFocus && !inlineSuggestionsVisible"
+    },
+    {
+        "key": "ctrl+space r",
+        "command": "codeium.diffActionReject",
+        "when": "editorTextFocus && !inlineSuggestionsVisible"
+    },
+    {
+        "key": "alt+r",
+        "command": "-codeium.diffActionReject",
+        "when": "editorTextFocus && !inlineSuggestionsVisible"
+    },
+    {
+        "key": "ctrl+space r",
+        "command": "codeium.cancelCodeiumCommand",
+        "when": "codeium.commandEnabled && editorTextFocus"
+    },
+    {
+        "key": "alt+c",
+        "command": "-codeium.cancelCodeiumCommand",
+        "when": "codeium.commandEnabled && editorTextFocus"
+    },
+    {
+        "key": "ctrl+space ]",
+        "command": "codeium.showNextCortexStep"
+    },
+    {
+        "key": "alt+.",
+        "command": "-codeium.showNextCortexStep"
+    },
+    {
+        "key": "ctrl+space [",
+        "command": "codeium.showPreviousCortexStep"
+    },
+    {
+        "key": "alt+,",
+        "command": "-codeium.showPreviousCortexStep"
+    },
+    {
+        "key": "ctrl+space i",
+        "command": "codeium.openCodeiumCommand",
+        "when": "codeium.commandEnabled && editorTextFocus && !inlineSuggestionsVisible"
+    },
+    {
+        "key": "shift+cmd+i",
+        "command": "-codeium.openCodeiumCommand",
+        "when": "codeium.commandEnabled && editorTextFocus && !inlineSuggestionsVisible"
+    },
+    {
+        "key": "ctrl+space c",
+        "command": "codeium.openChatView",
+        "when": "true"
+    },
+    {
+        "key": "shift+cmd+a",
+        "command": "-codeium.openChatView",
+        "when": "true"
+    },
+    {
+        "key": "cmd+k cmd+j",
+        "command": "-editor.unfoldAll",
+        "when": "editorTextFocus && foldingEnabled"
     }
 ]
