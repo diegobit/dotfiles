@@ -69,11 +69,11 @@ return {
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[K]eymaps' })
       -- files
       -- vim.keymap.set('n', '<leader>f', builtin.find_files, { desc = 'Find [F]ile by Name' })
-      vim.keymap.set('n', '<leader>F', builtin.git_files, { desc = 'Find git [F]ile by Name' })
+      vim.keymap.set('n', '<leader>F', builtin.git_files, { desc = '[F]ind Git files' })
       -- vim.api.nvim_set_keymap('n', '<Leader>F', ':lua require"telescope.builtin".find_files({ hidden = true })<CR>', {noremap = true, silent = true, desc = 'Find [F]ile by name (w/ hidden)'})
       vim.keymap.set('n', '<Leader>f', function()
         require('telescope.builtin').find_files { hidden = true }
-      end, { desc = 'Find [F]ile by Name' })
+      end, { desc = '[F]ind Project files' })
 
       vim.keymap.set('n', '<leader>sr', builtin.oldfiles, { desc = '[R]ecently opened Files' })
       vim.keymap.set('n', '<leader>sn', function()
