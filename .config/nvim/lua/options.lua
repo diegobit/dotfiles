@@ -58,6 +58,10 @@ vim.opt.inccommand = 'split'
 -- Show which line your cursor is on
 vim.opt.cursorline = true
 
+-- Default number of spaces per tab
+vim.o.shiftwidth = 4
+
+-- Use spaces in insert mode when pressing <TAB>
 vim.o.expandtab = true
 
 -- number of lines to keep when scrolling out of view
