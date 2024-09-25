@@ -47,6 +47,12 @@ brew install zoxide
 curl -s https://cht.sh/:cht.sh | sudo tee /usr/local/bin/cht.sh && sudo chmod +x /usr/local/bin/cht.sh
 
 # ---------------------------------------------
+# Aerospace
+# ---------------------------------------------
+brew install --cask nikitabobko/tap/aerospace
+brew install borders
+
+# ---------------------------------------------
 # Neovim
 # ---------------------------------------------
 brew install neovim
