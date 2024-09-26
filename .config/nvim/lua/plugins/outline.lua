@@ -3,10 +3,12 @@ return {
   version = '*',
   lazy = true,
   cmd = { 'Outline', 'OutlineOpen' },
-  keys = { -- Example mapping to toggle outline
+  keys = {
     { '<leader>to', '<cmd>Outline<CR>', mode = 'n', desc = '[O]utline' },
   },
   opts = {
-    -- Your setup opts here
+    outline_window = {
+      width = 20,
+    },
   },
 }
