@@ -48,7 +48,7 @@ return {
       mode = 'n',
     },
     {
-      '<leader>ts',
+      '<leader>tS',
       '<cmd>Trouble symbols toggle focus=false<cr>',
       desc = '[S]ymbols (Trouble)',
       mode = 'n',

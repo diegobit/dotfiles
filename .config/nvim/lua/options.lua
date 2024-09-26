@@ -70,6 +70,9 @@ vim.opt.scrolloff = 6
 -- hide tabline
 vim.opt.showtabline = 0
 
+-- Spellcheck languages
+vim.opt.spelllang = { 'it', 'en_us' }
+
 -- border for diagnostics
 vim.diagnostic.config { float = { border = 'single' } }
 

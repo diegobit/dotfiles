@@ -59,7 +59,7 @@ vim.keymap.set({ 'n', 't' }, '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the 
 -- vim.keymap.set('v', '<M-up>', ":m '<-2<CR>gv=gv", { desc = 'Move block up' })
 
 -- Canc / delete_forward
-vim.keymap.set('i', '<C-l>', "<Del>", { desc = 'Delete forward' })
+vim.keymap.set('i', '<C-l>', '<Del>', { desc = 'Delete forward' })
 
 -- Quick exit -- NOTE: you can exit with ZQ (:q!) or ZZ (:x)
 
@@ -74,6 +74,12 @@ vim.keymap.set({ 'n', 'v' }, '<D-a>', 'ggVG', { desc = 'Select all' })
 vim.keymap.set('n', '[q', '<CMD>cprev<CR>', { desc = 'Previous quickfix entry (:cp)' })
 vim.keymap.set('n', ']q', '<CMD>cnext<CR>', { desc = 'Next quickfix entry (:cn)' })
 
-vim.keymap.del("n", "gx")
+-- toggle spellcheck
+vim.keymap.set('n', '<leader>ts', function()
+  vim.opt.spell = not vim.opt.spell:get() -- ignore warning
+end, { desc = '[S]pellcheck' })
+
+-- Disable gx
+vim.keymap.del('n', 'gx')
 
 -- vim: ts=2 sts=2 sw=2 et
