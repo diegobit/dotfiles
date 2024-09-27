@@ -81,7 +81,7 @@ require('lazy').setup({
 }, {
   ui = {
     icons = {},
-    border = 'single',
+    border = 'rounded',
   },
   performance = {
     rtp = {
