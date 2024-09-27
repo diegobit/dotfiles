@@ -64,8 +64,17 @@ return {
     vim.keymap.set('n', '<leader>sf', function()
       require('telescope.builtin').find_files {
         cwd = require('oil').get_current_dir(),
-        hidden = true
+        hidden = true,
       }
     end, { desc = '[F]ind files in explorer cwd (Oil)' })
+    local file_ignore_patterns = { 'node_modules', '.git' }
+    vim.keymap.set('n', '<leader>sg', function()
+      require('telescope.builtin').live_grep {
+        cwd = require('oil').get_current_dir(),
+        file_ignore_patterns = file_ignore_patterns,
+        additional_args = { '-uu' },
+        prompt_title = 'Live Grep in cwd',
+      }
+    end, { desc = 'Grep in explorer cwd (Oil)' })
   end,
 }
