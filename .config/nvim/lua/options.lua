@@ -24,6 +24,9 @@ vim.opt.showmode = false
 -- Enable break indent
 vim.opt.breakindent = true
 
+-- Wrap line at character 'breakat' rathern then what fits
+vim.opt.lbr = true
+
 -- Save undo history
 vim.opt.undofile = true
 
