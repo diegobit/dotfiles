@@ -18,6 +18,6 @@ return {
   },
 
   keys = {
-    vim.keymap.set('n', '<leader>tz', ':ZenMode<CR>', { desc = '[Z]enmode' }),
+    vim.keymap.set('n', '<leader>tz', ':ZenMode<CR>', { desc = 'Zenmode' }),
   },
 }

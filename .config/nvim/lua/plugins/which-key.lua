@@ -23,10 +23,10 @@ return {
 
       -- Document existing key chains
       require('which-key').add {
-        { '<leader>c', group = '[C]ode' },
-        -- { '<leader>d', group = '[D]ebug' },
-        { '<leader>s', group = '[S]earch' },
-        { '<leader>t', group = '[T]oggle' },
+        { '<leader>c', group = 'Code' },
+        -- { '<leader>d', group = 'Debug' },
+        { '<leader>s', group = 'Search' },
+        { '<leader>t', group = 'Toggle' },
 
         -- docs for MisanthropicBit/decipher.nvim
         { 'g/', group = 'URL encoding', mode = { 'n', 'v' } },

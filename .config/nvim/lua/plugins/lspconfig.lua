@@ -78,39 +78,39 @@ return {
           -- Jump to the definition of the word under your cursor.
           --  This is where a variable was first declared, or where a function is defined, etc.
           --  To jump back, press <C-t>.
-          map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
+          map('gd', require('telescope.builtin').lsp_definitions, 'Goto Definition')
 
           -- Find references for the word under your cursor.
-          map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
+          map('gr', require('telescope.builtin').lsp_references, 'Goto References')
 
           -- Jump to the implementation of the word under your cursor.
           --  Useful when your language has ways of declaring types without an actual implementation.
-          map('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
+          map('gI', require('telescope.builtin').lsp_implementations, 'Goto Implementation')
 
           -- Jump to the type of the word under your cursor.
           --  Useful when you're not sure what type a variable is and you want to see
           --  the definition of its *type*, not where it was *defined*.
-          map('gy', require('telescope.builtin').lsp_type_definitions, '[G]oto t[Y]pe Definition')
+          map('gy', require('telescope.builtin').lsp_type_definitions, 'Goto tYpe Definition')
 
           -- Fuzzy find all the symbols in your current document.
           --  Symbols are things like variables, functions, types, etc.
-          map('<leader>ss', require('telescope.builtin').lsp_document_symbols, 'Document [S]ymbols')
+          map('<leader>ss', require('telescope.builtin').lsp_document_symbols, 'Document Symbols')
 
           -- Fuzzy find all the symbols in your current workspace.
           --  Similar to document symbols, except searches over your entire project.
-          map('<leader>sS', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
+          map('<leader>sS', require('telescope.builtin').lsp_dynamic_workspace_symbols, 'Workspace Symbols')
 
           -- Rename the variable under your cursor.
           --  Most Language Servers support renaming across files, etc.
-          map('<leader>cr', vim.lsp.buf.rename, '[R]ename variable')
+          map('<leader>cr', vim.lsp.buf.rename, 'Rename variable')
 
           -- Execute a code action, usually your cursor needs to be on top of an error
           -- or a suggestion from your LSP for this to activate.
-          map('<leader>ca', vim.lsp.buf.code_action, 'Code [A]ctions')
+          map('<leader>ca', vim.lsp.buf.code_action, 'Code Actions')
 
           -- WARN: This is not Goto Definition, this is Goto Declaration.
           --  For example, in C this would take you to the header.
-          map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
+          map('gD', vim.lsp.buf.declaration, 'Goto Declaration')
 
           -- use conform format
           map('gw', function()
@@ -156,13 +156,16 @@ return {
           if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
             map('<leader>th', function()
               vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
-            end, 'Inlay [H]ints')
+            end, 'Inlay Hints')
           end
 
           -- Decorate floating windows
           vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(vim.lsp.handlers.hover, { border = 'single' })
           vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = 'single' })
-          require('lspconfig.ui.windows').default_options.border = 'single'
+          require('lspconfig.ui.windows').default_options.border = 'rounded'
+          vim.diagnostic.config {
+            float = { border = 'rounded' },
+          }
         end,
       })
 
@@ -194,6 +197,10 @@ return {
         --
         -- But for many setups, the LSP (`tsserver`) will work just fine
         -- tsserver = {},
+        ruff = {},
+        bashls = {
+          filetypes = { 'sh', 'zsh' },
+        },
         rust_analyzer = {
           settings = {
             ['rust-analyzer'] = {
@@ -228,7 +235,7 @@ return {
       --  You can press `g?` for help in this menu.
       require('mason').setup {
         ui = {
-          border = 'single',
+          border = 'rounded',
         },
       }
 
@@ -237,6 +244,7 @@ return {
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
+        'bash-language-server',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -252,10 +260,6 @@ return {
           end,
         },
       }
-
-      -- `ruff`, not ruff_lsp!.
-      -- See: https://docs.astral.sh/ruff/editors/setup/#neovim
-      require('lspconfig').ruff.setup {}
     end,
   },
 }

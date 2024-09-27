@@ -66,7 +66,8 @@ return {
         cwd = require('oil').get_current_dir(),
         hidden = true,
       }
-    end, { desc = '[F]ind files in explorer cwd (Oil)' })
+    end, { desc = 'Find files in explorer cwd (Oil)' })
+
     local file_ignore_patterns = { 'node_modules', '.git' }
     vim.keymap.set('n', '<leader>sg', function()
       require('telescope.builtin').live_grep {

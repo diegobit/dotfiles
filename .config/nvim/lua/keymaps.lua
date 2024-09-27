@@ -70,14 +70,14 @@ vim.keymap.set({ 'n', 'v' }, '<D-x>', '"*d', { desc = 'Delete and write to syste
 vim.keymap.set({ 'n', 'v' }, '<D-a>', 'ggVG', { desc = 'Select all' })
 
 -- QuickFix shortcut
--- vim.keymap.set('n', '<leader>tq', '<CMD>copen<CR>', { desc = '[Q]uickfix List (:copen)' })
+-- vim.keymap.set('n', '<leader>tq', '<CMD>copen<CR>', { desc = 'Quickfix List (:copen)' })
 vim.keymap.set('n', '[q', '<CMD>cprev<CR>', { desc = 'Previous quickfix entry (:cp)' })
 vim.keymap.set('n', ']q', '<CMD>cnext<CR>', { desc = 'Next quickfix entry (:cn)' })
 
 -- toggle spellcheck
 vim.keymap.set('n', '<leader>ts', function()
   vim.opt.spell = not vim.opt.spell:get() -- ignore warning
-end, { desc = '[S]pellcheck' })
+end, { desc = 'Spellcheck' })
 
 -- Disable gx
 vim.keymap.del('n', 'gx')

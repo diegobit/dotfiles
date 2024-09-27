@@ -8,6 +8,6 @@ return {
     'tpope/vim-fugitive',
   },
   keys = {
-    vim.keymap.set('n', '<leader>tG', '<CMD>Flog<CR>', { desc = 'Git [G]raph (Flog)' }),
+    vim.keymap.set('n', '<leader>tG', '<CMD>Flog<CR>', { desc = 'Git Graph (Flog)' }),
   },
 }

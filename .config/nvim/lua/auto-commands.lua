@@ -54,7 +54,7 @@ vim.api.nvim_create_autocmd({ "VimLeave", "VimSuspend" }, {
 --         client.notify('rust-analyzer/runFlycheck', params)
 --       end
 --     end
---     vim.keymap.set({ 'n' }, '<leader>cl', ra_flycheck, { desc = '[C]heck [L]int' })
+--     vim.keymap.set({ 'n' }, '<leader>cl', ra_flycheck, { desc = 'Check Lint' })
 --   end,
 -- })
 

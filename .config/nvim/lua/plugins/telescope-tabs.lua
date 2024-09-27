@@ -8,7 +8,7 @@ return {
   end,
   vim.keymap.set('n', '<leader>T', function()
     require('telescope-tabs').list_tabs()
-  end, { desc = '[T]abs' }),
+  end, { desc = 'Tabs' }),
   lazy = true,
   dependencies = { 'nvim-telescope/telescope.nvim' },
 }

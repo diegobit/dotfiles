@@ -7,6 +7,6 @@ return {
   end,
   ft = { 'markdown' },
   keys = {
-    vim.keymap.set('n', '<leader>tm', '<Cmd>:MarkdownPreview<CR>', { desc = '[M]arkdown Preview' }),
+    vim.keymap.set('n', '<leader>tm', '<Cmd>:MarkdownPreview<CR>', { desc = 'Markdown Preview' }),
   },
 }

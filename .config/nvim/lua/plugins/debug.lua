@@ -16,25 +16,25 @@ return {
     local dap = require 'dap'
     local dapui = require 'dapui'
     return {
-      { '<leader>cc', dap.continue, desc = 'Start/[C]ontinue (F5)' },
+      { '<leader>cc', dap.continue, desc = 'Start/Continue (F5)' },
       { '<F5>', dap.continue, desc = 'Debug: Start/Continue' },
-      { '<leader>ci', dap.step_into, desc = 'Step [I]nto (F1)' },
+      { '<leader>ci', dap.step_into, desc = 'Step Into (F1)' },
       { '<F1>', dap.step_into, desc = 'Debug: Step Into' },
-      { '<leader>cv', dap.step_over, desc = 'Step o[V]er (F2)' },
+      { '<leader>cv', dap.step_over, desc = 'Step over (F2)' },
       { '<F2>', dap.step_over, desc = 'Debug: Step Over' },
-      { '<leader>co', dap.step_out, desc = 'Step [O]ut (F3)' },
+      { '<leader>co', dap.step_out, desc = 'Step Out (F3)' },
       { '<F3>', dap.step_out, desc = 'Debug: Step Out' },
-      { '<leader>cb', dap.toggle_breakpoint, desc = 'Toggle [B]reakpoint' },
+      { '<leader>cb', dap.toggle_breakpoint, desc = 'Toggle Breakpoint' },
       {
         '<leader>db',
         function()
           dap.set_breakpoint(vim.fn.input 'Breakpoint condition: ')
         end,
-        desc = 'Set [B]reakpoint',
+        desc = 'Set Breakpoint',
       },
       -- Toggle to see last session result. Without this, you can't see
       -- session output in case of unhandled exception.
-      { '<leader>cl', dapui.toggle, desc = 'See [L]ast session result (F7)' },
+      { '<leader>cl', dapui.toggle, desc = 'See Last session result (F7)' },
       { '<F7>', dapui.toggle, desc = 'Debug: See last session result.' },
       unpack(keys),
     }
