@@ -1221,7 +1221,7 @@
         "when": "inlineSuggestionVisible && !editorReadonly"
     },
     {
-        "key": "ctrl+space y",
+        "key": "ctrl+g",
         "command": "editor.action.inlineSuggest.commit",
         "when": "inlineSuggestionVisible"
     },
@@ -1481,5 +1481,14 @@
         "key": "cmd+k cmd+j",
         "command": "-editor.unfoldAll",
         "when": "editorTextFocus && foldingEnabled"
+    },
+    {
+        "key": "ctrl+g",
+        "command": "-extension.vim_ctrl+g",
+        "when": "editorTextFocus && vim.active && vim.use<C-g> && !inDebugRepl"
+    },
+    {
+        "key": "ctrl+g",
+        "command": "-workbench.action.gotoLine"
     }
 ]
