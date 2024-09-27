@@ -1,0 +1,5 @@
+.config/karabiner/*backups/
+.config/karabiner/assets/complex_modifications/
+**.add
+**.spl
+**.sug
