@@ -61,22 +61,41 @@ return {
     vim.api.nvim_create_user_command('Sex', sexplore, {})
     vim.api.nvim_create_user_command('Sexplore', sexplore, {})
 
-    vim.keymap.set('n', '<leader>sf', function()
-      require('telescope.builtin').find_files {
-        cwd = require('oil').get_current_dir(),
-        hidden = true,
-        prompt_title = 'Find Files in Oil cwd',
-      }
-    end, { desc = 'Find files in cwd (Oil)' })
+    vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWinEnter' }, {
+      pattern = 'oil://*',
+      callback = function()
+        vim.keymap.set('n', '<leader>sf', function()
+          require('telescope.builtin').find_files {
+            cwd = require('oil').get_current_dir(),
+            hidden = true,
+            prompt_title = 'Find Files in Oil cwd',
+          }
+        end, { desc = 'Find files in cwd (Oil)', buffer = 0 })
+        vim.keymap.set('n', '<leader>sF', function()
+          require('telescope.builtin').find_files {
+            cwd = require('oil').get_current_dir(),
+            hidden = false,
+            prompt_title = 'Find Files in Oil cwd [no hidden]',
+          }
+        end, { desc = 'Find files in cwd [no hidden] (Oil)', buffer = 0 })
 
-    vim.keymap.set('n', '<leader>sg', function()
-      require('telescope.builtin').live_grep {
-        cwd = require('oil').get_current_dir(),
-        file_ignore_patterns = file_ignore_patterns,
-        additional_args = { '-uu' },
-        prompt_title = 'Live Grep in Oil cwd',
-      }
-    end, { desc = 'Grep in cwd (Oil)' })
         local file_ignore_patterns = { 'node_modules', '.git', '.obsidian' }
+        vim.keymap.set('n', '<leader>sg', function()
+          require('telescope.builtin').live_grep {
+            cwd = require('oil').get_current_dir(),
+            file_ignore_patterns = file_ignore_patterns,
+            additional_args = { '-uu' },
+            prompt_title = 'Live Grep in Oil cwd',
+          }
+        end, { desc = 'Grep in cwd (Oil)', buffer = 0 })
+        vim.keymap.set('n', '<leader>sG', function()
+          require('telescope.builtin').live_grep {
+            cwd = require('oil').get_current_dir(),
+            file_ignore_patterns = file_ignore_patterns,
+            prompt_title = 'Live Grep in Oil cwd [no hidden]',
+          }
+        end, { desc = 'Grep in cwd (Oil) [no hidden]', buffer = 0 })
+      end,
+    })
   end,
 }
