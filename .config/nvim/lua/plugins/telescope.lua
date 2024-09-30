@@ -125,11 +125,12 @@ return {
           -- initial_mode = 'normal',
         }
       end, { desc = 'List opened Buffers' })
-      vim.keymap.set('n', '<leader>s/', function()
-        builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
-          previewer = false,
-        })
-      end, { desc = 'Fuzzy search in Current Buffer' })
+      -- vim.keymap.set('n', '<leader>s/', function()
+      --   -- builtin.current_buffer_fuzzy_find { previewer = false, layout_strategy = 'vertical' }
+      --   builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
+      --     previewer = false,
+      --   })
+      -- end, { desc = 'Fuzzy search in Current Buffer' })
       vim.keymap.set('n', '<leader>sb', function()
         builtin.live_grep {
           grep_open_files = true,
