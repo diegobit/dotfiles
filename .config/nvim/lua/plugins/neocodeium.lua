@@ -12,6 +12,7 @@ return {
     }
 
     -- WARN: <C-[> cannot be remapped! Remapping it means remapping <Esc> !
+    --       The same for <C-i>, which is tab
 
     -- NOTE: Full set of bindings with <C-space>KEY
     -- vim.keymap.set('i', '<C-space>y', neocodeium.accept, { desc = 'Accept suggestion (Neocodeium)' })
