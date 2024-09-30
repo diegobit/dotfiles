@@ -109,7 +109,7 @@ return {
         builtin.live_grep { file_ignore_patterns = file_ignore_patterns, additional_args = { '-uu' } }
       end, { desc = 'Grep in Project Files' })
       vim.keymap.set('n', '<leader>G', function()
-        builtin.live_grep { prompt_title = 'Live Grep [respect hidden]' }
+        builtin.live_grep { prompt_title = 'Live Grep [no hidden]' }
       end, { desc = 'Grep in Project Files (nohid)' })
 
       -- buffer
