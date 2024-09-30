@@ -9,8 +9,8 @@ return {
     { '<CR>', '<Plug>(bullets-newline)', mode = 'i', ft = text_ft },
     { '<C-CR>', '<Plug>(bullets-newline)', mode = 'i', ft = text_ft },
     { 'o', '<Plug>(bullets-newline)', mode = 'n', ft = text_ft },
-    { 'gR', '<Plug>(bullets-renumber)', mode = { 'n', 'v' }, desc = 'Renumber paragraph', ft = text_ft },
-    { 'gx', '<Plug>(bullets-toggle-checkbox)', mode = 'n', desc = 'Toggle checkbox', ft = text_ft },
+    { 'g=', '<Plug>(bullets-renumber)', mode = { 'n', 'v' }, desc = 'Renumber paragraph', ft = text_ft },
+    -- { 'gx', '<Plug>(bullets-toggle-checkbox)', mode = 'n', desc = 'Toggle checkbox', ft = text_ft },
     -- similar to how nvim-obsidian does
     { '<CR>', '<Plug>(bullets-toggle-checkbox)', mode = 'n', desc = 'Toggle checkbox', ft = text_ft },
     { '<C-t>', '<Plug>(bullets-demote)', mode = 'i', desc = 'Demote bullet', ft = text_ft },
