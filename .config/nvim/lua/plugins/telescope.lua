@@ -24,7 +24,7 @@ return {
       --
       -- [[ Configure Telescope ]]
       -- See `:help telescope` and `:help telescope.setup()`
-      local file_ignore_patterns = { 'node_modules', '.git' }
+      local file_ignore_patterns = { 'node_modules', '.git', '.obsidian' }
 
       require('telescope').setup {
         defaults = {

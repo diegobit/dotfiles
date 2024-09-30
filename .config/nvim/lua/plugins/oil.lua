@@ -69,7 +69,6 @@ return {
       }
     end, { desc = 'Find files in cwd (Oil)' })
 
-    local file_ignore_patterns = { 'node_modules', '.git' }
     vim.keymap.set('n', '<leader>sg', function()
       require('telescope.builtin').live_grep {
         cwd = require('oil').get_current_dir(),
@@ -78,5 +77,6 @@ return {
         prompt_title = 'Live Grep in Oil cwd',
       }
     end, { desc = 'Grep in cwd (Oil)' })
+        local file_ignore_patterns = { 'node_modules', '.git', '.obsidian' }
   end,
 }
