@@ -74,7 +74,7 @@ return {
 
       -- builtin and utils
       local builtin = require 'telescope.builtin'
-      vim.keymap.set('n', '<leader>st', builtin.builtin, { desc = 'Telescope Commands' })
+      vim.keymap.set('n', '<leader>sc', builtin.builtin, { desc = 'Telescope Commands' })
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = 'Help' })
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = 'Keymaps' })
       vim.keymap.set('n', '<leader>s.', builtin.resume, { desc = 'Resume last search' })
