@@ -138,6 +138,8 @@ source '/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.in
 ##############################
 source ${brewHome}/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#888888" #8495a0 #9379a0
+bindkey '^G' autosuggest-accept # binding used also by nvim for accepting a word. I couldn't bind CTRL-space
+bindkey '^x' autosuggest-clear
 
 ##############################
 # ZSH SYNTAX HIGHLIGHT

@@ -31,7 +31,8 @@ return {
     -- end, { desc = 'Show/hide suggestion (Neocodeium)' })
 
     -- NOTE: Reduced set of bindings: quicker, just <C-KEY> bindings that should be empty in insert mode
-    vim.keymap.set('i', '<C-g>', neocodeium.accept, { desc = 'Accept suggestion (Neocodeium)' })
+    vim.keymap.set('i', '<C-space>', neocodeium.accept, { desc = 'Accept suggestion (Neocodeium)' })
+    vim.keymap.set('i', '<C-g>', neocodeium.accept_word, { desc = 'Accept suggestion (Neocodeium)' })
     vim.keymap.set('i', '<C-x>', neocodeium.clear, { desc = 'Clear suggestion (Neocodeium)' })
     vim.keymap.set('i', '<C-]>', neocodeium.cycle, { desc = 'Next suggestion (Neocodeium)' })
 
