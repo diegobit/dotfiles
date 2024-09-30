@@ -44,7 +44,7 @@ return {
     {
       '<leader>tD',
       '<cmd>Trouble diagnostics toggle filter.buf=0<cr>',
-      desc = 'Diagnostics curr. Buffer (Trouble)',
+      desc = 'Diagnostics Buffer (Trouble)',
       mode = 'n',
     },
     {
