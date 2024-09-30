@@ -6,9 +6,12 @@ return {
       -- Your custom config :^)
     }
   end,
-  vim.keymap.set('n', '<leader>T', function()
-    require('telescope-tabs').list_tabs()
-  end, { desc = 'Tabs' }),
+  vim.keymap.set('n', '<leader>st', function()
+    require('telescope-tabs').list_tabs(require('telescope.themes').get_dropdown {
+      previewer = false,
+      -- initial_mode = 'normal',
+    })
+  end, { desc = 'List Tabs' }),
   lazy = true,
   dependencies = { 'nvim-telescope/telescope.nvim' },
 }
