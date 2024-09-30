@@ -42,13 +42,23 @@ return {
           },
           layout_config = {
             horizontal = {
-              preview_cutoff = 120,
+              preview_cutoff = 150,
             },
           },
         },
         pickers = {
+          buffers = {
+            theme = 'dropdown',
+            path_display = { 'smart' },
+          },
           find_files = {
             follow = true,
+          },
+          grep_string = {
+            layout_strategy = 'vertical',
+          },
+          live_grep = {
+            layout_strategy = 'vertical',
           },
         },
         extensions = {
@@ -75,7 +85,9 @@ return {
       end, { desc = 'Find Project files' })
       vim.keymap.set('n', '<leader>F', builtin.git_files, { desc = 'Find Git files' })
 
-      vim.keymap.set('n', '<leader>sr', builtin.oldfiles, { desc = 'Recently opened Files' })
+      vim.keymap.set('n', '<leader>sr', function()
+        builtin.oldfiles { layout_strategy = 'vertical' }
+      end, { desc = 'Recently opened Files' })
       vim.keymap.set('n', '<leader>sn', function()
         builtin.find_files { cwd = vim.fn.stdpath 'config' }
       end, { desc = 'Neovim Files' })
@@ -90,13 +102,24 @@ return {
         builtin.grep_string { search = word }
       end, { desc = 'Grep WORD in Project Files' })
       vim.keymap.set('n', '<leader>g', function()
-        builtin.live_grep { file_ignore_patterns = file_ignore_patterns, additional_args = { '-uu' }, prompt_title = 'Live Grep' }
-      end, { desc = 'Grep in Project Files (w/ Hidden)' })
-      vim.keymap.set('n', '<leader>G', builtin.live_grep, { desc = 'Grep in Project Files (nohid)' })
+        builtin.live_grep { file_ignore_patterns = file_ignore_patterns, additional_args = { '-uu' } }
+      end, { desc = 'Grep in Project Files' })
+      vim.keymap.set('n', '<leader>G', function()
+        builtin.live_grep { prompt_title = 'Live Grep [respect hidden]' }
+      end, { desc = 'Grep in Project Files (nohid)' })
 
       -- buffer
       vim.keymap.set('n', '<leader>b', function()
-        builtin.buffers { initial_mode = 'normal' }
+        -- builtin.buffers(require('telescope.themes').get_dropdown {
+        --   previewer = true,
+        --   initial_mode = 'normal',
+        --   show_all_buffers = true,
+        -- })
+        -- builtin.buffers { layout_strategy = 'vertical', layout_config = { width = 0.5 }, initial_mode = 'normal' }
+        builtin.buffers {
+          show_all_buffers = true,
+          -- initial_mode = 'normal',
+        }
       end, { desc = 'List opened Buffers' })
       vim.keymap.set('n', '<leader>s/', function()
         builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
