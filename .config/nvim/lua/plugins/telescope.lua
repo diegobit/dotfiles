@@ -78,6 +78,10 @@ return {
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = 'Help' })
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = 'Keymaps' })
       vim.keymap.set('n', '<leader>s.', builtin.resume, { desc = 'Resume last search' })
+      -- builtin.command_history,
+      vim.keymap.set('n', '<leader>:', function()
+        builtin.command_history(require('telescope.themes').get_dropdown {})
+      end, { desc = 'Command History' })
 
       -- files
       vim.keymap.set('n', '<Leader>f', function()
