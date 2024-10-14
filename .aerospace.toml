@@ -62,13 +62,23 @@ on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
 #                 In this example, 24 is a default value when there is no match.
 #                 Monitor pattern is the same as for 'workspace-to-monitor-force-assignment'.
 #                 See: https://nikitabobko.github.io/AeroSpace/guide#assign-workspaces-to-monitors
+## Gaps without JankyBorders, apps slightly overlapped
 [gaps]
-inner.horizontal = 4
-inner.vertical =   4
-outer.left =       3
-outer.bottom =     3
-outer.top =        3
-outer.right =      3
+inner.horizontal = -3
+inner.vertical =   -3
+outer.left =       0
+outer.bottom =     0
+outer.top =        0
+outer.right =      0
+
+## Gaps when using JankyBorders
+# [gaps]
+# inner.horizontal = 4
+# inner.vertical =   4
+# outer.left =       3
+# outer.bottom =     3
+# outer.top =        3
+# outer.right =      3
 
 ############################
 # MAIN BINDINGS
