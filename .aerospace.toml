@@ -135,20 +135,20 @@ ctrl-shift-cmd-u = 'workspace U'
 ctrl-shift-cmd-i = 'workspace I'
 ctrl-shift-cmd-o = 'workspace O'
 ctrl-shift-cmd-p = 'workspace P'
-ctrl-shift-cmd-leftSquareBracket = 'workspace ['
-# ctrl-shift-cmd-rightSquareBracket = 'workspace ]'
-ctrl-shift-cmd-e = 'workspace E'
-ctrl-shift-cmd-b = 'workspace B'
+ctrl-shift-cmd-quote = 'workspace qt'
+ctrl-shift-cmd-semicolon = 'workspace sc'
+ctrl-shift-cmd-slash = 'workspace sl'
+ctrl-shift-cmd-backslash = 'workspace bs'
 
 ctrl-shift-cmd-alt-y = 'move-node-to-workspace Y'
 ctrl-shift-cmd-alt-u = 'move-node-to-workspace U'
 ctrl-shift-cmd-alt-i = 'move-node-to-workspace I'
 ctrl-shift-cmd-alt-o = 'move-node-to-workspace O'
 ctrl-shift-cmd-alt-p = 'move-node-to-workspace P'
-ctrl-shift-cmd-alt-leftSquareBracket = 'move-node-to-workspace ['
-# ctrl-shift-cmd-alt-rightSquareBracket = 'move-node-to-workspace ]'
-ctrl-shift-cmd-alt-e = 'move-node-to-workspace E'
-ctrl-shift-cmd-alt-b = 'move-node-to-workspace B'
+ctrl-shift-cmd-alt-quote = 'move-node-to-workspace qt'
+ctrl-shift-cmd-alt-semicolon = 'move-node-to-workspace sc'
+ctrl-shift-cmd-alt-slash = 'move-node-to-workspace sl'
+ctrl-shift-cmd-alt-backslash = 'move-node-to-workspace bs'
 
 # back and forth between two most recent workspaces
 ctrl-shift-cmd-tab = 'workspace-back-and-forth'
@@ -173,8 +173,9 @@ ctrl-shift-cmd-alt-w = 'move-workspace-to-monitor --wrap-around next'
 #       - workspace 1 is assigned to B
 #       - workspace 2 gets assigned to E2
 # B = ['^Built-in Retina Display$']
-B = 'secondary'
-E = 3
+Y = 'main'
+'sc' = 'secondary'
+'sl' = 3
 
 ### AUTOMATIONS ###
 [[on-window-detected]]
