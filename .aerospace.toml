@@ -25,6 +25,7 @@
 # Start AeroSpace at login
 start-at-login = true
 
+# ctrl-shift-cmd-f5 = 'reload-config'
 after-startup-command = [
   'exec-and-forget borders'
 ]
