@@ -95,10 +95,10 @@ ctrl-shift-cmd-s = 'layout tiles accordion' # [S]tacked
 ctrl-shift-cmd-a = 'layout tiling' # [A]ttach
 ctrl-shift-cmd-d = 'layout floating' # [D]etach
 
-ctrl-shift-cmd-h = 'focus left'
-ctrl-shift-cmd-j = 'focus down'
-ctrl-shift-cmd-k = 'focus up'
-ctrl-shift-cmd-l = 'focus right'
+ctrl-shift-cmd-h = ['focus left', 'move-mouse window-lazy-center']
+ctrl-shift-cmd-j = ['focus down', 'move-mouse window-lazy-center']
+ctrl-shift-cmd-k = ['focus up', 'move-mouse window-lazy-center']
+ctrl-shift-cmd-l = ['focus right', 'move-mouse window-lazy-center']
 
 ctrl-shift-cmd-alt-h = 'move left'
 ctrl-shift-cmd-alt-j = 'move down'
