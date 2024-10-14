@@ -71,7 +71,7 @@ require('lazy').setup({
 
   require 'plugins/vim-be-good',
 
-  require 'plugins/bg',
+  -- require 'plugins/bg',
 
   require 'plugins/bullets',
 
