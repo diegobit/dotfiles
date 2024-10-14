@@ -1,5 +1,7 @@
 return {
   'mfussenegger/nvim-dap',
+  lazy = true,
+  cmd = { 'DapContinue', 'DapInstall', 'DapLoadLunchJSON', 'DapNew' },
   dependencies = {
     -- Creates a beautiful debugger UI
     'rcarriga/nvim-dap-ui',
@@ -11,38 +13,100 @@ return {
 
     -- Add your own debuggers here
     -- 'leoluz/nvim-dap-go',
+    'mfussenegger/nvim-dap-python',
   },
   keys = function(_, keys)
-    local dap = require 'dap'
-    local dapui = require 'dapui'
     return {
-      { '<leader>cc', dap.continue, desc = 'Start/Continue (F5)' },
-      { '<F5>', dap.continue, desc = 'Debug: Start/Continue' },
-      { '<leader>ci', dap.step_into, desc = 'Step Into (F1)' },
-      { '<F1>', dap.step_into, desc = 'Debug: Step Into' },
-      { '<leader>cv', dap.step_over, desc = 'Step over (F2)' },
-      { '<F2>', dap.step_over, desc = 'Debug: Step Over' },
-      { '<leader>co', dap.step_out, desc = 'Step Out (F3)' },
-      { '<F3>', dap.step_out, desc = 'Debug: Step Out' },
-      { '<leader>cb', dap.toggle_breakpoint, desc = 'Toggle Breakpoint' },
       {
-        '<leader>db',
+        '<leader>cc',
         function()
-          dap.set_breakpoint(vim.fn.input 'Breakpoint condition: ')
+          require('dap').continue()
+        end,
+        desc = 'Start/Continue (F5)',
+      },
+      {
+        '<F5>',
+        function()
+          require('dap').continue()
+        end,
+        desc = 'Debug: Start/Continue',
+      },
+      {
+        '<leader>ci',
+        function()
+          require('dap').step_into()
+        end,
+        desc = 'Step Into (F1)',
+      },
+      {
+        '<F1>',
+        function()
+          require('dap').step_into()
+        end,
+        desc = 'Debug: Step Into',
+      },
+      {
+        '<leader>cv',
+        function()
+          require('dap').step_over()
+        end,
+        desc = 'Step over (F2)',
+      },
+      {
+        '<F2>',
+        function()
+          require('dap').step_over()
+        end,
+        desc = 'Debug: Step Over',
+      },
+      {
+        '<leader>co',
+        function()
+          require('dap').step_out()
+        end,
+        desc = 'Step Out (F3)',
+      },
+      {
+        '<F3>',
+        function()
+          require('dap').step_out()
+        end,
+        desc = 'Debug: Step Out',
+      },
+      {
+        '<leader>ct',
+        function()
+          require('dap').toggle_breakpoint()
+        end,
+        desc = 'Toggle Breakpoint',
+      },
+      {
+        '<leader>cb',
+        function()
+          require('dap').set_breakpoint(vim.fn.input 'Breakpoint condition: ')
         end,
         desc = 'Set Breakpoint',
       },
       -- Toggle to see last session result. Without this, you can't see
       -- session output in case of unhandled exception.
-      { '<leader>cl', dapui.toggle, desc = 'See Last session result (F7)' },
-      { '<F7>', dapui.toggle, desc = 'Debug: See last session result.' },
+      {
+        '<leader>cl',
+        function()
+          require('dapui').toggle()
+        end,
+        desc = 'See Last session result (F7)',
+      },
+      {
+        '<F7>',
+        function()
+          require('dapui').toggle()
+        end,
+        desc = 'Debug: See last session result.',
+      },
       unpack(keys),
     }
   end,
   config = function()
-    local dap = require 'dap'
-    local dapui = require 'dapui'
-
     require('mason-nvim-dap').setup {
       -- Makes a best effort to setup the various debuggers with
       -- reasonable debug configurations
@@ -54,13 +118,13 @@ return {
 
       ensure_installed = {
         -- Update this to ensure that you have the debuggers for the langs you want
-        'delve',
+        -- 'leoluz/nvim-dap-go',
       },
     }
 
     -- Dap UI setup
     -- For more information, see |:help nvim-dap-ui|
-    dapui.setup {
+    require('dapui').setup {
       icons = { expanded = '▾', collapsed = '▸', current_frame = '*' },
       controls = {
         icons = {
@@ -77,13 +141,22 @@ return {
       },
     }
 
-    dap.listeners.after.event_initialized['dapui_config'] = dapui.open
-    dap.listeners.before.event_terminated['dapui_config'] = dapui.close
-    dap.listeners.before.event_exited['dapui_config'] = dapui.close
+    require('dap').listeners.after.event_initialized['dapui_config'] = require('dapui').open
+    require('dap').listeners.before.event_terminated['dapui_config'] = require('dapui').close
+    require('dap').listeners.before.event_exited['dapui_config'] = require('dapui').close
 
     -- Install golang specific config
-    require('dap-go').setup {
-      delve = {},
-    }
+    -- require('dap-go').setup {
+    --   delve = {},
+    -- }
+    require('dap-python').setup '/Users/diego/.pyenv/versions/pynvim/bin/python'
+    table.insert(require('dap').configurations.python, {
+      type = 'python',
+      request = 'launch',
+      name = 'Module',
+      console = 'integratedTerminal',
+      module = 'src', -- edit this to be your app's main module
+      cwd = '${workspaceFolder}',
+    })
   end,
 }
