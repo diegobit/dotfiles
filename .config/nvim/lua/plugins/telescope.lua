@@ -34,17 +34,20 @@ return {
               ['<C-Enter>'] = 'to_fuzzy_refine',
               -- ['<C-p>'] = require('telescope.actions.layout').toggle_preview,
               ['<C-d>'] = require('telescope.actions').delete_buffer,
+              ['<C-w>'] = require('telescope.actions.layout').cycle_layout_next,
             },
             n = {
               ['<C-p>'] = require('telescope.actions.layout').toggle_preview,
               ['<C-d>'] = require('telescope.actions').delete_buffer,
+              ['<C-w>'] = require('telescope.actions.layout').cycle_layout_next,
             },
           },
-          layout_config = {
-            horizontal = {
-              preview_cutoff = 150,
-            },
-          },
+          -- layout_config = {
+          --   horizontal = {
+          --     preview_cutoff = 150,
+          --   },
+          -- },
+          layout_strategy = 'vertical',
         },
         pickers = {
           buffers = {
@@ -54,12 +57,15 @@ return {
           find_files = {
             follow = true,
           },
-          grep_string = {
-            layout_strategy = 'vertical',
-          },
-          live_grep = {
-            layout_strategy = 'vertical',
-          },
+          -- grep_string = {
+          --   layout_strategy = 'vertical',
+          -- },
+          -- live_grep = {
+          --   layout_strategy = 'vertical',
+          -- },
+          -- registers = {
+          --   theme = 'ivy',
+          -- },
         },
         extensions = {
           ['ui-select'] = {
