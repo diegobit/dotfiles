@@ -27,6 +27,7 @@ local function lazy_keys(keys)
     vim.o.lazyredraw = old
   end
 end
+
 vim.keymap.set({ 'n', 'v' }, '<C-f>', lazy_keys '<C-f>zvzz', { desc = 'Scroll down screen' })
 vim.keymap.set({ 'n', 'v' }, '<C-b>', lazy_keys '<C-b>zvzz', { desc = 'Scroll up screen' })
 vim.keymap.set({ 'n', 'v' }, '<C-d>', lazy_keys '<C-d>zvzz', { desc = 'Scroll down half screen' })
@@ -65,8 +66,8 @@ vim.keymap.set('i', '<C-l>', '<Del>', { desc = 'Delete forward' })
 
 -- Enable macos copy paste shortcuts, for those sad moments where you are using the mouse
 vim.keymap.set({ 'i', 'n', 'v' }, '<D-s>', '<Cmd>up<CR><Esc>', { desc = 'Save file' })
-vim.keymap.set({ 'n', 'v' }, '<D-c>', '"*y', { desc = 'Yank to system clipboard' })
-vim.keymap.set({ 'n', 'v' }, '<D-x>', '"*d', { desc = 'Delete and write to system clipboard' })
+vim.keymap.set({ 'n', 'v' }, '<D-c>', '"+y', { desc = 'Yank to system clipboard' })
+vim.keymap.set({ 'n', 'v' }, '<D-x>', '"+d', { desc = 'Delete and write to system clipboard' })
 vim.keymap.set({ 'n', 'v' }, '<D-a>', 'ggVG', { desc = 'Select all' })
 
 -- QuickFix shortcut
