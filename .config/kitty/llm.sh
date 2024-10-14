@@ -34,7 +34,7 @@ while true; do
     read_input "> "
     question=$REPLY
 
-    output=$(echo $question | llm -m gemini-1.5-flash-latest -s "$prompt" | tee /dev/tty )
+    output=$(echo $question | llm -m gemini-pro -s "$prompt" | tee /dev/tty )
 
     if [ "$first_question" = true ]; then
         prompt="${prompt}\n\n# CONVERSATION HISTORY:\n\nUSER: ${question}\n\nASSISTANT: ${output}"
