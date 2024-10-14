@@ -48,11 +48,28 @@ return {
       -- mini.statusline: Better statusline
       --------------------------------------
       local statusline = require 'mini.statusline'
-      statusline.setup { use_icons = vim.g.have_nerd_font }
+      vim.api.nvim_set_hl(0, 'MiniStatuslineTab', { fg = '#ff9e64', bg = '#292e42', default = true })
+      -- vim.api.nvim_set_hl(0, 'MiniStatuslineTab', { link = 'IncSearch', default = true })
+      -- vim.api.nvim_set_hl(0, 'MiniStatuslineTab', { link = 'CurSearch', default = true })
 
-      -- Default logic from source, with different formatting
-      ---@diagnostic disable-next-line: duplicate-set-field
-      statusline.section_location = function(args)
+      local my_section_tab = function(args)
+        local tab_max = vim.fn.tabpagenr '$'
+        if tab_max > 1 then
+          -- if statusline.is_truncated(args.trunc_width) then
+          --   return ' ' .. vim.fn.tabpagenr()
+          -- else
+          --   return ' ' .. vim.fn.tabpagenr() .. '/' .. tab_max
+          if statusline.is_truncated(args.trunc_width) then
+            return '' .. vim.fn.tabpagenr()
+          else
+            return ' ' .. vim.fn.tabpagenr()
+          end
+        else
+          return ''
+        end
+      end
+
+      local my_section_location = function(args)
         -- Use virtual column number to allow update when past last column
         if statusline.is_truncated(args.trunc_width) then
           return '%l│%v'
@@ -63,38 +80,29 @@ return {
         return '%2l/%L│%2v'
       end
 
-      -- Empty function
-      -- Disable search count: it's already in the cmdline
-      ---@diagnostic disable-next-line: duplicate-set-field
-      statusline.section_searchcount = function()
-        return ''
-      end
+      local my_active_content = function()
+        local mode, mode_hl = MiniStatusline.section_mode { trunc_width = 120 }
+        local tab = my_section_tab { trunc_width = 75 }
+        local git = MiniStatusline.section_git { trunc_width = 40 }
+        local diff = MiniStatusline.section_diff { trunc_width = 75 }
+        local diagnostics = MiniStatusline.section_diagnostics { trunc_width = 75 }
+        local lsp = MiniStatusline.section_lsp { trunc_width = 75 }
+        local filename = MiniStatusline.section_filename { trunc_width = 140 }
+        local fileinfo = MiniStatusline.section_fileinfo { trunc_width = 120 }
+        local location = my_section_location { trunc_width = 90 }
 
-      local function tab_text(is_truncated)
-        local title = is_truncated and '' or 'Tab:'
-        local tab_max = vim.fn.tabpagenr '$'
-        if tab_max > 1 then
-          return '[' .. title .. vim.fn.tabpagenr() .. '] '
-          --     return '[' .. title .. vim.fn.tabpagenr() .. '/' .. tab_max .. '] '
-        else
-          return ''
-        end
+        return MiniStatusline.combine_groups {
+          { hl = mode_hl, strings = { mode } },
+          { hl = 'MiniStatuslineDevinfo', strings = { git, diff, diagnostics, lsp } },
+          { hl = 'MiniStatuslineTab', strings = { tab } },
+          '%<', -- Mark general truncate point
+          { hl = 'MiniStatuslineFilename', strings = { filename } },
+          '%=', -- End left alignment
+          { hl = 'MiniStatuslineFileinfo', strings = { fileinfo } },
+          { hl = mode_hl, strings = { location } },
+        }
       end
-
-      ---@diagnostic disable-next-line: duplicate-set-field
-      statusline.section_filename = function(args)
-        -- In terminal always use plain name
-        if vim.bo.buftype == 'terminal' then
-          return tab_text(false) .. '%t'
-        elseif MiniStatusline.is_truncated(args.trunc_width) then
-          -- File name with 'truncate', 'modified', 'readonly' flags
-          -- Use relative path if truncated
-          return tab_text(true) .. '%f%m%r'
-        else
-          -- Use fullpath if not truncated
-          return tab_text(false) .. '%F%m%r'
-        end
-      end
+      statusline.setup { content = { active = my_active_content }, use_icons = vim.g.have_nerd_font }
     end,
   },
 }
