@@ -97,10 +97,10 @@ return {
           ['<C-;>'] = cmp.mapping(function()
             luasnip.jump(1)
           end, { 'i' }),
-          ['<C-d>'] = cmp.mapping(function()
+          ['<C-f>'] = cmp.mapping(function()
             cmp.mapping.scroll_docs(4)
           end, { 'i' }),
-          ['<C-u>'] = cmp.mapping(function()
+          ['<C-b>'] = cmp.mapping(function()
             cmp.mapping.scroll_docs(-4)
           end, { 'i' }),
 
