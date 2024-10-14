@@ -151,7 +151,8 @@ ctrl-shift-cmd-alt-slash = 'move-node-to-workspace sl'
 ctrl-shift-cmd-alt-backslash = 'move-node-to-workspace bs'
 
 # back and forth between two most recent workspaces
-ctrl-shift-cmd-tab = 'workspace-back-and-forth'
+# ctrl-shift-cmd-tab = 'workspace-back-and-forth'
+ctrl-shift-cmd-6 = 'workspace-back-and-forth'
 
 ### SECONDARY DISPLAY ###
 ctrl-shift-cmd-m = 'focus-monitor --wrap-around next'
