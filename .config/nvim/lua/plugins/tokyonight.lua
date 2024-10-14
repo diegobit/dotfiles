@@ -9,10 +9,10 @@ return {
     priority = 1000, -- Make sure to load this before all the other start plugins.
     init = function()
       -- require('tokyonight').setup {
-        -- on_colors = function(colors)
-        --   colors.bg_sidebar = '#000000'
-        --   colors.bg_float = '#000000'
-        -- end,
+      -- on_colors = function(colors)
+      --   colors.bg_sidebar = '#000000'
+      --   colors.bg_float = '#000000'
+      -- end,
       -- }
 
       -- Load the colorscheme here.
@@ -26,8 +26,9 @@ return {
       vim.cmd.hi 'Comment guifg=#95607e'
       -- vim.cmd.hi 'LineNr  guifg=#95606a'
       -- old line numbers: 4E567B
-      vim.cmd.hi 'LineNrAbove guifg=#5a5c6f'
-      vim.cmd.hi 'LineNrBelow guifg=#5a5c6f'
+      vim.cmd.hi 'LineNr guifg=#555c75'
+      vim.cmd.hi 'LineNrAbove guifg=#555c75'
+      vim.cmd.hi 'LineNrBelow guifg=#555c75'
       -- change line highlight background
       vim.cmd.hi 'CursorLine guibg=#232738'
       -- Change selection color
