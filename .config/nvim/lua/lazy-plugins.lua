@@ -78,6 +78,8 @@ require('lazy').setup({
   require 'plugins/outline',
 
   require 'plugins/trouble',
+
+  require 'plugins/vim-plist'
 }, {
   ui = {
     icons = {},
