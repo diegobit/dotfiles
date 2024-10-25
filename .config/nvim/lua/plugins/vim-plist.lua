@@ -1,5 +1,4 @@
 return {
   'darfink/vim-plist',
-  ft = { 'plist' },
-  event = { 'BufReadCmd' },
+  event = { 'BufReadCmd *.plist' },
 }
