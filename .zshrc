@@ -60,7 +60,13 @@ setopt INC_APPEND_HISTORY EXTENDED_HISTORY HIST_FIND_NO_DUPS AUTO_CD NOTIFY
 bindkey -v
 bindkey ^R history-incremental-search-backward
 bindkey ^S history-incremental-search-forward
-#bindkey -e # Emacs key bindings
+
+# make ctrl-p and ctrl-n behave as up and down
+autoload -Uz up-line-or-history
+autoload -Uz down-line-or-history
+bindkey "^P" up-line-or-history
+bindkey "^N" down-line-or-history
+
 # for allowing canc to delete forward char
 bindkey    "^[[3~"          delete-char
 bindkey    "^[3;5~"         delete-char
