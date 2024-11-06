@@ -28,6 +28,11 @@ local function lazy_keys(keys)
   end
 end
 
+-- toggle relativenumber
+vim.keymap.set('n', '<leader>tr', function ()
+  vim.opt.relativenumber = not vim.opt.relativenumber:get()
+end, { desc = 'Relative line numbers' })
+
 vim.keymap.set({ 'n', 'v' }, '<C-f>', lazy_keys '<C-f>zvzz', { desc = 'Scroll down screen' })
 vim.keymap.set({ 'n', 'v' }, '<C-b>', lazy_keys '<C-b>zvzz', { desc = 'Scroll up screen' })
 vim.keymap.set({ 'n', 'v' }, '<C-d>', lazy_keys '<C-d>zvzz', { desc = 'Scroll down half screen' })
