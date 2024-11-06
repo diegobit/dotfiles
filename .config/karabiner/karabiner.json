@@ -54,17 +54,9 @@
                         ]
                     },
                     {
-                        "description": "SPACEFN LAYER: vim navigation (hjkl, f=pagedown, b=pageup) [f,b not kitty]",
+                        "description": "SPACEFN LAYER: vim navigation (hjkl, ui=page, yo=home end, <>=backspace delete)",
                         "manipulators": [
                             {
-                                "conditions": [
-                                    {
-                                        "bundle_identifiers": [
-                                            "net.kovidgoyal.kitty"
-                                        ],
-                                        "type": "frontmost_application_unless"
-                                    }
-                                ],
                                 "from": {
                                     "modifiers": { "optional": ["any"] },
                                     "simultaneous": [
@@ -96,14 +88,6 @@
                                 "type": "basic"
                             },
                             {
-                                "conditions": [
-                                    {
-                                        "bundle_identifiers": [
-                                            "net.kovidgoyal.kitty"
-                                        ],
-                                        "type": "frontmost_application_unless"
-                                    }
-                                ],
                                 "from": {
                                     "modifiers": { "optional": ["any"] },
                                     "simultaneous": [
@@ -135,14 +119,6 @@
                                 "type": "basic"
                             },
                             {
-                                "conditions": [
-                                    {
-                                        "bundle_identifiers": [
-                                            "net.kovidgoyal.kitty"
-                                        ],
-                                        "type": "frontmost_application_unless"
-                                    }
-                                ],
                                 "from": {
                                     "modifiers": { "optional": ["any"] },
                                     "simultaneous": [
@@ -174,14 +150,6 @@
                                 "type": "basic"
                             },
                             {
-                                "conditions": [
-                                    {
-                                        "bundle_identifiers": [
-                                            "net.kovidgoyal.kitty"
-                                        ],
-                                        "type": "frontmost_application_unless"
-                                    }
-                                ],
                                 "from": {
                                     "modifiers": { "optional": ["any"] },
                                     "simultaneous": [
@@ -213,19 +181,11 @@
                                 "type": "basic"
                             },
                             {
-                                "conditions": [
-                                    {
-                                        "bundle_identifiers": [
-                                            "net.kovidgoyal.kitty"
-                                        ],
-                                        "type": "frontmost_application_unless"
-                                    }
-                                ],
                                 "from": {
                                     "modifiers": { "optional": ["any"] },
                                     "simultaneous": [
                                         { "key_code": "spacebar" },
-                                        { "key_code": "b" }
+                                        { "key_code": "i" }
                                     ],
                                     "simultaneous_options": {
                                         "key_down_order": "strict",
@@ -252,19 +212,11 @@
                                 "type": "basic"
                             },
                             {
-                                "conditions": [
-                                    {
-                                        "bundle_identifiers": [
-                                            "net.kovidgoyal.kitty"
-                                        ],
-                                        "type": "frontmost_application_unless"
-                                    }
-                                ],
                                 "from": {
                                     "modifiers": { "optional": ["any"] },
                                     "simultaneous": [
                                         { "key_code": "spacebar" },
-                                        { "key_code": "f" }
+                                        { "key_code": "u" }
                                     ],
                                     "simultaneous_options": {
                                         "key_down_order": "strict",
@@ -291,13 +243,131 @@
                                 "type": "basic"
                             },
                             {
-                                "conditions": [
+                                "from": {
+                                    "modifiers": { "optional": ["any"] },
+                                    "simultaneous": [
+                                        { "key_code": "spacebar" },
+                                        { "key_code": "y" }
+                                    ],
+                                    "simultaneous_options": {
+                                        "key_down_order": "strict",
+                                        "key_up_order": "strict_inverse",
+                                        "to_after_key_up": [
+                                            {
+                                                "set_variable": {
+                                                    "name": "SpaceFN",
+                                                    "value": 0
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                "to": [
                                     {
-                                        "bundle_identifiers": [
-                                            "net.kovidgoyal.kitty"
-                                        ],
-                                        "type": "frontmost_application_unless"
+                                        "set_variable": {
+                                            "name": "SpaceFN",
+                                            "value": 1
+                                        }
                                     },
+                                    { "key_code": "home" }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "from": {
+                                    "modifiers": { "optional": ["any"] },
+                                    "simultaneous": [
+                                        { "key_code": "spacebar" },
+                                        { "key_code": "o" }
+                                    ],
+                                    "simultaneous_options": {
+                                        "key_down_order": "strict",
+                                        "key_up_order": "strict_inverse",
+                                        "to_after_key_up": [
+                                            {
+                                                "set_variable": {
+                                                    "name": "SpaceFN",
+                                                    "value": 0
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "set_variable": {
+                                            "name": "SpaceFN",
+                                            "value": 1
+                                        }
+                                    },
+                                    { "key_code": "end" }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "from": {
+                                    "modifiers": { "optional": ["any"] },
+                                    "simultaneous": [
+                                        { "key_code": "spacebar" },
+                                        { "key_code": "comma" }
+                                    ],
+                                    "simultaneous_options": {
+                                        "key_down_order": "strict",
+                                        "key_up_order": "strict_inverse",
+                                        "to_after_key_up": [
+                                            {
+                                                "set_variable": {
+                                                    "name": "SpaceFN",
+                                                    "value": 0
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "set_variable": {
+                                            "name": "SpaceFN",
+                                            "value": 1
+                                        }
+                                    },
+                                    { "key_code": "delete_or_backspace" }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "from": {
+                                    "modifiers": { "optional": ["any"] },
+                                    "simultaneous": [
+                                        { "key_code": "spacebar" },
+                                        { "key_code": "period" }
+                                    ],
+                                    "simultaneous_options": {
+                                        "key_down_order": "strict",
+                                        "key_up_order": "strict_inverse",
+                                        "to_after_key_up": [
+                                            {
+                                                "set_variable": {
+                                                    "name": "SpaceFN",
+                                                    "value": 0
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "set_variable": {
+                                            "name": "SpaceFN",
+                                            "value": 1
+                                        }
+                                    },
+                                    { "key_code": "delete_forward" }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
                                     {
                                         "name": "SpaceFN",
                                         "type": "variable_if",
@@ -314,12 +384,6 @@
                             {
                                 "conditions": [
                                     {
-                                        "bundle_identifiers": [
-                                            "net.kovidgoyal.kitty"
-                                        ],
-                                        "type": "frontmost_application_unless"
-                                    },
-                                    {
                                         "name": "SpaceFN",
                                         "type": "variable_if",
                                         "value": 1
@@ -334,12 +398,6 @@
                             },
                             {
                                 "conditions": [
-                                    {
-                                        "bundle_identifiers": [
-                                            "net.kovidgoyal.kitty"
-                                        ],
-                                        "type": "frontmost_application_unless"
-                                    },
                                     {
                                         "name": "SpaceFN",
                                         "type": "variable_if",
@@ -356,12 +414,6 @@
                             {
                                 "conditions": [
                                     {
-                                        "bundle_identifiers": [
-                                            "net.kovidgoyal.kitty"
-                                        ],
-                                        "type": "frontmost_application_unless"
-                                    },
-                                    {
                                         "name": "SpaceFN",
                                         "type": "variable_if",
                                         "value": 1
@@ -377,19 +429,13 @@
                             {
                                 "conditions": [
                                     {
-                                        "bundle_identifiers": [
-                                            "net.kovidgoyal.kitty"
-                                        ],
-                                        "type": "frontmost_application_unless"
-                                    },
-                                    {
                                         "name": "SpaceFN",
                                         "type": "variable_if",
                                         "value": 1
                                     }
                                 ],
                                 "from": {
-                                    "key_code": "b",
+                                    "key_code": "i",
                                     "modifiers": { "optional": ["any"] }
                                 },
                                 "to": [{ "key_code": "page_up" }],
@@ -401,19 +447,73 @@
                                         "name": "SpaceFN",
                                         "type": "variable_if",
                                         "value": 1
-                                    },
-                                    {
-                                        "bundle_identifiers": [
-                                            "net.kovidgoyal.kitty"
-                                        ],
-                                        "type": "frontmost_application_unless"
                                     }
                                 ],
                                 "from": {
-                                    "key_code": "f",
+                                    "key_code": "u",
                                     "modifiers": { "optional": ["any"] }
                                 },
                                 "to": [{ "key_code": "page_down" }],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "name": "SpaceFN",
+                                        "type": "variable_if",
+                                        "value": 1
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "y",
+                                    "modifiers": { "optional": ["any"] }
+                                },
+                                "to": [{ "key_code": "home" }],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "name": "SpaceFN",
+                                        "type": "variable_if",
+                                        "value": 1
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "o",
+                                    "modifiers": { "optional": ["any"] }
+                                },
+                                "to": [{ "key_code": "end" }],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "name": "SpaceFN",
+                                        "type": "variable_if",
+                                        "value": 1
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "comma",
+                                    "modifiers": { "optional": ["any"] }
+                                },
+                                "to": [{ "key_code": "delete_or_backspace" }],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "name": "SpaceFN",
+                                        "type": "variable_if",
+                                        "value": 1
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "period",
+                                    "modifiers": { "optional": ["any"] }
+                                },
+                                "to": [{ "key_code": "delete_forward" }],
                                 "type": "basic"
                             }
                         ]
