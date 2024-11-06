@@ -50,10 +50,20 @@ default-root-container-orientation = 'auto'
 # Possible values: (qwerty|dvorak)
 key-mapping.preset = 'qwerty'
 
+# Mouse follows focus
+# see: https://nikitabobko.github.io/AeroSpace/guide#on-focus-changed-callbacks
+#   NOTE: Commented, because it's not reliable. It moves the mouse *before* the
+#   focus is changed, resulting in moving the mouse in weird places.
+# on-focus-changed = ['move-mouse window-lazy-center']
+
 # Mouse follows focus when focused monitor changes
 # See https://nikitabobko.github.io/AeroSpace/guide#on-focus-changed-callbacks
 # See https://nikitabobko.github.io/AeroSpace/commands#move-mouse
-on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
+# Use this to move to center of focused app - bug: when clicking on menubar in other monitor
+# the mouse goes back to the previously focused monitor
+# on-focused-monitor-changed = ['move-mouse window-lazy-center']
+# To move mouse to center of monitor, use this instead:
+# on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
 
 # Gaps between windows (inner-*) and between monitor edges (outer-*).
 # Possible values:
