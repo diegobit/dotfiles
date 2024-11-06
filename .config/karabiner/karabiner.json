@@ -520,6 +520,7 @@
                     },
                     {
                         "description": "VIM insert mode [not kitty]: C-h=backspace, C-u=delete to beginning of line, C-w=delete prev word, C-l=canc",
+                        "enabled": false,
                         "manipulators": [
                             {
                                 "conditions": [
@@ -534,7 +535,7 @@
                                     "key_code": "h",
                                     "modifiers": {
                                         "mandatory": ["control"],
-                                        "optional": ["left_option"]
+                                        "optional": ["option"]
                                     }
                                 },
                                 "to": [{ "key_code": "delete_or_backspace" }],
@@ -572,12 +573,12 @@
                                 ],
                                 "from": {
                                     "key_code": "w",
-                                    "modifiers": { "mandatory": ["left_control"] }
+                                    "modifiers": { "mandatory": ["control"] }
                                 },
                                 "to": [
                                     {
                                         "key_code": "delete_or_backspace",
-                                        "modifiers": ["left_option"]
+                                        "modifiers": ["option"]
                                     }
                                 ],
                                 "type": "basic"
@@ -594,8 +595,8 @@
                                 "from": {
                                     "key_code": "l",
                                     "modifiers": {
-                                        "mandatory": ["left_control"],
-                                        "optional": ["left_option"]
+                                        "mandatory": ["control"],
+                                        "optional": ["option"]
                                     }
                                 },
                                 "to": [{ "key_code": "delete_forward" }],
