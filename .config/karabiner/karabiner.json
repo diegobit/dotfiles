@@ -630,6 +630,7 @@
                     },
                     {
                         "description": "Mouse navigation: button4->back, button5->forward (all mouses. Must enable Device)",
+                        "enabled": false,
                         "manipulators": [
                             {
                                 "from": { "pointing_button": "button4" },
