@@ -873,6 +873,7 @@
                         "product_id": 9136,
                         "vendor_id": 65261
                     },
+                    "ignore": true,
                     "manipulate_caps_lock_led": false
                 },
                 {
@@ -895,7 +896,6 @@
                         "product_id": 9136,
                         "vendor_id": 65261
                     },
-                    "ignore": false,
                     "manipulate_caps_lock_led": false
                 }
             ],
