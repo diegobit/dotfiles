@@ -165,7 +165,7 @@ ctrl-shift-cmd-alt-backslash = 'move-node-to-workspace bs'
 ctrl-shift-cmd-6 = 'workspace-back-and-forth'
 
 ### SECONDARY DISPLAY ###
-ctrl-shift-cmd-m = 'focus-monitor --wrap-around next'
+ctrl-shift-cmd-m = [ 'focus-monitor --wrap-around next', 'move-mouse window-lazy-center' ]
 ctrl-shift-cmd-alt-m = 'move-node-to-monitor --wrap-around next'
 ctrl-shift-cmd-alt-w = 'move-workspace-to-monitor --wrap-around next'
 
