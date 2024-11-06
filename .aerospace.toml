@@ -120,7 +120,7 @@ ctrl-shift-cmd-down = 'join-with down'
 ctrl-shift-cmd-up = 'join-with up'
 ctrl-shift-cmd-right = 'join-with right'
 
-ctrl-shift-cmd-backspace = 'flatten-workspace-tree'
+ctrl-shift-cmd-g = 'flatten-workspace-tree' # [G]round
 
 ### RESIZE ###
 # similar to vim windows: <C-w> plus '-', '+', '<' or '>'
