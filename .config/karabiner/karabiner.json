@@ -9,30 +9,6 @@
                 "parameters": { "basic.simultaneous_threshold_milliseconds": 750 },
                 "rules": [
                     {
-                        "description": "[no lotus]: cmd+space -> f11",
-                        "manipulators": [
-                            {
-                                "conditions": [
-                                    {
-                                        "identifiers": [{ "vendor_id": 65261 }],
-                                        "type": "device_unless"
-                                    }
-                                ],
-                                "from": {
-                                    "key_code": "spacebar",
-                                    "modifiers": {
-                                        "mandatory": ["command"]
-                                    }
-                                },
-                                "to": [
-                                    { "key_code": "f11" }
-                                ],
-                                "type": "basic"
-                            }
-
-                        ]
-                    },
-                    {
                         "description": "CAPS_LOCK LAYER: caps_lock -> ctrl. Send escape when pressed alone [300ms] [no lotus]",
                         "manipulators": [
                             {
