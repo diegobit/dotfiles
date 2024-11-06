@@ -1,7 +1,7 @@
 {
     "global": {
-        "enable_notification_window": false,
-        "show_in_menu_bar": false
+        "ask_for_confirmation_before_quitting": false,
+        "enable_notification_window": false
     },
     "profiles": [
         {
