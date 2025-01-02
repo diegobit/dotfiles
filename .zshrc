@@ -49,6 +49,13 @@ export XDG_CONFIG_HOME=~/.config # used by kickstart-nvim for example
 # export LIBARCHIVE=/usr/local/opt/libarchive/lib/libarchive.dylib
 # export LIBCRYPTO=/usr/local/opt/openssl/lib/libcrypto.dylib
 
+# simonw/llm package configuration
+# install with `brew install llm` and `llm install llm-gemini`
+# Remember to set default `llm models default MODEL_NAME`
+export LLM_MODEL_FAST="gemini-2.0-flash-exp"
+export LLM_MODEL_SLOW="gemini-2.0-flash-exp"
+export GOOGLEAI_API_KEY="AIzaSyDtIbuKKi4V0oG3VjM0-RjiSKRVDF4iCBY"
+
 ##############################
 # COMMON SETTINGS
 ##############################
@@ -264,8 +271,8 @@ yyn() {
     yy
 }
 
-alias llmp="llm -m gemini-pro"
-alias llmf="llm -m gemini-1.5-flash-latest"
+alias llmp="llm -m $LLM_MODEL_SLOW"
+alias llmf="llm -m $LLM_MODEL_SLOW"
 
 retry() {
   local attempts=1000
