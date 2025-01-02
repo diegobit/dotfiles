@@ -12,7 +12,7 @@ return {
     'jay-babu/mason-nvim-dap.nvim',
 
     -- Add your own debuggers here
-    -- 'leoluz/nvim-dap-go',
+    'leoluz/nvim-dap-go',
     'mfussenegger/nvim-dap-python',
   },
   keys = function(_, keys)
@@ -22,71 +22,114 @@ return {
         function()
           require('dap').continue()
         end,
-        desc = 'Start/Continue (F5)',
+        desc = 'Start/Continue [F5] (DAP)',
       },
       {
         '<F5>',
         function()
           require('dap').continue()
         end,
-        desc = 'Debug: Start/Continue',
+        desc = 'Start/Continue (DAP)',
       },
+
+      {
+        '<leader>c.',
+        function()
+          require('dap').disconnect { terminateDebuggee = true }
+          -- require('dap').close()
+        end,
+        desc = 'Stop (DAP)',
+      },
+
       {
         '<leader>ci',
         function()
           require('dap').step_into()
         end,
-        desc = 'Step Into (F1)',
+        desc = 'Step Into [F1] (DAP)',
       },
       {
         '<F1>',
         function()
           require('dap').step_into()
         end,
-        desc = 'Debug: Step Into',
+        desc = 'Step Into (DAP)',
       },
+
       {
         '<leader>cv',
         function()
           require('dap').step_over()
         end,
-        desc = 'Step over (F2)',
+        desc = 'Step Over [F2] (DAP)',
       },
       {
         '<F2>',
         function()
           require('dap').step_over()
         end,
-        desc = 'Debug: Step Over',
+        desc = 'Step Over (DAP)',
       },
+
       {
         '<leader>co',
         function()
           require('dap').step_out()
         end,
-        desc = 'Step Out (F3)',
+        desc = 'Step Out [F3] (DAP)',
       },
       {
         '<F3>',
         function()
           require('dap').step_out()
         end,
-        desc = 'Debug: Step Out',
+        desc = 'Step Out (DAP)',
       },
-      {
-        '<leader>ct',
-        function()
-          require('dap').toggle_breakpoint()
-        end,
-        desc = 'Toggle Breakpoint',
-      },
+
       {
         '<leader>cb',
         function()
+          require('dap').toggle_breakpoint()
+        end,
+        desc = 'Toggle Breakpoint (DAP)',
+      },
+      {
+        '<leader>cB',
+        function()
           require('dap').set_breakpoint(vim.fn.input 'Breakpoint condition: ')
         end,
-        desc = 'Set Breakpoint',
+        desc = 'Set Breakpoint w/ Cond. (DAP)',
       },
+      {
+        '<leader>ce',
+        function()
+          require('dap').set_exception_breakpoints()
+        end,
+        desc = 'Set Exception Breakpoint (DAP)',
+      },
+      {
+        '<leader>cC',
+        function()
+          require('dap').clear_breakpoints()
+        end,
+        desc = 'Clear Breakpoints (DAP)',
+      },
+
+      {
+        '<leader>ck',
+        function()
+          require('dap').up()
+        end,
+        desc = 'Go Up in Stacktrace (DAP)',
+      },
+      {
+        '<leader>cj',
+        function()
+          require('dap').down()
+        end,
+        desc = 'Go Down in Stacktrace (DAP)',
+      },
+
       -- Toggle to see last session result. Without this, you can't see
       -- session output in case of unhandled exception.
       {
@@ -94,14 +137,14 @@ return {
         function()
           require('dapui').toggle()
         end,
-        desc = 'See Last session result (F7)',
+        desc = 'See Last Session [F7] (DAP)',
       },
       {
         '<F7>',
         function()
           require('dapui').toggle()
         end,
-        desc = 'Debug: See last session result.',
+        desc = 'See last session result. (DAP)',
       },
       unpack(keys),
     }
@@ -146,9 +189,9 @@ return {
     require('dap').listeners.before.event_exited['dapui_config'] = require('dapui').close
 
     -- Install golang specific config
-    -- require('dap-go').setup {
-    --   delve = {},
-    -- }
+    require('dap-go').setup {
+      delve = {},
+    }
     require('dap-python').setup '/Users/diego/.pyenv/versions/pynvim/bin/python'
     table.insert(require('dap').configurations.python, {
       type = 'python',
