@@ -33,12 +33,12 @@
   typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(
     # =========================[ Line #1 ]=========================
     # os_icon               # os identifier
+    background_jobs         # presence of background jobs
     context                 # user@hostname
     dir                     # current directory
     vcs                     # git status
     pyenv                   # python environment (https://github.com/pyenv/pyenv)
-    background_jobs         # presence of background jobs
-    # command_execution_time  # duration of the last command
+    command_execution_time  # duration of the last command
     gcloud                  # google cloud cli account and project (https://cloud.google.com/)
     kubecontext             # current kubernetes context (https://kubernetes.io/)
     terraform               # terraform workspace (https://www.terraform.io)
@@ -570,11 +570,11 @@
 
   #######################[ background_jobs: presence of background jobs ]#######################
   # Don't show the number of background jobs.
-  typeset -g POWERLEVEL9K_BACKGROUND_JOBS_VERBOSE=false
+  typeset -g POWERLEVEL9K_BACKGROUND_JOBS_VERBOSE=true
   # Background jobs color.
   typeset -g POWERLEVEL9K_BACKGROUND_JOBS_FOREGROUND=37
   # Custom icon.
-  # typeset -g POWERLEVEL9K_BACKGROUND_JOBS_VISUAL_IDENTIFIER_EXPANSION='⭐'
+  # typeset -g POWERLEVEL9K_BACKGROUND_JOBS_VISUAL_IDENTIFIER_EXPANSION=' '
 
   #######################[ direnv: direnv status (https://direnv.net/) ]########################
   # Direnv color.
