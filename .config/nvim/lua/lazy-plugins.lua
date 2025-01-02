@@ -80,6 +80,8 @@ require('lazy').setup({
   require 'plugins/trouble',
 
   require 'plugins/vim-plist'
+
+  require 'plugins/gp'
 }, {
   ui = {
     icons = {},
