@@ -26,7 +26,6 @@ return {
       -- Document existing key chains
       require('which-key').add {
         { '<leader>c', group = 'Code' },
-        -- { '<leader>d', group = 'Debug' },
         { '<leader>s', group = 'Search' },
         { '<leader>t', group = 'Toggle' },
 
