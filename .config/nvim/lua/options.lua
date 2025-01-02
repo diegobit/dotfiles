@@ -63,6 +63,7 @@ vim.opt.cursorline = true
 
 -- Default number of spaces per tab
 vim.o.shiftwidth = 4
+vim.o.tabstop = 4
 
 -- Use spaces in insert mode when pressing <TAB>
 vim.o.expandtab = true
