@@ -1,0 +1,5 @@
+font-family = JetBrains Mono NL
+font-size = 15
+font-feature = "-liga"
+theme = Wombat
+window-padding-color = extend
