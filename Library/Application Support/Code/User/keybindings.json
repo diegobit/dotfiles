@@ -454,11 +454,6 @@
         "when": "editorTextFocus && inDebugMode"
     },
     {
-        "key": "ctrl+h",
-        "command": "editor.action.showHover",
-        "when": "editorTextFocus"
-    },
-    {
         "key": "cmd+k cmd+i",
         "command": "-editor.action.showHover",
         "when": "editorTextFocus"
@@ -1490,5 +1485,10 @@
     {
         "key": "ctrl+g",
         "command": "-workbench.action.gotoLine"
+    },
+    {
+        "key": "ctrl+h",
+        "command": "deleteLeft",
+        "when": "textInputFocus"
     }
 ]
