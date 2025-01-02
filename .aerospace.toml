@@ -110,15 +110,15 @@ ctrl-shift-cmd-j = ['focus down', 'move-mouse window-lazy-center']
 ctrl-shift-cmd-k = ['focus up', 'move-mouse window-lazy-center']
 ctrl-shift-cmd-l = ['focus right', 'move-mouse window-lazy-center']
 
-ctrl-shift-cmd-alt-h = 'move left'
-ctrl-shift-cmd-alt-j = 'move down'
-ctrl-shift-cmd-alt-k = 'move up'
-ctrl-shift-cmd-alt-l = 'move right'
+ctrl-shift-cmd-left  = 'move left'
+ctrl-shift-cmd-down  = 'move down'
+ctrl-shift-cmd-up    = 'move up'
+ctrl-shift-cmd-right = 'move right'
 
-ctrl-shift-cmd-left = 'join-with left'
-ctrl-shift-cmd-down = 'join-with down'
-ctrl-shift-cmd-up = 'join-with up'
-ctrl-shift-cmd-right = 'join-with right'
+ctrl-shift-cmd-alt-h = 'join-with left'
+ctrl-shift-cmd-alt-j = 'join-with down'
+ctrl-shift-cmd-alt-k = 'join-with up'
+ctrl-shift-cmd-alt-l = 'join-with right'
 
 ctrl-shift-cmd-g = 'flatten-workspace-tree' # [G]round
 
@@ -126,7 +126,7 @@ ctrl-shift-cmd-g = 'flatten-workspace-tree' # [G]round
 # similar to vim windows: <C-w> plus '-', '+', '<' or '>'
 # the difference is that, there, to do '+', '<' or '>' we use also shift.
 # We cannot add shift to hyper!
-ctrl-shift-cmd-0 = 'balance-sizes' # cannot use '=', backslash is maximise in nvim
+ctrl-shift-cmd-quote= 'balance-sizes' # cannot use '=', backslash is maximise in nvim
 ctrl-shift-cmd-minus = 'resize height -100'
 ctrl-shift-cmd-equal = 'resize height +100'
 ctrl-shift-cmd-comma = 'resize width -100'
