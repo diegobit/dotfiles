@@ -187,7 +187,7 @@ export FZF_ALT_C_COMMAND="fd -I --max-depth 5 --type directory | proximity-sort 
 # yazi
 ##############################
 
-function yy() {
+function y() {
     local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
     yazi "$@" --cwd-file="$tmp"
     if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
@@ -210,6 +210,7 @@ alias fzfp='fzf --preview "bat --style=numbers,changes --color=always --line-ran
 alias g="git"
 alias gl="git log"
 alias gs="git status"
+alias gc="git commit"
 alias grep="grep --color=auto"
 alias ip="ifconfig -a | perl -nle'/(\d+\.\d+\.\d+\.\d+)/ && print $1'; dig +short myip.opendns.com @resolver1.opendns.com"
 alias l="ls -lah"
@@ -217,8 +218,8 @@ alias lg="lazygit"
 alias ls="ls -G"
 alias pa="pyenv activate"
 alias pd="pyenv deactivate"
-alias nv="nvim"
-nvd() {
+alias n="nvim"
+nd() {
     target="$1"
     # no argument, just open nvim in current dir
     if [[ -z "$target" ]]; then
@@ -238,7 +239,7 @@ nvd() {
       exit 1
     fi
 }
-nvg() {
+ng() {
     target="$1"
     # if arg is a dir, cd into it
     if [[ -z "$target" ]]; then
@@ -262,11 +263,16 @@ nvg() {
 
     nvim "$target"
 }
-nvn() {
+nn() {
     cd ~/notes
     nvim .
 }
-yyn() {
+nr() {
+    cd ~/notes/Registro
+    most_recent=$(ls -Art | tail -n 1)
+    nvim $most_recent
+}
+yn() {
     cd ~/notes
     yy
 }
