@@ -54,7 +54,7 @@ export XDG_CONFIG_HOME=~/.config # used by kickstart-nvim for example
 # Remember to set default `llm models default MODEL_NAME`
 export LLM_MODEL_FAST="gemini-2.0-flash-exp"
 export LLM_MODEL_SLOW="gemini-2.0-flash-exp"
-export GOOGLEAI_API_KEY="AIzaSyDtIbuKKi4V0oG3VjM0-RjiSKRVDF4iCBY"
+export GOOGLEAI_API_KEY="---XXX---"
 
 ##############################
 # COMMON SETTINGS
