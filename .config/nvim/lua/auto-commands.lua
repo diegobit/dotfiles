@@ -26,6 +26,14 @@ vim.api.nvim_create_autocmd('FileType', {
   end,
 })
 
+-- Disable ai autocomplete (neocodeium) in specific places
+vim.api.nvim_create_autocmd({ 'BufEnter', 'BufRead' }, {
+  pattern = { '**/gp/chats/*.md' },
+  callback = function()
+    require("neocodeium.commands").disable()
+  end,
+})
+
 -- Integration with kitty. kitty will read this variable to know nvim is in focus
 vim.api.nvim_create_autocmd({ 'VimEnter', 'VimResume' }, {
   group = vim.api.nvim_create_augroup('KittySetVarVimEnter', { clear = true }),
