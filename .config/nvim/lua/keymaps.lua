@@ -47,6 +47,7 @@ vim.keymap.set({ 'n', 't' }, '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the 
 vim.keymap.set({ 'n', 't' }, '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set({ 'n', 't' }, '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 vim.keymap.set({ 'n', 't' }, '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
+vim.keymap.set({ 'n', 't' }, '<C-tab>', '<C-6>', { desc = 'Switch to last active window' })
 
 ---- Move current line / block with Alt-j/k (Use these if macos_option_as_alt is true)
 -- vim.keymap.set('n', '<M-j>', ':m .+1<CR>==', { desc = 'Move line down' })
