@@ -334,7 +334,7 @@ notify() {
 # - Change the model to your favourite one: llm -m MODEL_NAME
 gcm() {
     generate_commit_message() {
-        git diff --cached | llm -m gemini-pro -s "Below is a diff of all staged changes, coming from the command:
+        git diff --cached | llm -m $LLM_MODEL_SLOW -s "Below is a diff of all staged changes, coming from the command:
 
 \`\`\`
 git diff --cached
