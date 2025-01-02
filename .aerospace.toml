@@ -260,3 +260,14 @@ run = 'layout floating'
 if.app-id = 'com.apple.QuickTimePlayerX'
 run = 'layout floating'
 
+[[on-window-detected]]
+if.app-id = 'com.aone.keka'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'org.keepassxc.keepassxc'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.keepassium.ios'
+run = 'layout floating'
