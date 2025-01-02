@@ -37,6 +37,6 @@ return {
     vim.keymap.set('i', '<C-x>', neocodeium.clear, { desc = 'Clear suggestion (Neocodeium)' })
     vim.keymap.set('i', '<C-]>', neocodeium.cycle, { desc = 'Next suggestion (Neocodeium)' })
 
-    vim.keymap.set('n', '<leader>ta', '<Cmd>NeoCodeium disable<CR>', { desc = 'AI suggestions (Neocodeium)' })
+    vim.keymap.set('n', '<leader>ta', '<Cmd>NeoCodeium disable<CR>', { desc = 'AI autocomplete (Neocodeium)' })
   end,
 }
