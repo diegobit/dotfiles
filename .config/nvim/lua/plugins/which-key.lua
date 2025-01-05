@@ -33,6 +33,9 @@ return {
         { 'g/', group = 'URL encoding', mode = { 'n', 'v' } },
         { 'gb', group = 'Base64 encoding', mode = { 'n', 'v' } },
         { 'gbs', group = 'URL Safe', mode = { 'n', 'v' } },
+
+        -- Rename commands
+        { 'gx', desc = 'Open URL under cursor' },
       }
     end,
   },

@@ -90,7 +90,4 @@ vim.keymap.set('n', '<leader>ts', function()
   vim.opt.spell = not vim.opt.spell:get() -- ignore warning
 end, { desc = 'Spellcheck' })
 
--- gx has a super long description about opening some url
-vim.keymap.set("n", 'gx', "<nop>")
-
 -- vim: ts=2 sts=2 sw=2 et
