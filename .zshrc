@@ -2,7 +2,6 @@
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
-# source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
     source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
@@ -16,7 +15,8 @@ source ~/.p10k.zsh
 # Plugins for lazy loading
 ##############################
 source ~/Dev/zsh_plugins/zsh-lazyload/zsh-lazyload.zsh
-source ~/Dev/zsh_plugins/evalcache/evalcache.plugin.zsh
+# source ~/Dev/zsh_plugins/evalcache/evalcache.plugin.zsh
+source ~/Dev/zsh_plugins/zsh-smartcache/zsh-smartcache.plugin.zsh
 
 ##############################
 # PATH
@@ -112,24 +112,26 @@ local _reset="\e[0m"
 #source ~/.iterm2_shell_integration.zsh
 
 ##############################
-# Zeoxide
+# Zoxide
 ##############################
-_evalcache zoxide init --cmd j zsh
-#_evalcache zoxide --cmd cd zsh
+# eval "$(zoxide init --cmd j zsh)"
+smartcache eval zoxide init --cmd j zsh
 
 ##############################
 # PYENV
 ##############################
 export PYENV_ROOT="$HOME/.pyenv"
 export PYENV_VIRTUALENV_DISABLE_PROMPT=1
-_evalcache pyenv init - zsh
-_evalcache pyenv virtualenv-init -
+# eval "$(pyenv init - zsh)"
+# eval "$(pyenv virtualenv-init -)"
+smartcache eval pyenv init - zsh
+smartcache eval pyenv virtualenv-init -
 
 ##############################
 # JENV
 ##############################
 # eval "$(jenv init -)"
-# _evalcache jenv init -
+# smartcache jenv init -
 
 ##############################
 # RUST (path is in .zshenv)
