@@ -1,5 +1,54 @@
 font-family = JetBrains Mono NL
+# font-family = TX-02
+# adjust-cell-height = 5%
 font-size = 15
-font-feature = "-liga"
-theme = Wombat
+font-feature = "-calt, -liga, -dlig"
+font-thicken
+adjust-cursor-thickness = 2
+
+theme = Everblush
+background = #16161e
+# theme = Wombat
+selection-background = #344372
+selection-foreground = #dddddd
+# selection-invert-fg-bg
+# minimum-contrast = 1.01
+
+# theme = tokyonight_night
+# theme = GruvboxDarkHard
+# background = #161818
+
+window-save-state = always
+macos-titlebar-style=tabs
 window-padding-color = extend
+
+split-divider-color = #926645
+# alpha-blending = linear-corrected
+# window-colorspace = srgb
+
+# keybindings
+# next tab: ctrl+tab
+# split: cmd+d, cmd+shift+d
+# keybind = cmd+g>shift+t=previous_tab
+# keybind = cmd+g>t=next_tab
+# keybind = cmd+g>,=move_tab:-1
+# keybind = cmd+g>.=move_tab:+1
+# keybind = cmd+g>v=new_split:right
+# keybind = cmd+g>s=new_split:down
+keybind = cmd+down=goto_split:bottom
+keybind = cmd+up=goto_split:top
+keybind = cmd+left=goto_split:left
+keybind = cmd+right=goto_split:right
+# keybind = cmd+g>j=goto_split:bottom
+# keybind = cmd+g>k=goto_split:top
+# keybind = cmd+g>h=goto_split:left
+# keybind = cmd+g>l=goto_split:right
+
+keybind = cmd+enter=toggle_split_zoom
+# keybind = cmd+g>f=toggle_split_zoom
+keybind = cmd+0=equalize_splits
+# keybind = cmd+g>equal=equalize_splits
+
+keybind = cmd+f=write_screen_file:open
+
+keybind = global:cmd+shift+ctrl+g=toggle_quick_terminal
