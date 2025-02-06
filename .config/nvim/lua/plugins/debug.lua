@@ -18,134 +18,134 @@ return {
   keys = function(_, keys)
     return {
       {
-        '<leader>cc',
+        '<leader>dr',
         function()
           require('dap').continue()
         end,
-        desc = 'Start/Continue [F5] (DAP)',
+        desc = 'Run (Start/Continue) [F5]',
       },
       {
         '<F5>',
         function()
           require('dap').continue()
         end,
-        desc = 'Start/Continue (DAP)',
+        desc = 'Start/Continue',
       },
 
       {
-        '<leader>c.',
+        '<leader>d.',
         function()
           require('dap').disconnect { terminateDebuggee = true }
           -- require('dap').close()
         end,
-        desc = 'Stop (DAP)',
+        desc = 'Stop',
       },
 
       {
-        '<leader>ci',
+        '<leader>di',
         function()
           require('dap').step_into()
         end,
-        desc = 'Step Into [F1] (DAP)',
+        desc = 'Step Into [F8]',
       },
       {
-        '<F1>',
+        '<F8>',
         function()
           require('dap').step_into()
         end,
-        desc = 'Step Into (DAP)',
+        desc = 'Step Into',
       },
 
       {
-        '<leader>cv',
+        '<leader>dv',
         function()
           require('dap').step_over()
         end,
-        desc = 'Step Over [F2] (DAP)',
+        desc = 'Step oVer [F7]',
       },
       {
-        '<F2>',
+        '<F7>',
         function()
           require('dap').step_over()
         end,
-        desc = 'Step Over (DAP)',
+        desc = 'Step Over',
       },
 
       {
-        '<leader>co',
+        '<leader>do',
         function()
           require('dap').step_out()
         end,
-        desc = 'Step Out [F3] (DAP)',
+        desc = 'Step Out [F9]',
       },
       {
-        '<F3>',
+        '<F9>',
         function()
           require('dap').step_out()
         end,
-        desc = 'Step Out (DAP)',
+        desc = 'Step Out',
       },
 
       {
-        '<leader>cb',
+        '<leader>dt',
         function()
           require('dap').toggle_breakpoint()
         end,
-        desc = 'Toggle Breakpoint (DAP)',
+        desc = 'Toggle Breakpoint',
       },
       {
-        '<leader>cB',
+        '<leader>db',
         function()
           require('dap').set_breakpoint(vim.fn.input 'Breakpoint condition: ')
         end,
-        desc = 'Set Breakpoint w/ Cond. (DAP)',
+        desc = 'Set Breakpoint w/ Cond.',
       },
       {
-        '<leader>ce',
+        '<leader>de',
         function()
           require('dap').set_exception_breakpoints()
         end,
-        desc = 'Set Exception Breakpoint (DAP)',
+        desc = 'Set Exception Breakpoint',
       },
       {
-        '<leader>cC',
+        '<leader>dc',
         function()
           require('dap').clear_breakpoints()
         end,
-        desc = 'Clear Breakpoints (DAP)',
+        desc = 'Clear Breakpoints',
       },
 
       {
-        '<leader>ck',
+        '<leader>dk',
         function()
           require('dap').up()
         end,
-        desc = 'Go Up in Stacktrace (DAP)',
+        desc = 'Go Up in Stacktrace',
       },
       {
-        '<leader>cj',
+        '<leader>dj',
         function()
           require('dap').down()
         end,
-        desc = 'Go Down in Stacktrace (DAP)',
+        desc = 'Go Down in Stacktrace',
       },
 
       -- Toggle to see last session result. Without this, you can't see
       -- session output in case of unhandled exception.
       {
-        '<leader>cl',
+        '<leader>dl',
         function()
           require('dapui').toggle()
         end,
-        desc = 'See Last Session [F7] (DAP)',
+        desc = 'See Last Session',
       },
-      {
-        '<F7>',
-        function()
-          require('dapui').toggle()
-        end,
-        desc = 'See last session result. (DAP)',
-      },
+      -- {
+      --   '<F7>',
+      --   function()
+      --     require('dapui').toggle()
+      --   end,
+      --   desc = 'See last session result.',
+      -- },
       unpack(keys),
     }
   end,

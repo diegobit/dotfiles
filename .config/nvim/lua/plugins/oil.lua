@@ -64,37 +64,37 @@ return {
     vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWinEnter' }, {
       pattern = 'oil://*',
       callback = function()
-        vim.keymap.set('n', '<leader>sf', function()
+        vim.keymap.set('n', '<leader>f', function()
           require('telescope.builtin').find_files {
             cwd = require('oil').get_current_dir(),
             hidden = true,
             prompt_title = 'Find Files in Oil cwd',
           }
-        end, { desc = 'Find files in cwd (Oil)', buffer = 0 })
-        vim.keymap.set('n', '<leader>sF', function()
+        end, { desc = 'Find Files in cwd (Oil)', buffer = 0 })
+        vim.keymap.set('n', '<leader>F', function()
           require('telescope.builtin').find_files {
             cwd = require('oil').get_current_dir(),
             hidden = false,
             prompt_title = 'Find Files in Oil cwd [no hidden]',
           }
-        end, { desc = 'Find files in cwd [no hidden] (Oil)', buffer = 0 })
+        end, { desc = 'Find Files in cwd [nohid] (Oil)', buffer = 0 })
 
         local file_ignore_patterns = { 'node_modules', '.git', '.obsidian' }
-        vim.keymap.set('n', '<leader>sg', function()
+        vim.keymap.set('n', '<leader>g', function()
           require('telescope.builtin').live_grep {
             cwd = require('oil').get_current_dir(),
             file_ignore_patterns = file_ignore_patterns,
             additional_args = { '-uu' },
             prompt_title = 'Live Grep in Oil cwd',
           }
-        end, { desc = 'Grep in cwd (Oil)', buffer = 0 })
-        vim.keymap.set('n', '<leader>sG', function()
+        end, { desc = 'Grep in cwd Files (Oil)', buffer = 0 })
+        vim.keymap.set('n', '<leader>G', function()
           require('telescope.builtin').live_grep {
             cwd = require('oil').get_current_dir(),
             file_ignore_patterns = file_ignore_patterns,
             prompt_title = 'Live Grep in Oil cwd [no hidden]',
           }
-        end, { desc = 'Grep in cwd (Oil) [no hidden]', buffer = 0 })
+        end, { desc = 'Grep in cwd Files (Oil) [nohid]', buffer = 0 })
       end,
     })
   end,

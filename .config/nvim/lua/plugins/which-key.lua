@@ -21,13 +21,19 @@ return {
     config = function() -- This is the function that runs, AFTER loading
       require('which-key').setup {
         preset = 'helix',
+        icons = {
+          separator = '│',
+        },
       }
 
       -- Document existing key chains
       require('which-key').add {
-        { '<leader>c', group = 'Code' },
-        { '<leader>s', group = 'Search' },
+        { '<leader>d', group = 'Debug' },
+        -- { '<leader><leader>', group = 'Others' },
         { '<leader>t', group = 'Toggle' },
+
+        -- custom preset for marks
+        -- { '`', function() require('which-key').show({ keys = '`', preset = 'modern' }) end },
 
         -- docs for MisanthropicBit/decipher.nvim
         { 'g/', group = 'URL encoding', mode = { 'n', 'v' } },

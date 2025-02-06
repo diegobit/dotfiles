@@ -31,6 +31,7 @@ return {
           file_ignore_patterns = file_ignore_patterns,
           mappings = {
             i = {
+              ['<CR>'] = require('telescope.actions').select_default + require('telescope.actions').center,
               ['<C-Enter>'] = 'to_fuzzy_refine',
               -- ['<C-p>'] = require('telescope.actions.layout').toggle_preview,
               ['<C-d>'] = require('telescope.actions').delete_buffer,
@@ -80,13 +81,13 @@ return {
 
       -- builtin and utils
       local builtin = require 'telescope.builtin'
-      vim.keymap.set('n', '<leader>sc', builtin.builtin, { desc = 'Telescope Commands' })
-      vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = 'Help' })
-      vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = 'Keymaps' })
-      vim.keymap.set('n', '<leader>s.', builtin.resume, { desc = 'Resume last search' })
+      vim.keymap.set('n', '<leader><leader>', builtin.builtin, { desc = 'Telescope Commands' })
+      -- vim.keymap.set('n', '<leader><leader>h', builtin.help_tags, { desc = 'Help' })
+      -- vim.keymap.set('n', '<leader><leader>k', builtin.keymaps, { desc = 'Keymaps' })
+      vim.keymap.set('n', '<leader>.', builtin.resume, { desc = 'Resume last search' })
       -- builtin.command_history,
       vim.keymap.set('n', '<leader>:', function()
-        builtin.command_history(require('telescope.themes').get_dropdown {})
+        builtin.command_history(require('telescope.themes').get_ivy {})
       end, { desc = 'Command History' })
 
       -- files
@@ -95,19 +96,19 @@ return {
       end, { desc = 'Find Project files' })
       vim.keymap.set('n', '<leader>F', builtin.git_files, { desc = 'Find Git files' })
 
-      vim.keymap.set('n', '<leader>sr', function()
+      vim.keymap.set('n', '<leader>R', function()
         builtin.oldfiles { layout_strategy = 'vertical' }
       end, { desc = 'Recently opened Files' })
-      vim.keymap.set('n', '<leader>sn', function()
-        builtin.find_files { cwd = vim.fn.stdpath 'config' }
-      end, { desc = 'Neovim Files' })
+      -- vim.keymap.set('n', '<leader><leader>n', function()
+      --   builtin.find_files { cwd = vim.fn.stdpath 'config' }
+      -- end, { desc = 'Neovim Files' })
 
       -- grep
-      vim.keymap.set('n', '<leader>sw', function()
+      vim.keymap.set('n', '<leader>w', function()
         local word = vim.fn.expand '<cword>'
         builtin.grep_string { search = word }
       end, { desc = 'Grep word in Project Files' })
-      vim.keymap.set('n', '<leader>sW', function()
+      vim.keymap.set('n', '<leader>W', function()
         local word = vim.fn.expand '<cWORD>'
         builtin.grep_string { search = word }
       end, { desc = 'Grep WORD in Project Files' })
@@ -137,7 +138,7 @@ return {
       --     previewer = false,
       --   })
       -- end, { desc = 'Fuzzy search in Current Buffer' })
-      vim.keymap.set('n', '<leader>sb', function()
+      vim.keymap.set('n', '<leader>/', function()
         builtin.live_grep {
           grep_open_files = true,
           prompt_title = 'Live Grep in Open Buffers',
@@ -145,7 +146,7 @@ return {
       end, { desc = 'Grep in Open Buffers' })
 
       -- Diagnostics:
-      vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = 'Diagnostics' })
+      vim.keymap.set('n', '<leader>D', builtin.diagnostics, { desc = 'Diagnostics' })
       -- Natively we have:
       --  `]d`/`[d` to go to next/prev diagnostic (w/o opening floating window)
       --  `<C-w>d` to open floating window
