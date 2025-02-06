@@ -87,4 +87,9 @@ vim.g.python3_host_prog = '$PYENV_ROOT/versions/pynvim/bin/python'
 vim.cmd "cnoreabbrev llmf !llm -m $LLM_MODEL_SLOW -s 'You are an expert software engineer. Your answers are helpful and super concise. If I ask you for a bash command, just output that.'"
 vim.cmd "cnoreabbrev llmp !llm -m $LLM_MODEL_SLOW -s 'You are an expert software engineer. Your answers are helpful and concise.'"
 
+-- disable errors and warnings from appearing in signcolumn
+vim.diagnostic.config {
+  signs = false,
+}
+
 -- vim: ts=2 sts=2 sw=2 et
