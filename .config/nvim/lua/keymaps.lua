@@ -77,8 +77,8 @@ vim.keymap.set({ 'n', 'v' }, '<D-x>', '"+d', { desc = 'Delete and write to syste
 vim.keymap.set({ 'n', 'v' }, '<D-a>', 'ggVG', { desc = 'Select all' })
 
 -- paste without overwriting register, delete without writing
-vim.keymap.set('v', '<leader>p', '\"_dP', { desc = 'Paste  to null register (_dP)' })
-vim.keymap.set({ 'n', 'v' }, '<leader>d', '\"_d', { desc = 'Delete to null register ("_d)' })
+vim.keymap.set('v', '<leader>p', '\"_dP', { desc = 'Paste  to null register ("_dP)' })
+-- vim.keymap.set({ 'n', 'v' }, '<leader>d', '\"_d', { desc = 'Delete to null register ("_d)' })
 
 -- QuickFix shortcut
 -- vim.keymap.set('n', '<leader>tq', '<CMD>copen<CR>', { desc = 'Quickfix List (:copen)' })

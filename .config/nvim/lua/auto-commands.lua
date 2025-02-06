@@ -30,7 +30,7 @@ vim.api.nvim_create_autocmd('FileType', {
 vim.api.nvim_create_autocmd({ 'BufEnter', 'BufRead' }, {
   pattern = { '**/gp/chats/*.md' },
   callback = function()
-    require("neocodeium.commands").disable()
+    require('neocodeium.commands').disable()
   end,
 })
 
