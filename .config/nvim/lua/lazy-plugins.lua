@@ -37,7 +37,7 @@ require('lazy').setup({
 
   require 'plugins/neocodeium',
 
-  require 'plugins/toggleterm',
+  -- require 'plugins/toggleterm',
 
   require 'plugins/zen-mode',
 
