@@ -1,57 +1,75 @@
+####################
+### GENERAL
+####################
+
+### SESSION
+window-save-state = always
+
+### WINDOW
+macos-titlebar-style=tabs
+window-padding-color = extend
+
+####################
+### FONT AND CURSOR
+####################
+
 font-family = JetBrains Mono NL
 # font-family = TX-02
 # adjust-cell-height = 5%
 font-size = 15
 font-feature = "-calt, -liga, -dlig"
 font-thicken
+
 adjust-cursor-thickness = 2
 
-theme = Everblush
-background = #16161e
+###################
+### THEME AND COLORS
+###################
+
+### DARK GRAY
+theme = 0x96f
+selection-background = #485481
+selection-foreground = #e0e0e0
+
+### OLD COLORS, FULL BLACK
+# theme = Everblush
+# background = #16161e
+# selection-background = #344372
+# selection-foreground = #dddddd
+
+### EVEN OLDEST COLORS, STILL FULL BLACK
 # theme = Wombat
-selection-background = #344372
-selection-foreground = #dddddd
 # selection-invert-fg-bg
 # minimum-contrast = 1.01
 
+### COLORS SIMILAR TO NVIM
 # theme = tokyonight_night
 # theme = GruvboxDarkHard
 # background = #161818
-
-window-save-state = always
-macos-titlebar-style=tabs
-window-padding-color = extend
 
 split-divider-color = #926645
 # alpha-blending = linear-corrected
 # window-colorspace = srgb
 
-# keybindings
-# next tab: ctrl+tab
-# split: cmd+d, cmd+shift+d
-# keybind = cmd+g>shift+t=previous_tab
-# keybind = cmd+g>t=next_tab
-# keybind = cmd+g>,=move_tab:-1
-# keybind = cmd+g>.=move_tab:+1
-# keybind = cmd+g>v=new_split:right
-# keybind = cmd+g>s=new_split:down
+###################
+# KEYBINDINGS
+###################
+
+# Keep splits keybindings similar to Ghostty defaults, or like iTerm does. Not go into vim route
+#   next tab: ctrl+tab
+#   split: cmd+d, cmd+shift+d
 keybind = cmd+down=goto_split:bottom
 keybind = cmd+up=goto_split:top
 keybind = cmd+left=goto_split:left
 keybind = cmd+right=goto_split:right
-# keybind = cmd+g>j=goto_split:bottom
-# keybind = cmd+g>k=goto_split:top
-# keybind = cmd+g>h=goto_split:left
-# keybind = cmd+g>l=goto_split:right
-
 keybind = cmd+enter=toggle_split_zoom
-# keybind = cmd+g>f=toggle_split_zoom
 keybind = cmd+0=equalize_splits
-# keybind = cmd+g>equal=equalize_splits
 
-keybind = cmd+f=write_screen_file:open
-
+# Enable hovering terminal like iterm
 keybind = global:cmd+shift+ctrl+g=toggle_quick_terminal
+
 # Make CMD+C, CMD+A working in neovim
 keybind = unconsumed:super+a=select_all
 keybind = unconsumed:super+c=copy_to_clipboard
+# use CMD+F to open scrollback
+keybind = cmd+f=write_screen_file:open
