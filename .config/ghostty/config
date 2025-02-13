@@ -52,3 +52,6 @@ keybind = cmd+0=equalize_splits
 keybind = cmd+f=write_screen_file:open
 
 keybind = global:cmd+shift+ctrl+g=toggle_quick_terminal
+# Make CMD+C, CMD+A working in neovim
+keybind = unconsumed:super+a=select_all
+keybind = unconsumed:super+c=copy_to_clipboard
