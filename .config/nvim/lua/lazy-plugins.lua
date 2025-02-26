@@ -41,7 +41,7 @@ require('lazy').setup({
 
   require 'plugins/zen-mode',
 
-  require 'plugins/kitty-scrollback',
+  -- require 'plugins/kitty-scrollback',
 
   require 'plugins/undotree',
 
