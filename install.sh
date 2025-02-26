@@ -98,7 +98,7 @@ mkdir -p /Users/diego/.npm-global
 npm -g config set prefix /Users/diego/.npm-global
 
 # RUST
-# curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
 echo "👉 Install docker and colima"
 brew install docker docker-credential-helper docker-buildx docker-completion docker-compose
