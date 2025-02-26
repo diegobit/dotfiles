@@ -41,8 +41,8 @@ brew install zoxide
 # ---------------------------------------------
 # Aerospace
 # ---------------------------------------------
-brew install --cask nikitabobko/tap/aerospace
-brew install borders
+# brew install --cask nikitabobko/tap/aerospace
+# brew install borders
 
 # ---------------------------------------------
 # Neovim
