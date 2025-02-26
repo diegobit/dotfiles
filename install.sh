@@ -75,6 +75,12 @@ brew install --cask jupyter-notebook-viewer
 brew install jq # json tool! Also required for formatting in nvim
 
 # ---------------------------------------------
+# AI
+# ---------------------------------------------
+brew install aichat
+npm install -g @anthropic-ai/claude-code
+
+# ---------------------------------------------
 # Programming Languages and Frameworks, work
 # ---------------------------------------------
 
