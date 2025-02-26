@@ -148,6 +148,11 @@ mkdir -p "$HOME/Dev/plg"
 echo "Link the iCloud Obsidian dir to the home dir"
 ln -s "$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/Note" "$HOME/notes"
 
+# Python plugin support in neovim
+uv venv ~/.local/share/neovim/venv
+cd ~/.local/share/neovim/venv
+uv pip install pynvim pip
+
 # ---------------------------------------------
 # Manual actions
 # ---------------------------------------------
