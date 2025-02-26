@@ -314,6 +314,6 @@
     "extensions.experimental.affinity": {
         "vscodevim.vim": 1
     },
-    "cloudcode.duetAI.project": "plg-chatbot",
-    "diffEditor.codeLens": true
+    "diffEditor.codeLens": true,
+    "geminicodeassist.project": "plg-chatbot"
 }
