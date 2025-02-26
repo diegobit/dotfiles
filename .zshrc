@@ -31,13 +31,16 @@ export HOMEBREW_PREFIX=${brewHome}
 local brewPath="/usr/local/bin:/usr/local/sbin"
 local icu4cPath="/usr/local/opt/icu4c/bin:/usr/local/opt/icu4c/sbin"
 local nodePath="/usr/local/opt/node/bin"
+local nodeGlobalPath="$HOME/.npm-global/bin"
 local sqlitePath="/usr/local/opt/sqlite/bin"
-local pyenvPath="$HOME/.pyenv/shims"
-local brewAdditionalPath="${pyenvPath}:${sqlitePath}:${nodePath}:${icu4cPath}"
+# local pyenvPath="$HOME/.pyenv/shims"
+# local brewAdditionalPath="${pyenvPath}:${sqlitePath}:${nodePath}:${icu4cPath}"
+local brewAdditionalPath="${sqlitePath}:${nodeGlobalPath}:${nodePath}:${icu4cPath}"
 local goPath="/usr/local/go/bin"
 local rustPath="$HOME/.cargo/bin"
-local myPath="${HOME}/bin"
-local manuallyInstPath="${myPath}:${goPath}:${rustPath}"
+local uvPath="$HOME/.local/bin"
+local myPath="$HOME/bin"
+local manuallyInstPath="${myPath}:${uvPath}:${goPath}:${rustPath}"
 export PATH="${manuallyInstPath}:${brewAdditionalPath}:${brewPath}:${systemPath}"
 
 # Some programs use the shell defined in these variables
@@ -120,12 +123,17 @@ smartcache eval zoxide init --cmd j zsh
 ##############################
 # PYENV
 ##############################
-export PYENV_ROOT="$HOME/.pyenv"
-export PYENV_VIRTUALENV_DISABLE_PROMPT=1
+# function pyenvinit() {
+#     export PYENV_ROOT="$HOME/.pyenv"
+#     export PYENV_VIRTUALENV_DISABLE_PROMPT=1
+#     export PATH="$pyenvPath:$PATH"
+#     eval "$(pyenv init - zsh)"
+#     eval "$(pyenv virtualenv-init -)"
+# }
 # eval "$(pyenv init - zsh)"
 # eval "$(pyenv virtualenv-init -)"
-smartcache eval pyenv init - zsh
-smartcache eval pyenv virtualenv-init -
+# smartcache eval pyenv init - zsh
+# smartcache eval pyenv virtualenv-init -
 
 ##############################
 # JENV
@@ -217,8 +225,10 @@ alias ip="ifconfig -a | perl -nle'/(\d+\.\d+\.\d+\.\d+)/ && print $1'; dig +shor
 alias l="ls -lah"
 alias lg="lazygit"
 alias ls="ls -G"
-alias pa="pyenv activate"
-alias pd="pyenv deactivate"
+alias sa="source .venv/bin/activate"
+alias sd="deactivate"
+# alias pa="pyenv activate"
+# alias pd="pyenv deactivate"
 alias n="nvim"
 nd() {
     target="$1"

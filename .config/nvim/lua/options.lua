@@ -81,7 +81,7 @@ vim.opt.spelllang = { 'it', 'en_us' }
 vim.diagnostic.config { float = { border = 'single' } }
 
 -- python
-vim.g.python3_host_prog = '$PYENV_ROOT/versions/pynvim/bin/python'
+vim.g.python3_host_prog = '$HOME/.local/share/nvim/pyvenv/bin/python3'
 
 -- aliases when executing commands
 vim.cmd "cnoreabbrev llmf !llm -m $LLM_MODEL_SLOW -s 'You are an expert software engineer. Your answers are helpful and super concise. If I ask you for a bash command, just output that.'"

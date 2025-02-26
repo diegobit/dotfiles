@@ -192,7 +192,7 @@ return {
     require('dap-go').setup {
       delve = {},
     }
-    require('dap-python').setup '/Users/diego/.pyenv/versions/pynvim/bin/python'
+    require('dap-python').setup("uv")
     table.insert(require('dap').configurations.python, {
       type = 'python',
       request = 'launch',
