@@ -105,6 +105,7 @@ brew install docker docker-credential-helper docker-buildx docker-completion doc
 brew install colima
 
 # OTHERS
+brew install openssl
 brew install ngrok
 # brew install terraform
 # brew install jmeter
