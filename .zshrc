@@ -52,11 +52,7 @@ export XDG_CONFIG_HOME=~/.config # used by kickstart-nvim for example
 # export LIBARCHIVE=/usr/local/opt/libarchive/lib/libarchive.dylib
 # export LIBCRYPTO=/usr/local/opt/openssl/lib/libcrypto.dylib
 
-# simonw/llm package configuration
-# install with `brew install llm` and `llm install llm-gemini`
-# Remember to set default `llm models default MODEL_NAME`
-export LLM_MODEL_FAST="gemini-2.0-flash"
-export LLM_MODEL_SLOW="gemini-2.0-flash"
+# Api key for scripts using gemini
 
 ##############################
 # COMMON SETTINGS
@@ -288,8 +284,7 @@ yn() {
     yy
 }
 
-alias llmp="llm -m $LLM_MODEL_SLOW"
-alias llmf="llm -m $LLM_MODEL_SLOW"
+alias ai="aichat"
 
 retry() {
   local attempts=1000
@@ -351,7 +346,7 @@ notify() {
 # - Change the model to your favourite one: llm -m MODEL_NAME
 gcm() {
     generate_commit_message() {
-        git diff --cached | llm -m $LLM_MODEL_SLOW -s "Below is a diff of all staged changes, coming from the command:
+        git diff --cached | aichat "Below is a diff of all staged changes, coming from the command:
 
 \`\`\`
 git diff --cached
