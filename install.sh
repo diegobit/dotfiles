@@ -90,9 +90,12 @@ brew install google-cloud-sdk
 # PYTHON: uv
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
-# NODEJS (yarn also required for some nvim plugins)
+# NODEJS (yarn also required for some nvim plugins).
+# Move global to have all permissions (eg. claude complaints otherwise)
 brew install node
 brew install yarn
+mkdir -p /Users/diego/.npm-global
+npm -g config set prefix /Users/diego/.npm-global
 
 # RUST
 # curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
