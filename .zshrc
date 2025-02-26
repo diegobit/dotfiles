@@ -225,6 +225,7 @@ alias sa="source .venv/bin/activate"
 alias sd="deactivate"
 # alias pa="pyenv activate"
 # alias pd="pyenv deactivate"
+alias ghostty="/Applications/Ghostty.app/Contents/MacOS/ghostty"
 alias n="nvim"
 nd() {
     target="$1"
