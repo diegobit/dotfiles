@@ -4,13 +4,8 @@
 # Install command-line tools using Homebrew.
 # ---------------------------------------------
 
-if [ ! "$?" -eq 0 ] ; then
-    echo "Homebrew not installed. Attempting to install Homebrew"
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    if [ ! "$?" -eq 0 ] ; then
-        echo "Something went wrong. Exiting..." && exit 1
-    fi
-fi
+# Install brew
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
 brew update
 brew upgrade
