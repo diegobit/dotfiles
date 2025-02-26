@@ -51,7 +51,7 @@ require('lazy').setup({
 
   require 'plugins/debug',
 
-  require 'plugins/autopairs',
+  -- require 'plugins/autopairs',
 
   require 'plugins/lint',
 
