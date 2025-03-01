@@ -285,7 +285,7 @@ yn() {
     yy
 }
 
-alias ai="aichat"
+alias ai="aichat -r def"
 
 retry() {
   local attempts=1000
