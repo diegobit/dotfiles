@@ -109,10 +109,15 @@ return {
         },
       },
 
-      chat_shortcut_respond = { modes = { 'n', 'v', 'x' }, shortcut = '<leader>ag' },
-      chat_shortcut_delete = { modes = { 'n', 'v', 'x' }, shortcut = '<leader>ad' },
-      chat_shortcut_stop = { modes = { 'n', 'v', 'x' }, shortcut = '<leader>a.' },
-      chat_shortcut_new = { modes = { 'n', 'v', 'x' }, shortcut = '<leader>ac' },
+      -- chat_shortcut_respond = { modes = { 'n', 'v', 'x' }, shortcut = '<leader>ag' },
+      -- chat_shortcut_delete = { modes = { 'n', 'v', 'x' }, shortcut = '<leader>ad' },
+      -- chat_shortcut_stop = { modes = { 'n', 'v', 'x' }, shortcut = '<leader>a.' },
+      -- chat_shortcut_new = { modes = { 'n', 'v', 'x' }, shortcut = '<leader>ac' },
+      ---- the <leader>key work in normal mode
+      chat_shortcut_respond = { modes = { 'i' }, shortcut = '<C-g>' },
+      chat_shortcut_delete = { modes = { 'i' }, shortcut = '<C-d>' },
+      chat_shortcut_stop = { modes = { 'i' }, shortcut = '<C-.>' },
+      chat_shortcut_new = { modes = { 'i' }, shortcut = '<C-c>' },
     }
     require('gp').setup(conf)
 
