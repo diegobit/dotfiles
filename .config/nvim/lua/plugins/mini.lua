@@ -48,9 +48,10 @@ return {
       -- mini.statusline: Better statusline
       --------------------------------------
       local statusline = require 'mini.statusline'
-      vim.api.nvim_set_hl(0, 'MiniStatuslineTab', { fg = '#ff9e64', bg = '#292e42', default = true })
-      -- vim.api.nvim_set_hl(0, 'MiniStatuslineTab', { link = 'IncSearch', default = true })
-      -- vim.api.nvim_set_hl(0, 'MiniStatuslineTab', { link = 'CurSearch', default = true })
+      -- color for tokyonight night
+      -- vim.api.nvim_set_hl(0, 'MiniStatuslineTab', { fg = '#ff9e64', bg = '#292e42', default = true })
+      -- color for tokyonight
+      vim.api.nvim_set_hl(0, 'MiniStatuslineTab', { fg = '#ff9e64', bg = '#2f334d', default = true })
 
       local my_section_tab = function(args)
         local tab_max = vim.fn.tabpagenr '$'
