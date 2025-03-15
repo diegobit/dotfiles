@@ -26,7 +26,7 @@ adjust-cell-width = -1
 # font-family = TX-02
 # adjust-cell-height = 5%
 
-adjust-cursor-thickness = 2
+adjust-cursor-thickness = 1
 
 ###################
 ### THEME AND COLORS
