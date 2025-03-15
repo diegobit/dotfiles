@@ -211,7 +211,6 @@ alias ...="cd ..; cd .."
 alias ....="cd ..; cd ..; cd .."
 alias c="clear"
 alias dust='dust -r'
-alias fzfp='fzf --preview "bat --style=numbers,changes --color=always --line-range :70 {}"'
 alias g="git"
 alias gl="git log"
 alias gs="git status"
@@ -223,8 +222,6 @@ alias lg="lazygit"
 alias ls="ls -G"
 alias sa="source .venv/bin/activate"
 alias sd="deactivate"
-# alias pa="pyenv activate"
-# alias pd="pyenv deactivate"
 alias ghostty="/Applications/Ghostty.app/Contents/MacOS/ghostty"
 alias n="nvim"
 nd() {
@@ -282,7 +279,7 @@ nr() {
 }
 yn() {
     cd ~/notes
-    yy
+    yazi
 }
 
 alias ai="aichat -r def"
@@ -336,8 +333,10 @@ function untar(){
 }
 
 notify() {
-    $@
-    terminal-notifier -title "Terminated: $*" -message "Exit code: $?"
+  "$@"
+  local exit_code=$?
+  osascript -e "display notification \"Exit code: ${exit_code}\" with title \"Terminated: $*\""
+  say "Execution finished."
 }
 
 # -----------------------------------------------------------------------------
