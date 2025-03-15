@@ -67,7 +67,7 @@ return {
         },
         {
           provider = 'googleai',
-          name = 'Gemini Code Fallback',
+          name = 'Gemini Code Flash',
           chat = false,
           command = true,
           model = { model = 'gemini-2.0-flash-exp', temperature = 0.0, top_p = 1 },
