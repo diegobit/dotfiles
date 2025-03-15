@@ -12,13 +12,19 @@ window-padding-color = extend
 ####################
 ### FONT AND CURSOR
 ####################
+font-size = 15
 
-font-family = JetBrains Mono NL
+font-family = Monaspace Argon
+font-thicken
+font-thicken-strength = 0
+adjust-cell-width = -1
+
+# font-family = JetBrains Mono NL
+# font-feature = "-calt, -liga, -dlig"
+# font-thicken
+
 # font-family = TX-02
 # adjust-cell-height = 5%
-font-size = 15
-font-feature = "-calt, -liga, -dlig"
-font-thicken
 
 adjust-cursor-thickness = 2
 
