@@ -3,17 +3,18 @@ return {
   event = 'VeryLazy',
   config = function()
     local function trim(s)
-      return s:gsub("^%s*(.-)%s*$", "%1")
+      return s:gsub('^%s*(.-)%s*$', '%1')
     end
 
-    local system_prompt_code = trim([[
+    local system_prompt_code = trim [[
     You are the best AI working as a code editor.
       - Strive for excellent code, as simple as possible, both in reading it for a human, and in executing it in a computer (eg. non-pessimization). Avoid overengineering.
       - If I ask you for simple changes or to add something, try to make the smallest change to the existing code.
       - Please AVOID COMMENTARY OUTSIDE OF THE SNIPPET RESPONSE.
       - START AND END YOUR ANSWER WITH:\n\n```
+    ]]
 
-    local system_prompt_chat = trim([[
+    local system_prompt_chat = trim [[
     You are the best general AI assistant answering code related questions.
 
     Your guidelines:
@@ -21,8 +22,9 @@ return {
       - You strive for code to be excellent.
       - Code should be be as simple as possible, both in reading it for a human, and in executing it in a computer. Avoid overengineering. Eg. non-pessimization is a good principle.
       - Your answers are concise. Don't repeat yourself.
+    ]]
 
-    local system_prompt_chat_cot = trim([[
+    local system_prompt_chat_cot = trim [[
     You are the best general AI assistant answering code related questions.
 
     Your guidelines:
@@ -30,7 +32,7 @@ return {
       - Think deeply and carefully from first principles step by step. Enclose your reasoning between <think> </think> tags. Zoom out first to see the big picture and then zoom in to details.
       - You strive for code to be excellent.
       - Code should be be as simple as possible, both in reading it for a human, and in executing it in a computer. Avoid overengineering. Eg. non-pessimization is a good principle.
-    ]])
+    ]]
 
     local conf = {
       -- For customization, refer to Install > Configuration in the Documentation/Readme
@@ -69,7 +71,7 @@ return {
           chat = false,
           command = true,
           model = { model = 'gemini-2.0-flash-exp', temperature = 0.0, top_p = 1 },
-          system_prompt = system_prompt_code --require('gp.defaults').code_system_prompt,
+          system_prompt = system_prompt_code, --require('gp.defaults').code_system_prompt,
         },
         {
           provider = 'googleai',
@@ -77,7 +79,7 @@ return {
           chat = false,
           command = true,
           model = { model = 'gemini-2.0-pro-exp', temperature = 0.0, top_p = 1 },
-          system_prompt = system_prompt_code --require('gp.defaults').code_system_prompt,
+          system_prompt = system_prompt_code, --require('gp.defaults').code_system_prompt,
         },
         {
           provider = 'googleai',
@@ -85,7 +87,7 @@ return {
           chat = true,
           command = false,
           model = { model = 'gemini-2.0-flash-exp', temperature = 0.0, top_p = 1 },
-          system_prompt = system_prompt_chat -- require('gp.defaults').chat_system_prompt,
+          system_prompt = system_prompt_chat, -- require('gp.defaults').chat_system_prompt,
         },
         {
           provider = 'googleai',
@@ -93,7 +95,7 @@ return {
           chat = true,
           command = false,
           model = { model = 'gemini-2.0-pro-exp', temperature = 0.0, top_p = 1 },
-          system_prompt = system_prompt_chat_cot -- require('gp.defaults').chat_system_prompt,
+          system_prompt = system_prompt_chat_cot, -- require('gp.defaults').chat_system_prompt,
         },
       },
 
