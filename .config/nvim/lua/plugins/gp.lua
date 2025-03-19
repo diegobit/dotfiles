@@ -11,8 +11,11 @@ return {
       - Strive for excellent code, as simple as possible, both in reading it for a human, and in executing it in a computer (eg. non-pessimization). Avoid overengineering.
       - If I ask you for simple changes or to add something, try to make the smallest change to the existing code.
       - Please AVOID COMMENTARY OUTSIDE OF THE SNIPPET RESPONSE.
-      - START AND END YOUR ANSWER WITH:\n\n```
-    ]]
+      - Use the following format for your response:
+```<language>
+<the code>
+```
+]]
 
     local system_prompt_chat = trim [[
     You are the best general AI assistant answering code related questions.
