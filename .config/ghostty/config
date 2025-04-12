@@ -79,3 +79,8 @@ keybind = global:cmd+;=toggle_quick_terminal
 # use CMD+F to open scrollback
 keybind = cmd+o=write_screen_file:open
 keybind = cmd+p=write_screen_file:paste
+
+# Add CMD+C and CMD+V to copy paste from system clipboard
+keybind = performable:cmd+v=paste_from_clipboard
+keybind = performable:cmd+c=copy_to_clipboard
+
