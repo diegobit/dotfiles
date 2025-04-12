@@ -289,7 +289,11 @@ yn() {
     yazi
 }
 
-alias ai="aichat -r def"
+alias ai="aichat"
+alias ask="aichat -r def"
+alias trl="aichat -r tr"
+alias cmd="aichat -r sh"
+alias em="aichat -r em"
 
 retry() {
   local attempts=1000
@@ -443,4 +447,3 @@ Only generate the commit message (and optionally the comment), and nothing else.
 ##############################
 # NEW STUFF
 ##############################
-
