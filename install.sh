@@ -90,10 +90,13 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # NODEJS (yarn also required for some nvim plugins).
 # Move global to have all permissions (eg. claude complaints otherwise)
-brew install node
-brew install yarn
-mkdir -p /Users/diego/.npm-global
-npm -g config set prefix /Users/diego/.npm-global
+# brew install node
+# brew install yarn
+# mkdir -p /Users/diego/.npm-global
+# npm -g config set prefix /Users/diego/.npm-global
+#
+# Use fast node manager to manage node versions
+brew install fnm
 
 # RUST
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh

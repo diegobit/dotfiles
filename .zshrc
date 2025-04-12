@@ -145,6 +145,11 @@ smartcache eval zoxide init --cmd j zsh
 . "$HOME/.cargo/env"
 
 ##############################
+# Node version manager
+##############################
+eval "$(fnm env --use-on-cd --shell zsh)"
+
+##############################
 # GOOGLE CLOUD
 ##############################
 # google-cloud-sdk is installed at /usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk
