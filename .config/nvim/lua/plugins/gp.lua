@@ -18,30 +18,20 @@ return {
 ]]
 
     local system_prompt_chat = trim [[
-    You are the best general AI assistant answering code related questions.
+    You are the best general AI coding assistant answering code related questions.
 
     Your guidelines:
-      - Ask question if you need clarification to provide better answer.
-      - You strive for code to be excellent.
-      - Code should be be as simple as possible, both in reading it for a human, and in executing it in a computer. Avoid overengineering. Eg. non-pessimization is a good principle.
+      - Be based, i.e. be straight-forward with me and just get to the point.
+      - Ask questions if you you clarification to provide a better answer.
+      - You strive for code to be excellent. Code should be be as simple as possible, both in reading it for a human, and in executing it in a computer. Avoid overengineering. Eg. non-pessimization is a good principle.
       - Your answers are concise. Don't repeat yourself.
-    ]]
-
-    local system_prompt_chat_cot = trim [[
-    You are the best general AI assistant answering code related questions.
-
-    Your guidelines:
-      - Ask question if you need clarification to provide better answer.
-      - Think deeply and carefully from first principles step by step. Enclose your reasoning between <think> </think> tags. Zoom out first to see the big picture and then zoom in to details.
-      - You strive for code to be excellent.
-      - Code should be be as simple as possible, both in reading it for a human, and in executing it in a computer. Avoid overengineering. Eg. non-pessimization is a good principle.
     ]]
 
     local conf = {
       -- For customization, refer to Install > Configuration in the Documentation/Readme
       -- default agent names set during startup, if nil last used agent is used
-      default_command_agent = 'Gemini Chat Pro',
-      default_chat_agent = 'Gemini Code Flash',
+      default_command_agent = 'Gemini Chat Flash',
+      default_chat_agent = 'Gemini Code Pro',
 
       agents = {
         {
@@ -73,7 +63,7 @@ return {
           name = 'Gemini Code Flash',
           chat = false,
           command = true,
-          model = { model = 'gemini-2.0-flash-exp', temperature = 0.0, top_p = 1 },
+          model = { model = 'gemini-2.0-flash', temperature = 0.0, top_p = 1 },
           system_prompt = system_prompt_code, --require('gp.defaults').code_system_prompt,
         },
         {
@@ -81,7 +71,7 @@ return {
           name = 'Gemini Code Pro',
           chat = false,
           command = true,
-          model = { model = 'gemini-2.0-pro-exp', temperature = 0.0, top_p = 1 },
+          model = { model = 'gemini-2.5-pro-exp-03-25', temperature = 0.0, top_p = 1 },
           system_prompt = system_prompt_code, --require('gp.defaults').code_system_prompt,
         },
         {
@@ -89,16 +79,16 @@ return {
           name = 'Gemini Chat Flash',
           chat = true,
           command = false,
-          model = { model = 'gemini-2.0-flash-exp', temperature = 0.0, top_p = 1 },
+          model = { model = 'gemini-2.0-flash', temperature = 0.0, top_p = 1 },
           system_prompt = system_prompt_chat, -- require('gp.defaults').chat_system_prompt,
         },
         {
           provider = 'googleai',
-          name = 'Gemini Chat Pro-CoT',
+          name = 'Gemini Chat Pro',
           chat = true,
           command = false,
-          model = { model = 'gemini-2.0-pro-exp', temperature = 0.0, top_p = 1 },
-          system_prompt = system_prompt_chat_cot, -- require('gp.defaults').chat_system_prompt,
+          model = { model = 'gemini-2.5-pro-exp-03-25', temperature = 0.0, top_p = 1 },
+          system_prompt = system_prompt_chat, -- require('gp.defaults').chat_system_prompt,
         },
       },
 
