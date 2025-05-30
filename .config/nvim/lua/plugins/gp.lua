@@ -59,11 +59,19 @@ return {
           disable = true,
         },
         {
+          name = 'ChatGPT-o3-mini',
+          disable = true,
+        },
+        {
+          name = 'CodeGPT-o3-mini',
+          disable = true,
+        },
+        {
           provider = 'googleai',
           name = 'Gemini Code Flash',
           chat = false,
           command = true,
-          model = { model = 'gemini-2.0-flash', temperature = 0.0, top_p = 1 },
+          model = { model = 'gemini-2.5-flash-preview-04-17', temperature = 0.0, top_p = 1 },
           system_prompt = system_prompt_code, --require('gp.defaults').code_system_prompt,
         },
         {
@@ -71,7 +79,7 @@ return {
           name = 'Gemini Code Pro',
           chat = false,
           command = true,
-          model = { model = 'gemini-2.5-pro-exp-03-25', temperature = 0.0, top_p = 1 },
+          model = { model = 'gemini-2.5-pro-preview-05-06', temperature = 0.0, top_p = 1 },
           system_prompt = system_prompt_code, --require('gp.defaults').code_system_prompt,
         },
         {
@@ -79,7 +87,7 @@ return {
           name = 'Gemini Chat Flash',
           chat = true,
           command = false,
-          model = { model = 'gemini-2.0-flash', temperature = 0.0, top_p = 1 },
+          model = { model = 'gemini-2.5-flash-preview-04-17', temperature = 0.0, top_p = 1 },
           system_prompt = system_prompt_chat, -- require('gp.defaults').chat_system_prompt,
         },
         {
@@ -87,7 +95,7 @@ return {
           name = 'Gemini Chat Pro',
           chat = true,
           command = false,
-          model = { model = 'gemini-2.5-pro-exp-03-25', temperature = 0.0, top_p = 1 },
+          model = { model = 'gemini-2.5-pro-preview-05-06', temperature = 0.0, top_p = 1 },
           system_prompt = system_prompt_chat, -- require('gp.defaults').chat_system_prompt,
         },
       },
