@@ -66,6 +66,10 @@ return {
             vim.keymap.set('n', keys, func, { buffer = event.buf, desc = desc .. ' (LSP)' })
           end
 
+          local imap = function(keys, func, desc)
+            vim.keymap.set('i', keys, func, { buffer = event.buf, desc = desc .. ' (LSP)' })
+          end
+
           local vmap = function(keys, func, desc)
             vim.keymap.set('v', keys, func, { buffer = event.buf, desc = desc .. ' (LSP)' })
           end
@@ -117,6 +121,13 @@ return {
             require('conform').format { async = true, lsp_fallback = true }
           end, 'Format (conform)')
 
+          map('<C-s>', function()
+            vim.lsp.buf.signature_help { border = 'single' }
+          end, 'Signature Help')
+          imap('<C-s>', function()
+            vim.lsp.buf.signature_help { border = 'single' }
+          end, 'Signature Help')
+
           -- The following two autocommands are used to highlight references of the
           -- word under your cursor when your cursor rests there for a little while.
           --    See `:help CursorHold` for information about when this is executed
@@ -157,9 +168,17 @@ return {
           end
 
           -- Decorate floating windows
-          vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(vim.lsp.handlers.hover, { border = 'single' })
-          vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = 'single' })
-          vim.keymap.set('i', '<C-s>', vim.lsp.buf.signature_help)
+          -- vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(vim.lsp.handlers.hover, { border = 'single' })
+          -- vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = 'single' })
+          local hover = vim.lsp.buf.hover
+          ---@diagnostic disable-next-line: duplicate-set-field
+          vim.lsp.buf.hover = function(config)
+            local final_config = vim.tbl_deep_extend('force', {
+              border = 'single',
+            }, config or {})
+            return hover(final_config)
+          end
+          -- vim.keymap.set('i', '<C-->', vim.lsp.buf.signature_help)
           require('lspconfig.ui.windows').default_options.border = 'rounded'
         end,
       })
