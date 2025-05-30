@@ -74,7 +74,7 @@ keybind = cmd+enter=toggle_split_zoom
 keybind = cmd+backspace=equalize_splits
 
 # Enable hovering terminal like iterm
-keybind = global:cmd+;=toggle_quick_terminal
+keybind = global:cmd+shift+ctrl+g=toggle_quick_terminal
 
 # use CMD+F to open scrollback
 keybind = cmd+o=write_screen_file:open
