@@ -81,7 +81,9 @@ require('lazy').setup({
 
   require 'plugins/vim-plist',
 
-  require 'plugins/gp'
+  require 'plugins/gp',
+
+  require 'plugins/jupytext',
 }, {
   ui = {
     icons = {},
