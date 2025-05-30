@@ -84,3 +84,6 @@ keybind = cmd+p=write_screen_file:paste
 keybind = performable:cmd+v=paste_from_clipboard
 keybind = performable:cmd+c=copy_to_clipboard
 
+# Add CMD+A
+keybind = cmd+a=text:ggVG
+
