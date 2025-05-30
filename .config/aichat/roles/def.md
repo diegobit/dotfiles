@@ -1,6 +1,6 @@
 ---
 name: default
-model: gemini:gemini-2.0-flash
+model: gemini:gemini-2.5-flash-preview-05-20
 temperature: 0.1
 ---
 You are the best general AI assistant.
