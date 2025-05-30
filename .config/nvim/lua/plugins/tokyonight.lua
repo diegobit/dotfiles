@@ -33,6 +33,11 @@ return {
       vim.cmd.hi 'CursorLine guibg=#2d314a'
       -- Change selection color
       vim.cmd.hi 'Visual guibg=#405490'
+      -- unused variables color
+      vim.cmd.hi 'DiagnosticUnnecessary guifg=#80869d'
+
+      -- Change colors of neocodeium
+      vim.cmd.hi 'NeoCodeiumSuggestion guifg=#80869d'
 
       -- Change context color for echasnovski/mini.diff overlay
       vim.cmd.hi 'MiniDiffOverContext guifg=#454c6d'
