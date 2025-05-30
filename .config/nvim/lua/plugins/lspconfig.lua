@@ -190,6 +190,13 @@ return {
       local capabilities = vim.lsp.protocol.make_client_capabilities()
       capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
 
+      -- workaround for ruff using utf-8 instead of 16 while pyright uses 16
+      local base_cap = vim.lsp.protocol.make_client_capabilities()
+      base_cap = vim.tbl_deep_extend('force', base_cap, require('cmp_nvim_lsp').default_capabilities())
+      local ruff_cap = vim.tbl_extend('force', {}, base_cap, {
+        offsetEncoding = { 'utf-16' },
+      })
+
       -- Enable the following language servers
       --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
       --
@@ -202,7 +209,9 @@ return {
       local servers = {
         -- clangd = {},
         -- gopls = {},
-        -- pyright = {},
+        pyright = {
+          capabilities = base_cap,
+        },
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -211,7 +220,9 @@ return {
         --
         -- But for many setups, the LSP (`tsserver`) will work just fine
         -- tsserver = {},
-        ruff = {},
+        ruff = {
+          capabilities = ruff_cap,
+        },
         bashls = {
           filetypes = { 'sh', 'zsh' },
         },
