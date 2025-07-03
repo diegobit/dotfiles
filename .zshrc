@@ -308,8 +308,6 @@ retry() {
   return $?
 }
 
-mkcd() { mkdir -p "$@"; cd "$@"; }
-
 function gconf(){
     if [ -z $1 ]; then
         echo "running: gcloud config configurations list"
