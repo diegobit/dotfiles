@@ -232,12 +232,13 @@ alias sd="deactivate"
 alias ghostty="/Applications/Ghostty.app/Contents/MacOS/ghostty"
 alias n="nvim"
 nd() {
+    if [[ $# -lt 1 ]]; then
+        echo "Error: No target specified." >&2
+        return 1
+    fi
     target="$1"
-    # no argument, just open nvim in current dir
-    if [[ -z "$target" ]]; then
-        nvim .
     # if arg is a dir, cd into it
-    elif [[ -d "$target" ]]; then
+    if [[ -d "$target" ]]; then
         cd "$target"
         nvim .
     # if arg is a file, cd into either: git root, or dirname
@@ -252,11 +253,14 @@ nd() {
     fi
 }
 ng() {
+    # exit if the function has no args
+    if [[ $# -lt 1 ]]; then
+        echo "Error: No target specified." >&2
+        return 1
+    fi
     target="$1"
     # if arg is a dir, cd into it
-    if [[ -z "$target" ]]; then
-        :
-    elif [[ -d "$target" ]]; then
+    if [[ -d "$target" ]]; then
         cd "$target"
     # if arg is a file, cd into either: git root, or dirname
     elif [[ -f "$target" ]]; then
