@@ -212,14 +212,8 @@ function y() {
 # Aliases and functions
 ##############################
 export ait=$HOME/Dev/AIT
-alias .="open ."
-alias ..="cd .."
-alias ...="cd ..; cd .."
-alias ....="cd ..; cd ..; cd .."
-alias c="clear"
 alias dust='dust -r'
 alias g="git"
-alias gl="git log"
 alias gs="git status"
 alias gc="git commit"
 alias grep="grep --color=auto"
@@ -293,7 +287,6 @@ yn() {
     yazi
 }
 
-alias ai="aichat"
 alias ask="aichat -r def"
 alias trl="aichat -r tr"
 alias cmd="aichat -r sh"
