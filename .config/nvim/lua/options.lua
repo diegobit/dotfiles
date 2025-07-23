@@ -71,6 +71,9 @@ vim.o.expandtab = true
 -- number of lines to keep when scrolling out of view
 vim.opt.scrolloff = 6
 
+-- number of lines to scroll with <C-d> and <C-u>
+-- vim.opt.scrolljump = 10 
+
 -- hide tabline
 vim.opt.showtabline = 0
 
