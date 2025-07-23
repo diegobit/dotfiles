@@ -15,11 +15,6 @@
         "when": "editorTextFocus && !editorReadonly"
     },
     {
-        "key": "cmd+u",
-        "command": "workbench.action.quickOpen",
-        "args": "edt "
-    },
-    {
         "key": "ctrl+d",
         "command": "-deleteRight",
         "when": "editorTextFocus && !editorReadonly"
@@ -576,7 +571,7 @@
         "command": "workbench.view.remote"
     },
     {
-        "key": "cmd+y",
+        "key": "cmd+u",
         "command": "workbench.action.gotoSymbol",
         "when": "!accessibilityHelpIsShown && !accessibleViewIsShown"
     },
@@ -667,14 +662,6 @@
     },
     {
         "key": "cmd+o",
-        "command": "workbench.action.quickOpen"
-    },
-    {
-        "key": "cmd+p",
-        "command": "-workbench.action.quickOpen"
-    },
-    {
-        "key": "cmd+o",
         "command": "workbench.action.quickOpenNavigateNextInFilePicker",
         "when": "inFilesPicker && inQuickOpen"
     },
@@ -684,7 +671,7 @@
         "when": "inFilesPicker && inQuickOpen"
     },
     {
-        "key": "cmd+p",
+        "key": "shift+cmd+p",
         "command": "workbench.action.quickOpenNavigatePreviousInFilePicker",
         "when": "inFilesPicker && inQuickOpen"
     },
@@ -707,10 +694,6 @@
         "key": "cmd+e",
         "command": "-thunder-client.change-env",
         "when": "activeWebviewPanelId == 'tc.env-view' || activeWebviewPanelId == 'tc.request-view' || activeWebviewPanelId == 'tc.runcol-view'"
-    },
-    {
-        "key": "shift+cmd+p",
-        "command": "workbench.view.extension.thunder-client"
     },
     {
         "key": "alt+cmd+-",
@@ -817,10 +800,6 @@
         "when": "textInputFocus"
     },
     {
-        "key": "shift+cmd+p",
-        "command": "thunder-client-sidebar.focus"
-    },
-    {
         "key": "alt+cmd+[",
         "command": "workbench.action.debug.prevConsole",
         "when": "inDebugRepl"
@@ -893,7 +872,7 @@
         "command": "-workbench.action.replaceInFiles"
     },
     {
-        "key": "shift+cmd+y",
+        "key": "cmd+y",
         "command": "workbench.action.showAllSymbols"
     },
     {
@@ -948,7 +927,7 @@
         "when": "editorHasSignatureHelpProvider && editorTextFocus"
     },
     {
-        "key": "cmd+p",
+        "key": "shift+cmd+p",
         "command": "workbench.action.showCommands"
     },
     {
@@ -1490,5 +1469,25 @@
         "key": "ctrl+h",
         "command": "deleteLeft",
         "when": "textInputFocus"
+    },
+    {
+        "key": "ctrl+enter",
+        "command": "-workbench.action.chat.applyInEditor",
+        "when": "accessibleViewInCodeBlock && chatIsEnabled || chatIsEnabled && inChat && !inChatInput"
+    },
+    {
+        "key": "ctrl+enter",
+        "command": "-workbench.action.chat.insertCodeBlock",
+        "when": "accessibleViewInCodeBlock && chatIsEnabled || chatIsEnabled && inChat && !inChatInput"
+    },
+    {
+        "key": "cmd+k t",
+        "command": "-notebook.cell.expandCellOutput",
+        "when": "notebookCellListFocused && notebookCellOutputIsCollapsed"
+    },
+    {
+        "key": "cmd+k t",
+        "command": "-notebook.cell.collapseCellOutput",
+        "when": "notebookCellHasOutputs && notebookCellListFocused && !inputFocus && !notebookCellOutputIsCollapsed"
     }
 ]
