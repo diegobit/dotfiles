@@ -151,7 +151,7 @@ ln -s "$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/Note" "$HOME/
 
 # Python plugin support in neovim, such as yamllint
 uv venv ~/.local/share/nvim/pyvenv
-source $HOME/.local/share/nvim/pyvenv/bin/python3
+source $HOME/.local/share/nvim/pyvenv/bin/activate
 uv pip install pynvim pip yamllint
 
 # ---------------------------------------------
