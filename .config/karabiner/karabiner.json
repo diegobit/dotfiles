@@ -30,7 +30,7 @@
                         ]
                     },
                     {
-                        "description": "HYPER LAYER: ctrl+<key> -> hyper(cmd+ctrl+shift)+<key>. Send nothing when pressed alone [no lotus]",
+                        "description": "HYPER LAYER: ctrl+<key> -> hyper(cmd+ctrl+shift+alt)+<key>. Send nothing when pressed alone [no lotus]",
                         "manipulators": [
                             {
                                 "conditions": [
@@ -46,7 +46,7 @@
                                 "to": [
                                     {
                                         "key_code": "left_shift",
-                                        "modifiers": ["left_command", "left_control"]
+                                        "modifiers": ["left_command", "left_control", "left_option"]
                                     }
                                 ],
                                 "type": "basic"
