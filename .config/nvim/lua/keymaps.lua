@@ -29,7 +29,7 @@ local function lazy_keys(keys)
 end
 
 -- toggle relativenumber
-vim.keymap.set('n', '<leader>tr', function ()
+vim.keymap.set('n', '<leader>tr', function()
   vim.opt.relativenumber = not vim.opt.relativenumber:get()
 end, { desc = 'Relative line numbers' })
 
