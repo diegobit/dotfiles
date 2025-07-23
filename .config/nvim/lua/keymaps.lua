@@ -90,4 +90,11 @@ vim.keymap.set('n', '<leader>ts', function()
   vim.opt.spell = not vim.opt.spell:get() -- ignore warning
 end, { desc = 'Spellcheck' })
 
+-- disable builtin lsp references from nvim 0.11. I have set them up manually in telescope
+vim.keymap.del('n', 'gri')
+vim.keymap.del('n', 'grr')
+vim.keymap.del('n', 'gra')
+vim.keymap.del('n', 'grn')
+vim.keymap.del('n', 'gO')
+
 -- vim: ts=2 sts=2 sw=2 et
