@@ -53,8 +53,7 @@ export XDG_CONFIG_HOME=~/.config # used by kickstart-nvim for example
 # export LIBCRYPTO=/usr/local/opt/openssl/lib/libcrypto.dylib
 
 # Api key for scripts using gemini
-export GOOGLE_API_KEY=$(cat ~/.google_api_key)
-export GOOGLEAI_API_KEY=$(cat ~/.google_api_key)
+export GEMINI_API_KEY=$(cat ~/.gemini_api_key)
 
 ##############################
 # COMMON SETTINGS
