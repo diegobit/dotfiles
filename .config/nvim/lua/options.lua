@@ -96,6 +96,9 @@ end
 vim.diagnostic.config { float = { border = 'single' }, virtual_text = { current_line = true }, signs = true }
 vim.diagnostic.config { float = { border = 'single' }, virtual_text = true, signs = false }
 
+-- set 2 signcolumns
+-- vim.opt.signcolumn = 'yes:2'
+
 -- python
 vim.g.python3_host_prog = '$HOME/.local/share/nvim/pyvenv/bin/python3'
 
