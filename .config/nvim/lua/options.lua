@@ -81,7 +81,20 @@ vim.opt.showtabline = 0
 vim.opt.spelllang = { 'it', 'en_us' }
 
 -- border for diagnostics
-vim.diagnostic.config { float = { border = 'single' } }
+-- vim.o.winborder = 'single'
+local hover = vim.lsp.buf.hover
+---@diagnostic disable-next-line: duplicate-set-field
+vim.lsp.buf.hover = function()
+    return hover({
+        border = "single",
+        -- max_width = 100,
+        max_width = math.floor(vim.o.columns * 0.7),
+        max_height = math.floor(vim.o.lines * 0.7),
+    })
+end
+-- disable errors and warnings from appearing in signcolumn
+vim.diagnostic.config { float = { border = 'single' }, virtual_text = { current_line = true }, signs = true }
+vim.diagnostic.config { float = { border = 'single' }, virtual_text = true, signs = false }
 
 -- python
 vim.g.python3_host_prog = '$HOME/.local/share/nvim/pyvenv/bin/python3'
