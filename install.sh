@@ -14,7 +14,7 @@ brew upgrade
 # Basics
 # ---------------------------------------------
 brew install coreutils # gnu utils
-brew install bash
+# brew install bash
 brew install zsh
 brew install git
 
@@ -26,17 +26,28 @@ brew install stow
 # ---------------------------------------------
 # Terminal/zsh
 # ---------------------------------------------
-brew install --cask kitty
+# brew install --cask kitty
 brew install zsh-autosuggestions
 brew install zsh-syntax-highlighting
 brew install romkatv/powerlevel10k/powerlevel10k
 brew install ripgrep
 brew install fzf
 brew install yazi
-broot --set-install-state installed
 brew install lazygit
 brew install fd
 brew install zoxide
+
+# NODEJS (yarn also required for some nvim plugins).
+# Move global to have all permissions (eg. claude complaints otherwise)
+# brew install node
+# brew install yarn
+# mkdir -p /Users/diego/.npm-global
+# npm -g config set prefix /Users/diego/.npm-global
+
+brew install node
+curl -fsSL https://get.pnpm.io/install.sh | sh -
+source ~/.zshrc
+pnpm env use --global 22
 
 # ---------------------------------------------
 # Aerospace
@@ -49,7 +60,7 @@ brew install zoxide
 # ---------------------------------------------
 brew install neovim
 brew install luarocks
-npm i -g jshint # for javascript linting in nvim
+pnpm i -g jshint # for javascript linting in nvim
 brew install tflint # terraform lint
 
 # ---------------------------------------------
@@ -76,7 +87,8 @@ brew install parallel
 # AI
 # ---------------------------------------------
 brew install aichat
-npm install -g @anthropic-ai/claude-code
+brew install opencode-ai/tap/opencode
+# pnpm install -g @anthropic-ai/claude-code
 
 # ---------------------------------------------
 # Programming Languages and Frameworks, work
@@ -88,18 +100,8 @@ brew install google-cloud-sdk
 # PYTHON: uv
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
-# NODEJS (yarn also required for some nvim plugins).
-# Move global to have all permissions (eg. claude complaints otherwise)
-# brew install node
-# brew install yarn
-# mkdir -p /Users/diego/.npm-global
-# npm -g config set prefix /Users/diego/.npm-global
-#
-# Use fast node manager to manage node versions
-brew install fnm
-
 # RUST
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+# curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
 echo "👉 Install docker and colima"
 brew install docker docker-credential-helper docker-buildx docker-completion docker-compose
