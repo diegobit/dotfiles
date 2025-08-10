@@ -17,7 +17,7 @@ font-size = 15
 font-family = Monaspace Argon
 font-thicken
 font-thicken-strength = 0
-adjust-cell-width = -1
+adjust-cell-width = 0
 
 # font-family = JetBrains Mono NL
 # font-feature = "-calt, -liga, -dlig"
