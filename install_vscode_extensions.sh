@@ -7,7 +7,6 @@ pkglist=(
 andrewdircks.google-cloud-platform-ssh
 charliermarsh.ruff
 christian-kohler.path-intellisense
-codeium.codeium
 codezombiech.gitignore
 cwan.native-ascii-converter
 donjayamanne.githistory
