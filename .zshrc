@@ -6,7 +6,7 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
     source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 export ZLE_RPROMPT_INDENT=0
-source /usr/local/opt/powerlevel10k/share/powerlevel10k/powerlevel10k.zsh-theme
+source ${HOMEBREW_PREFIX}/share/powerlevel10k/powerlevel10k.zsh-theme
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 # [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 source ~/.p10k.zsh
@@ -14,43 +14,37 @@ source ~/.p10k.zsh
 ##############################
 # Plugins for lazy loading
 ##############################
-source ~/Dev/zsh_plugins/zsh-lazyload/zsh-lazyload.zsh
-# source ~/Dev/zsh_plugins/evalcache/evalcache.plugin.zsh
-source ~/Dev/zsh_plugins/zsh-smartcache/zsh-smartcache.plugin.zsh
+# source ~/bin/zsh_plugins/zsh-smartcache/zsh-smartcache.plugin.zsh
 
 ##############################
 # PATH
 ##############################
-# texPath=/usr/local/texlive/2018basic/bin/x86_64-darwin
-# pythonBrewPath=/usr/local/opt/python/libexec/bin
 # jenvPath="$HOME/.jenv/bin"
-# texPath="/Library/TeX/texbin"
-local systemPath="/usr/bin:/bin:/usr/sbin:/sbin"
-local brewHome="/usr/local" # /usr/local/sbin
-export HOMEBREW_PREFIX=${brewHome}
-local brewPath="/usr/local/bin:/usr/local/sbin"
-local icu4cPath="/usr/local/opt/icu4c/bin:/usr/local/opt/icu4c/sbin"
-local nodePath="/usr/local/opt/node/bin"
-local nodeGlobalPath="$HOME/.npm-global/bin"
-local sqlitePath="/usr/local/opt/sqlite/bin"
-# local pyenvPath="$HOME/.pyenv/shims"
-# local brewAdditionalPath="${pyenvPath}:${sqlitePath}:${nodePath}:${icu4cPath}"
-local brewAdditionalPath="${sqlitePath}:${nodeGlobalPath}:${nodePath}:${icu4cPath}"
-local goPath="/usr/local/go/bin"
-local rustPath="$HOME/.cargo/bin"
-local uvPath="$HOME/.local/bin"
-local myPath="$HOME/bin"
-local manuallyInstPath="${myPath}:${uvPath}:${goPath}:${rustPath}"
-export PATH="${manuallyInstPath}:${brewAdditionalPath}:${brewPath}:${systemPath}"
+export HOMEBREW_PREFIX="/opt/homebrew"
+export PATH="/usr/bin:/bin:/usr/sbin:/sbin" # system
+# brew
+export PATH="$PATH:/usr/local/bin" # things often end up here, eg. ollama; also the legacy path of brew
+export PATH="$PATH:${HOMEBREW_PREFIX}/bin:${HOMEBREW_PREFIX}/sbin" # new brew paths
+# export PATH="$PATH:${HOMEBREW_PREFIX}/Cellar/"
+# things installed with brew
+export PATH="$PATH:${HOMEBREW_PREFIX}/opt/icu4c/bin:${HOMEBREW_PREFIX}/opt/icu4c/sbin" # something for unicode symbols, maybe node installs it
+export PATH="$PATH:${HOMEBREW_PREFIX}/opt/sqlite/bin"
+# things installed manually
+export PATH="$PATH:$HOME/Library/pnpm"
+export PATH="$PATH:$HOME/.lmstudio/bin" # lmstudio
+export PATH="$PATH:/usr/local/go/bin" # golang
+export PATH="$PATH:$HOME/.cargo/bin" # rust
+export PATH="$PATH:$HOME/.local/bin" # python uv
+export PATH="$PATH:$HOME/bin" # my things
 
 # Some programs use the shell defined in these variables
-export SHELL=/usr/local/bin/zsh
-export ZSH=/usr/local/bin/zsh
+export SHELL=${HOMEBREW_PREFIX}/bin/zsh
+export ZSH=${HOMEBREW_PREFIX}/bin/zsh
 export EDITOR=nvim
 export XDG_CONFIG_HOME=~/.config # used by kickstart-nvim for example
 # Updated versions of network security libraries, useful for OpenAirDrop for example
-# export LIBARCHIVE=/usr/local/opt/libarchive/lib/libarchive.dylib
-# export LIBCRYPTO=/usr/local/opt/openssl/lib/libcrypto.dylib
+# export LIBARCHIVE=${HOMEBREW_PREFIX}/libarchive/lib/libarchive.dylib
+# export LIBCRYPTO=${HOMEBREW_PREFIX}/openssl/lib/libcrypto.dylib
 
 # Api key for scripts using gemini
 export GEMINI_API_KEY=$(cat ~/.gemini_api_key)
@@ -107,30 +101,10 @@ local _reset="\e[0m"
 # local _black="\e[0;90m"
 
 ##############################
-# iterm integration
-##############################
-#source ~/.iterm2_shell_integration.zsh
-
-##############################
 # Zoxide
 ##############################
-# eval "$(zoxide init --cmd j zsh)"
-smartcache eval zoxide init --cmd j zsh
-
-##############################
-# PYENV
-##############################
-# function pyenvinit() {
-#     export PYENV_ROOT="$HOME/.pyenv"
-#     export PYENV_VIRTUALENV_DISABLE_PROMPT=1
-#     export PATH="$pyenvPath:$PATH"
-#     eval "$(pyenv init - zsh)"
-#     eval "$(pyenv virtualenv-init -)"
-# }
-# eval "$(pyenv init - zsh)"
-# eval "$(pyenv virtualenv-init -)"
-# smartcache eval pyenv init - zsh
-# smartcache eval pyenv virtualenv-init -
+eval "$(zoxide init --cmd j zsh)"
+# smartcache eval zoxide init --cmd j zsh
 
 ##############################
 # JENV
@@ -144,23 +118,23 @@ smartcache eval zoxide init --cmd j zsh
 . "$HOME/.cargo/env"
 
 ##############################
-# Node version manager
+# MISE (ruby)
 ##############################
-eval "$(fnm env --use-on-cd --shell zsh)"
+eval "$(~/.local/bin/mise activate)"
 
 ##############################
 # GOOGLE CLOUD
 ##############################
 # google-cloud-sdk is installed at /usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk
 # export CLOUDSDK_PYTHON=python3
-source '/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc'
+source '/opt/homebrew/Caskroom/gcloud-cli/latest/google-cloud-sdk/path.zsh.inc'
 # zsh completion gcloud
 #source '/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc'
 
 ##############################
 # AUTOSUGGESTIONS
 ##############################
-source ${brewHome}/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+source ${HOMEBREW_PREFIX}/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#888888" #8495a0 #9379a0
 export ZSH_AUTOSUGGEST_MANUAL_REBIND=true # could interfere with other widgets, but faster startup
 # Bindings like nvim: <C-Space> accept; <C-G> accept word; <C-G> clear suggestion
@@ -172,26 +146,17 @@ bindkey '^x' autosuggest-clear
 # ZSH SYNTAX HIGHLIGHT
 ##############################
 export ZSH_HIGHLIGHT_HIGHLIGHTERS_DIR=${HOMEBREW_PREFIX}/share/zsh-syntax-highlighting/highlighters
-source ${brewHome}/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source ${HOMEBREW_PREFIX}/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 ##############################
 # FUZZY FINDER FZF
 ##############################
-source ~/.fzf.zsh
-# Use fd (https://github.com/sharkdp/fd) instead of the default find command for listing path candidates.
-# - The first argument to the function ($1) is the base path to start traversal
-# - See the source code (completion.{bash,zsh}) for the details.
-# _fzf_compgen_path() {
-#   fd --hidden --follow --exclude ".git" . "$1"
-# }
-# Use fd to generate the list for directory completion
-# _fzf_compgen_dir() {
-#   fd --type d --hidden --follow --exclude ".git" . "$1"
-# }
+source <(fzf --zsh)
 # Setting fd as the default source for fzf
 export FZF_DEFAULT_COMMAND='fd --type f'
 export FZF_DEFAULT_OPTS='--height=25'
-export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND --no-ignore-vcs"
+# export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND --no-ignore-vcs"
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND="fd -I --max-depth 5 --type directory | proximity-sort ."
 
 ##############################
@@ -347,3 +312,4 @@ notify() {
 ##############################
 # NEW STUFF
 ##############################
+
