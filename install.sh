@@ -6,6 +6,9 @@
 
 # Install brew
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+echo >> /Users/diego/.zprofile
+echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> /Users/diego/.zprofile
+eval "$(/opt/homebrew/bin/brew shellenv)"
 
 brew update
 brew upgrade
@@ -29,13 +32,14 @@ brew install stow
 # brew install --cask kitty
 brew install zsh-autosuggestions
 brew install zsh-syntax-highlighting
-brew install romkatv/powerlevel10k/powerlevel10k
+brew install powerlevel10k
 brew install ripgrep
 brew install fzf
 brew install yazi
 brew install lazygit
 brew install fd
 brew install zoxide
+brew install tree
 
 # NODEJS (yarn also required for some nvim plugins).
 # Move global to have all permissions (eg. claude complaints otherwise)
@@ -77,7 +81,7 @@ brew install dust
 brew install tmux
 brew install htop
 brew install php # for Alfred workflows
-brew install yt-dlp # like youtube-dl
+# brew install yt-dlp # like youtube-dl
 brew install qlstephen # quicklook files
 brew install --cask jupyter-notebook-viewer
 brew install jq # json tool! Also required for formatting in nvim
@@ -101,11 +105,15 @@ brew install google-cloud-sdk
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # RUST
-# curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+# install proximity-sort: for fzf and ALT-T
+cargo install proximity-sort
 
 echo "👉 Install docker and colima"
 brew install docker docker-credential-helper docker-buildx docker-completion docker-compose
 brew install colima
+brew install qemu
 
 # OTHERS
 brew install openssl
@@ -151,10 +159,21 @@ mkdir -p "$HOME/Dev/plg"
 echo "Link the iCloud Obsidian dir to the home dir"
 ln -s "$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/Note" "$HOME/notes"
 
-# Python plugin support in neovim, such as yamllint
-uv venv ~/.local/share/nvim/pyvenv
-source $HOME/.local/share/nvim/pyvenv/bin/activate
-uv pip install pynvim pip yamllint
+# ---------------------------------------------
+# Colima with docker
+# ---------------------------------------------
+mkdir -p ~/.docker/cli-plugins/
+ln -sfn $HOMEBREW_PREFIX/opt/docker-compose/bin/docker-compose ~/.docker/cli-plugins/docker-compose
+ln -sfn $(which docker-buildx) ~/.docker/cli-plugins/docker-buildx
+docker buildx install
+
+# ---------------------------------------------
+# Rectangle custom settings
+# ---------------------------------------------
+defaults write com.knollsoft.Rectangle almostMaximizeHeight -float 0.8
+defaults write com.knollsoft.Rectangle almostMaximizeWidth -float 0.6
+defaults write com.knollsoft.Rectangle sizeOffset -float 150
+defaults write com.knollsoft.Rectangle applyGapsToMaximize -int 3
 
 # ---------------------------------------------
 # Manual actions
