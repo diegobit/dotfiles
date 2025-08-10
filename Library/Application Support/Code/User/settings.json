@@ -315,5 +315,6 @@
         "vscodevim.vim": 1
     },
     "diffEditor.codeLens": true,
-    "geminicodeassist.project": "plg-chatbot"
+    "geminicodeassist.project": "plg-chatbot",
+    "python.defaultInterpreterPath": "/opt/homebrew/bin/python3.12"
 }
