@@ -167,6 +167,27 @@ ln -sfn $HOMEBREW_PREFIX/opt/docker-compose/bin/docker-compose ~/.docker/cli-plu
 ln -sfn $(which docker-buildx) ~/.docker/cli-plugins/docker-buildx
 docker buildx install
 
+# --------------------------------------------- 
+# MacOS settings
+# https://macos-defaults.com/
+# --------------------------------------------- 
+defaults write com.apple.finder "FXPreferredViewStyle" -string "Nlsv"
+defaults write com.apple.finder "FXRemoveOldTrashItems" -bool "true"
+defaults write com.apple.finder "FXEnableExtensionChangeWarning" -bool "false"
+defaults write NSGlobalDomain "AppleShowAllExtensions" -bool "true"
+defaults write NSGlobalDomain "NSCloseAlwaysConfirmsChanges" -bool "false"
+killall Finder
+
+defaults write com.apple.AppleMultitouchTrackpad "FirstClickThreshold" -int "0"
+
+defaults write com.apple.dock "expose-group-apps" -bool "true"
+killall Dock
+
+defaults write com.apple.Music "userWantsPlaybackNotifications" -bool "false"
+killall Music
+
+defaults write com.apple.LaunchServices "LSQuarantine" -bool "false"
+
 # ---------------------------------------------
 # Rectangle custom settings
 # ---------------------------------------------
