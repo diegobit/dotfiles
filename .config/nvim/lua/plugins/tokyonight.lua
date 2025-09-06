@@ -23,7 +23,7 @@ return {
       -- Background
       -- vim.cmd.hi 'Normal guibg=#161720'
       -- Comments and line numbers
-      vim.cmd.hi 'Comment guifg=#95607e'
+      vim.cmd.hi 'Comment guifg=#9c6485'
       -- vim.cmd.hi 'LineNr  guifg=#95606a'
       -- old line numbers: 4E567B
       vim.cmd.hi 'LineNr guifg=#58607e'
