@@ -14,7 +14,7 @@ source ~/.p10k.zsh
 ##############################
 # Plugins for lazy loading
 ##############################
-# source ~/bin/zsh_plugins/zsh-smartcache/zsh-smartcache.plugin.zsh
+# source ~/.local/share/zsh_plugins/zsh-smartcache/zsh-smartcache.plugin.zsh
 
 ##############################
 # PATH
