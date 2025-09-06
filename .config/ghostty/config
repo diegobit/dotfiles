@@ -17,14 +17,19 @@ window-padding-color = extend
 ####################
 font-size = 15
 
-font-family = Monaspace Argon
-font-thicken
-font-thicken-strength = 0
-adjust-cell-width = 0
+font-family = Cascadia Code
+adjust-cell-height = 2
+
+# font-family = Monaspace Argon
+# adjust-cell-width = -1
+# font-thicken
+# font-thicken-strength = 0
 
 # font-family = JetBrains Mono NL
-# font-feature = "-calt, -liga, -dlig"
 # font-thicken
+# font-thicken-strength = 0
+
+# font-feature = "-calt, -liga, -dlig"
 
 # font-family = TX-02
 # adjust-cell-height = 5%
