@@ -99,7 +99,4 @@ vim.diagnostic.config { float = { border = 'single' }, virtual_text = true, sign
 -- set 2 signcolumns
 -- vim.opt.signcolumn = 'yes:2'
 
--- python
-vim.g.python3_host_prog = '$HOME/.local/share/nvim/pyvenv/bin/python3'
-
 -- vim: ts=2 sts=2 sw=2 et
