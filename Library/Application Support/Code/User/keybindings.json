@@ -109,7 +109,7 @@
         "when": "inDebugMode"
     },
     {
-        "key": "cmd+k",
+        "key": "cmd+k cmd+j",
         "command": "workbench.action.togglePanel"
     },
     {
@@ -927,7 +927,7 @@
         "when": "editorHasSignatureHelpProvider && editorTextFocus"
     },
     {
-        "key": "shift+cmd+p",
+        "key": "cmd+p",
         "command": "workbench.action.showCommands"
     },
     {
@@ -1498,5 +1498,26 @@
         "key": "shift+enter",
         "command": "-jupyter.execSelectionInteractive",
         "when": "editorTextFocus && isWorkspaceTrusted && jupyter.ownsSelection && !findInputFocussed && !isCompositeNotebook && !notebookEditorFocused && !replaceInputFocussed && editorLangId == 'python'"
+    },
+    {
+        "key": "cmd+o",
+        "command": "workbench.action.quickOpen"
+    },
+    {
+        "key": "cmd+p",
+        "command": "-workbench.action.quickOpen"
+    },
+    {
+        "key": "shift+cmd+a",
+        "command": "-notification.acceptPrimaryAction",
+        "when": "notificationFocus || notificationToastsVisible"
+    },
+    {
+        "key": "shift+cmd+a",
+        "command": "workbench.view.extension.codexViewContainer"
+    },
+    {
+        "key": "shift+cmd+h",
+        "command": "workbench.view.extension.thunder-client"
     }
 ]
