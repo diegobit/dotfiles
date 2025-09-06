@@ -11,6 +11,7 @@ return {
         'markdown_inline',
         'vim',
         'python',
+        'ruby',
         'rust',
         'go',
         'javascript',
@@ -18,6 +19,7 @@ return {
       },
       -- Autoinstall languages that are not installed
       auto_install = true,
+      matchup = { enable = true, include_match_words = true },
       highlight = {
         enable = true,
         -- disable highlighting for big files
