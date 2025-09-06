@@ -2,6 +2,9 @@
 ### GENERAL
 ####################
 
+### SHELL
+command = /opt/homebrew/bin/fish
+
 ### SESSION
 window-save-state = always
 

@@ -44,12 +44,13 @@ Install VSCode, then:
 
 ## Notes
 The most configured apps are (in order):
-- zsh (.zshrc)
+- fish (.config/fish)
 - karabiner elements (.config/karabiner)
 - neovim (.config/nvim), which is customized from kickstart.vim settings
 - ghostty
 
 Customized, but older and not maintained anymore:
+- zsh
 - kitty
 - aerospace
 
