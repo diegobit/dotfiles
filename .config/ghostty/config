@@ -40,10 +40,24 @@ adjust-cursor-thickness = 1
 ### THEME AND COLORS
 ###################
 
+### ROSEPINE - https://rosepinetheme.com/
+theme = rose-pine-moon
+# replace "pine" with something actually green...
+palette = 2=#479b8e
+palette = 10=#54bbaa
+# make the cyan more blue (previously indistinguishable from white)
+palette = 4=#599cc7
+palette = 12=#66b3e4
+# gray color for eg. autocompete
+palette = 8=#63607b
+split-divider-color = #aa7477
+
 ### DARK GRAY
-theme = 0x96f
-selection-background = #485481
-selection-foreground = #e0e0e0
+# theme = 0x96f
+# selection-background = #485481
+# selection-foreground = #e0e0e0
+# palette = 8=#6e6e6b
+# split-divider-color = #926645
 
 ### OLD COLORS, FULL BLACK
 # theme = Everblush
@@ -61,7 +75,6 @@ selection-foreground = #e0e0e0
 # theme = GruvboxDarkHard
 # background = #161818
 
-split-divider-color = #926645
 # alpha-blending = linear-corrected
 # window-colorspace = srgb
 
