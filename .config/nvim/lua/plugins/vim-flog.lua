@@ -1,7 +1,5 @@
 return {
   'rbong/vim-flog',
-  -- version = '*',
-  branch = 'v3',
   lazy = true,
   cmd = { 'Flog', 'Flogsplit', 'Floggit' },
   dependencies = {
