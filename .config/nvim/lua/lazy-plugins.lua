@@ -23,6 +23,8 @@ require('lazy').setup({
 
   require 'plugins/conform',
 
+  require 'plugins/luasnip',
+
   require 'plugins/cmp',
 
   require 'plugins/vim-sleuth',
@@ -35,7 +37,7 @@ require('lazy').setup({
 
   require 'plugins/treesitter',
 
-  require 'plugins/neocodeium',
+  -- require 'plugins/neocodeium',
 
   -- require 'plugins/toggleterm',
 
