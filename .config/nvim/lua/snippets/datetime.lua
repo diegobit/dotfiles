@@ -24,3 +24,11 @@ ls.add_snippets('all', {
     end),
   }),
 })
+
+ls.add_snippets('all', {
+  s({ trig = 'dusa', dscr = 'Put the date in text format USA' }, {
+    f(function()
+      return os.date '%b %d, %Y'
+    end),
+  }),
+})
