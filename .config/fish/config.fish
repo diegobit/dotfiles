@@ -169,11 +169,24 @@ if status is-interactive
     end
 
     # Send notification after finishing the command
-    function notify
-        $argv
-        set -l code $status
-        osascript -e "display notification \"Exit code: $code\" with title \"Terminated: $argv\""
-        say "Execution finished."
+    function notify --description 'Run a command, then macOS notify; no args -> just say Finished'
+        if test (count $argv) -gt 0
+            # Run the command and capture its exit status
+            $argv
+            set -l code $status
+
+            # Build a readable title and escape quotes for AppleScript
+            set -l title (string join ' ' $argv)
+            set -l title (string replace -a '"' '\"' -- $title)
+
+            osascript -e "display notification \"Exit code: $code\" with title \"Terminated: $title\""
+            say "Finished."
+            return $code
+        else
+            osascript -e 'display notification "Finished" with title "notify"'
+            say "Finished"
+            return 0
+        end
     end
 
 end
