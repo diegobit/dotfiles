@@ -88,7 +88,6 @@ if status is-interactive
     alias dust='dust -r'
     alias grep='grep --color=auto'
     alias ls='ls -G'
-    alias ghostty='/Applications/Ghostty.app/Contents/MacOS/ghostty'
 
     # yazi with cwd handoff
     function y
