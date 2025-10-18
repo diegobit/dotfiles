@@ -41,7 +41,7 @@ adjust-cursor-thickness = 1
 ###################
 
 ### ROSEPINE - https://rosepinetheme.com/
-theme = rose-pine-moon
+theme = Rose Pine Moon
 # replace "pine" with something actually green...
 palette = 2=#479b8e
 palette = 10=#54bbaa
