@@ -56,11 +56,12 @@ return {
 
       local function my_section_tab(args)
         local tab_max = vim.fn.tabpagenr '$'
+        local icon = '󰓩'
         if tab_max > 1 then
           if statusline.is_truncated(args.trunc_width) then
             return '' .. vim.fn.tabpagenr()
           else
-            return ' ' .. vim.fn.tabpagenr()
+            return icon .. ' ' .. vim.fn.tabpagenr()
           end
         else
           return ''
