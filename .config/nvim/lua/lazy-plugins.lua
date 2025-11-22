@@ -86,6 +86,8 @@ require('lazy').setup({
   require 'plugins/gp',
 
   require 'plugins/jupytext',
+
+  require 'plugins/uv'
 }, {
   ui = {
     icons = {},
