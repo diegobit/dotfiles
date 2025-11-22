@@ -108,7 +108,7 @@ if status is-interactive
     abbr -a nn 'cd ~/notes; nvim .'
 
     # Open most recent ait/quicknote
-    function nq
+    function qn
         set -l latest (ls -t ~/notes/AIT/quicknotes-*.md | head -n 1)
 
         if test -z "$latest"
@@ -120,7 +120,7 @@ if status is-interactive
     end
 
     # Open most recent Registro note
-    function nr
+    function rn
         set -l latest (ls -t ~/notes/Registro/*.md | head -n 1)
         nvim "$latest"
     end
