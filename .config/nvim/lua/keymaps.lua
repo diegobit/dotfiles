@@ -43,11 +43,44 @@ vim.keymap.set('n', 'N', 'Nzvzz')
 
 ---- Keybinds to make split navigation easier.
 -- Use CTRL+<hjkl> to switch between windows
-vim.keymap.set({ 'n', 't' }, '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
-vim.keymap.set({ 'n', 't' }, '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
-vim.keymap.set({ 'n', 't' }, '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
-vim.keymap.set({ 'n', 't' }, '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
-vim.keymap.set({ 'n', 't' }, '<C-tab>', '<C-6>', { desc = 'Switch to last active window' })
+-- vim.keymap.set({ 'n', 't' }, '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
+-- vim.keymap.set({ 'n', 't' }, '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
+-- vim.keymap.set({ 'n', 't' }, '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+-- vim.keymap.set({ 'n', 't' }, '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
+
+-- Replacement for harpoon
+-- vim.keymap.set("n", "<leader>ha", function()
+--   vim.cmd("argadd %")
+--   vim.cmd("argdedup")
+-- end)
+--
+-- vim.keymap.set("n", "<leader>hl", function()
+--   vim.cmd.args()
+-- end)
+--
+-- vim.keymap.set("n", "<leader>hd", function()
+--   vim.cmd("argdelete %")
+-- end)
+--
+-- vim.keymap.set("n", "<C-h>", function()
+--   vim.cmd("silent! 1argument")
+-- end)
+--
+-- vim.keymap.set("n", "<C-j>", function()
+--   vim.cmd("silent! 2argument")
+-- end)
+--
+-- vim.keymap.set("n", "<C-k>", function()
+--   vim.cmd("silent! 3argument")
+-- end)
+--
+-- vim.keymap.set("n", "<C-l>", function()
+--   vim.cmd("silent! 4argument")
+-- end)
+--
+-- vim.keymap.set("n", "<C-;>", function()
+--   vim.cmd("silent! 5argument")
+-- end)
 
 ---- Move current line / block with Alt-j/k (Use these if macos_option_as_alt is true)
 -- vim.keymap.set('n', '<M-j>', ':m .+1<CR>==', { desc = 'Move line down' })
