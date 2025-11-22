@@ -48,18 +48,15 @@ return {
       -- mini.statusline: Better statusline
       --------------------------------------
       local statusline = require 'mini.statusline'
-      -- color for tokyonight night
-      -- vim.api.nvim_set_hl(0, 'MiniStatuslineTab', { fg = '#ff9e64', bg = '#292e42', default = true })
+
       -- color for tokyonight
       vim.api.nvim_set_hl(0, 'MiniStatuslineTab', { fg = '#ff9e64', bg = '#2f334d', default = true })
+      -- harpoon section: yellow-ish, same bg as tab
+      vim.api.nvim_set_hl(0, 'MiniStatuslineHarpoon', { fg = '#e0af68', bg = '#2f334d', default = true })
 
-      local my_section_tab = function(args)
+      local function my_section_tab(args)
         local tab_max = vim.fn.tabpagenr '$'
         if tab_max > 1 then
-          -- if statusline.is_truncated(args.trunc_width) then
-          --   return ' ' .. vim.fn.tabpagenr()
-          -- else
-          --   return ' ' .. vim.fn.tabpagenr() .. '/' .. tab_max
           if statusline.is_truncated(args.trunc_width) then
             return '' .. vim.fn.tabpagenr()
           else
@@ -70,32 +67,84 @@ return {
         end
       end
 
-      local my_section_location = function(args)
-        -- Use virtual column number to allow update when past last column
+      local function my_section_harpoon(args)
+        local ok, harpoon = pcall(require, 'harpoon')
+        if not ok then
+          return ''
+        end
+
+        local list = harpoon:list()
+        local items = list.items or {}
+        local total = #items
+        if total == 0 then
+          return ''
+        end
+
+        local icon = '󰛢'
+
+        -- normalize to absolute paths using Vim's path logic
+        local function normalize(path)
+          if not path or path == '' then
+            return nil
+          end
+          -- :p => full path, resolves "setup.py" -> "/Users/.../setup.py" from cwd
+          return vim.fn.fnamemodify(path, ':p')
+        end
+
+        local current_path = vim.api.nvim_buf_get_name(0)
+        local current_abs = normalize(current_path)
+        if not current_abs then
+          return ''
+        end
+
+        -- find current buffer in Harpoon list
+        local current_idx
+        for idx, item in ipairs(items) do
+          local item_abs = normalize(item.value)
+          if item_abs == current_abs then
+            current_idx = idx
+            break
+          end
+        end
+
+        -- truncated: show less info
+        if statusline.is_truncated(args.trunc_width) then
+          if current_idx then
+            return string.format('%s %d', icon, current_idx)
+          end
+        end
+
+        -- full: index/total if current file is in Harpoon, otherwise just count
+        if current_idx then
+          return string.format('%s %d', icon, current_idx, total)
+        end
+      end
+
+      local function my_section_location(args)
         if statusline.is_truncated(args.trunc_width) then
           return '%l│%v'
-          -- return '%v:%-l'
         end
-        -- Use `virtcol()` to correctly handle multi-byte characters
-        -- return '%2v:%l/%L'
         return '%2l/%L│%2v'
       end
 
-      local my_active_content = function()
-        local mode, mode_hl = MiniStatusline.section_mode { trunc_width = 120 }
+      local function my_active_content()
+        -- `MiniStatusline` global is set by the plugin, but we already have `statusline`
+        local mode, mode_hl = statusline.section_mode { trunc_width = 120 }
         local tab = my_section_tab { trunc_width = 75 }
-        local git = MiniStatusline.section_git { trunc_width = 40 }
-        local diff = MiniStatusline.section_diff { trunc_width = 75 }
-        local diagnostics = MiniStatusline.section_diagnostics { trunc_width = 75 }
-        local lsp = MiniStatusline.section_lsp { trunc_width = 75 }
-        local filename = MiniStatusline.section_filename { trunc_width = 140 }
-        local fileinfo = MiniStatusline.section_fileinfo { trunc_width = 120 }
+        local harpoon = my_section_harpoon { trunc_width = 75 }
+        local git = statusline.section_git { trunc_width = 40 }
+        local diff = statusline.section_diff { trunc_width = 75 }
+        local diagnostics = statusline.section_diagnostics { trunc_width = 75 }
+        local lsp = statusline.section_lsp { trunc_width = 75 }
+        local filename = statusline.section_filename { trunc_width = 140 }
+        local fileinfo = statusline.section_fileinfo { trunc_width = 120 }
         local location = my_section_location { trunc_width = 90 }
 
-        return MiniStatusline.combine_groups {
+        return statusline.combine_groups {
           { hl = mode_hl, strings = { mode } },
           { hl = 'MiniStatuslineDevinfo', strings = { git, diff, diagnostics, lsp } },
           { hl = 'MiniStatuslineTab', strings = { tab } },
+          { hl = 'MiniStatuslineHarpoon', strings = { harpoon } },
           '%<', -- Mark general truncate point
           { hl = 'MiniStatuslineFilename', strings = { filename } },
           '%=', -- End left alignment
@@ -103,7 +152,11 @@ return {
           { hl = mode_hl, strings = { location } },
         }
       end
-      statusline.setup { content = { active = my_active_content }, use_icons = vim.g.have_nerd_font }
+
+      statusline.setup {
+        content = { active = my_active_content },
+        use_icons = vim.g.have_nerd_font,
+      }
     end,
   },
 }
