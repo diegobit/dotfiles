@@ -40,6 +40,8 @@ vim.keymap.set({ 'n', 'v' }, '<C-u>', lazy_keys '<C-u>zvzz', { desc = 'Scroll up
 -- if going to the next search results scrolls the page, scroll AND center
 vim.keymap.set('n', 'n', 'nzvzz')
 vim.keymap.set('n', 'N', 'Nzvzz')
+vim.keymap.set('n', 'gn', 'gnzvzz')
+vim.keymap.set('n', 'gN', 'gNzvzz')
 
 ---- Keybinds to make split navigation easier.
 -- Use CTRL+<hjkl> to switch between windows
