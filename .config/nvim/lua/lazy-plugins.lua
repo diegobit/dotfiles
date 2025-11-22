@@ -47,7 +47,7 @@ require('lazy').setup({
 
   require 'plugins/undotree',
 
-  -- require 'plugins/harpoon',
+  require 'plugins/harpoon',
 
   require 'plugins/indent-blankline',
 
