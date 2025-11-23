@@ -103,6 +103,8 @@ brew install google-cloud-sdk
 
 # PYTHON: uv
 curl -LsSf https://astral.sh/uv/install.sh | sh
+# jupytext working in neovim
+uv tool install jupytext
 
 # RUST
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
