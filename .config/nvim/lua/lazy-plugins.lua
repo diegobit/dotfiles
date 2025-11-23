@@ -25,6 +25,8 @@ require('lazy').setup({
 
   require 'plugins/luasnip',
 
+  require 'plugins/friendly-snippets',
+
   require 'plugins/cmp',
 
   require 'plugins/vim-sleuth',
