@@ -13,7 +13,7 @@ return {
 
     -- Add your own debuggers here
     'leoluz/nvim-dap-go',
-    'mfussenegger/nvim-dap-python',
+    { 'mfussenegger/nvim-dap-python', ft = 'python' },
   },
   keys = function(_, keys)
     return {
