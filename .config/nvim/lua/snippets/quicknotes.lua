@@ -6,8 +6,7 @@ ls.add_snippets("all", {
   s({ trig = "qn", dscr = "Add a new quicknote" }, fmt([[
 
 {}
------
- 
+-------------
 {}
 
 
