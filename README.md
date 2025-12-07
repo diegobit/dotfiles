@@ -34,6 +34,23 @@ stow .
 ### Check
 - You can check health with `:checkhealth`
 
+## If needs to run fish config:
+
+`tide configure`
+
+Left prompt:
+
+```
+set -U tide_left_prompt_items pwd git newline character
+```
+
+Right prompt (minimal and complete):
+
+```
+set -U tide_right_prompt_items status cmd_duration context jobs python shlvl
+set -U tide_right_prompt_items status cmd_duration context jobs direnv node python rustc java php ruby go gcloud kubectl terraform shlvl
+```
+
 ## Install VSCode extensions
 
 Install VSCode, then:
