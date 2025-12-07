@@ -927,7 +927,7 @@
         "when": "editorHasSignatureHelpProvider && editorTextFocus"
     },
     {
-        "key": "cmd+p",
+        "key": "shift+cmd+p",
         "command": "workbench.action.showCommands"
     },
     {
