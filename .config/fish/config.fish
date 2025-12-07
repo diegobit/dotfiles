@@ -109,19 +109,21 @@ if status is-interactive
 
     # Open most recent ait/quicknote
     function qn
-        set -l latest (ls -t ~/notes/AIT/quicknotes-*.md | head -n 1)
+        # set -l latest (ls -t ~/notes/AIT/quicknotes-*.md | head -n 1)
 
-        if test -z "$latest"
-            echo "No quicknotes-*.md found in "(pwd)
-            return 1
-        end
+        # if test -z "$latest"
+        #     echo "No quicknotes-*.md found in "(pwd)
+        #     return 1
+        # end
 
-        nvim "$latest"
+        cd ~/notes/AIT
+        nvim quicknotes.md
     end
 
     # Open most recent Registro note
     function rn
         set -l latest (ls -t ~/notes/Registro/*.md | head -n 1)
+        cd ~/notes/Registro
         nvim "$latest"
     end
 
