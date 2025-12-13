@@ -69,7 +69,8 @@ if status is-interactive
     # Abbreviations
     abbr -a g git
     abbr -a gs 'git status'
-    abbr -a gl 'git log --oneline --graph --decorate --all'
+    abbr -a gl 'git log'
+    abbr -a gll 'git log --oneline --graph --decorate --all'
     abbr -a gp 'git push'
     abbr -a gb 'git branch -vv'
     abbr -a gc 'git commit'
