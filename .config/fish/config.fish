@@ -9,6 +9,7 @@ fish_add_path $HOME/Library/pnpm
 fish_add_path $HOME/.lmstudio/bin
 fish_add_path /usr/local/go/bin
 fish_add_path $HOME/.cargo/bin    # rust
+fish_add_path $HOME/go/bin        # go
 fish_add_path $HOME/.local/bin    # my path
 
 # pnpm
