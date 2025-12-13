@@ -198,9 +198,40 @@ if status is-interactive
         end
     end
 
+    # Sent notification to Pushover Device
+    function pushover --description 'Send a Pushover notification' --argument-names msg
+        set -l token (string trim -- (cat ~/.pushover-token))
+        set -l user  (string trim -- (cat ~/.pushover-user))
+        set -l where (prompt_pwd)
+
+        if test -n "$msg"
+            set msg "$msg ($where)"
+        else
+            set msg "Plin plon! ($where)"
+        end
+
+        curl -sS --fail \
+            --form-string "token=$token" \
+            --form-string "user=$user" \
+            --form-string "message=$msg" \
+            https://api.pushover.net/1/messages.json >/dev/null
+    end
+
+    function tg --description 'Send a Telegram message to myself' --argument-names msg
+        set -l token (string trim -- (cat ~/.telegram-bot-token))
+        set -l chat  (string trim -- (cat ~/.telegram-chat-id))
+        set -l where (prompt_pwd)
+
+        if test -n "$msg"
+            set msg "$msg ($where)"
+        else
+            set msg "Plin plon! ($where)"
+        end
+
+        curl -sS --fail --max-time 10 \
+            --form-string "chat_id=$chat" \
+            --form-string "text=$msg" \
+            "https://api.telegram.org/bot$token/sendMessage" >/dev/null
+    end
+
 end
-
-# Added by LM Studio CLI (lms)
-set -gx PATH $PATH /Users/diego/.lmstudio/bin
-# End of LM Studio CLI section
-
