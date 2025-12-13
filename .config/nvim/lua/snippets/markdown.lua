@@ -5,9 +5,14 @@ local fmt = require('luasnip.extras.fmt').fmt
 ls.add_snippets('all', {
   s(
     { trig = 'cb', dscr = 'Empty codeblock.' },
-    fmt([[```{}```]], {
-      i(0),
-    })
+    fmt(
+      [[```
+{}
+```]],
+      {
+        i(0),
+      }
+    )
   ),
 })
 
