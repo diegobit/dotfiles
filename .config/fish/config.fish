@@ -35,28 +35,6 @@ set -gx TRY_PATH ~/code/hack
 
 # fzf
 fzf --fish | source
-set -gx FZF_CTRL_T_COMMAND 'fd -H --type f'
-# Function inspired from official CTRL-T from https://github.com/junegunn/fzf/blob/master/shell/key-bindings.fish
-function fzf-dir-widget -d "List files and folders"
-    set -l commandline (__fzf_parse_commandline)
-    set -lx dir $commandline[1]
-    set -l fzf_query $commandline[2]
-    set -l prefix $commandline[3]
-
-    set -lx FZF_DEFAULT_OPTS (__fzf_defaults \
-      "--reverse --walker=dir,follow,hidden --scheme=path --multi --print0")
-
-    set -lx FZF_DEFAULT_COMMAND
-    set -lx FZF_DEFAULT_OPTS_FILE
-
-    set -l result (eval (__fzfcmd) --walker-root=$dir --query=$fzf_query | string split0)
-    and commandline -rt -- (string join -- ' ' $prefix(string escape -- $result))' '
-
-    commandline -f repaint
-end
-# Search directories
-bind \ce fzf-cd-proximity
-bind -M insert \ce fzf-dir-widget
 
 if status is-interactive
     # Keybindings
