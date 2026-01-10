@@ -215,4 +215,64 @@ if status is-interactive
             "https://api.telegram.org/bot$token/sendMessage" >/dev/null
     end
 
+    # Create a new worktree and branch from within current git directory.
+    function gwa
+        if test (count $argv) -lt 1
+            echo "Usage: gwa <branch-name>"
+            return 1
+        end
+
+        # Make sure we're inside a git worktree/repo
+        git rev-parse --is-inside-work-tree >/dev/null 2>&1; or begin
+            echo "gwa: not inside a git repository"
+            return 1
+        end
+
+        set -l branch $argv[1]
+        set -l base (basename (pwd))
+        set -l path "../$base--$branch"
+
+        # -b creates a new branch; this fails if branch already exists (often desirable).
+        git worktree add -b $branch $path; or return $status
+        # mise trust $path
+        cd $path
+    end
+
+    # Remove worktree and branch from within active worktree directory.
+    function gwd
+        git rev-parse --is-inside-work-tree >/dev/null 2>&1; or begin
+            echo "gwd: not inside a git repository/worktree"
+            return 1
+        end
+
+        set -l cwd (pwd)
+        set -l worktree (basename $cwd)
+
+        # Split on first '--'
+        set -l parts (string split -m 1 -- '--' $worktree)
+        if test (count $parts) -lt 2
+            echo "gwd: current directory name doesn't look like a worktree (<root>--<branch>): $worktree"
+            return 1
+        end
+
+        set -l root $parts[1]
+        set -l branch $parts[2]
+        set -l repo_dir "../$root"
+
+        # Extra guard: ensure repo_dir is a git repo
+        git -C $repo_dir rev-parse --git-dir >/dev/null 2>&1; or begin
+            echo "gwd: can't find main repo at $repo_dir"
+            return 1
+        end
+
+        if not gum confirm "Remove worktree and branch? [$worktree]"
+            return 0
+        end
+
+        # Remove *this* worktree by absolute path, from the main repo.
+        cd $repo_dir
+        git -C $repo_dir worktree remove $cwd --force; or return $status
+        git -C $repo_dir branch -D $branch
+    end
+
 end
