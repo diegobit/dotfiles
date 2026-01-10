@@ -98,8 +98,8 @@ brew install parallel
 # AI
 # ---------------------------------------------
 brew install aichat
-brew install opencode-ai/tap/opencode
-# pnpm install -g @anthropic-ai/claude-code
+curl -fsSL https://opencode.ai/install | bash # opencode. Better for fast moving projects
+brew install codex
 
 # ---------------------------------------------
 # Programming Languages and Frameworks, work
