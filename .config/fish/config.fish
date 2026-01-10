@@ -69,6 +69,8 @@ if status is-interactive
     abbr -a em  --set-cursor 'aichat -r emoji \'%\''
     abbr -a teach --set-cursor 'aichat -r teach \'%\''
     abbr -a t 'try'
+    abbr -a o 'opencode'
+    abbr -a c 'codex'
 
     # Aliases
     alias dust='dust -r'
