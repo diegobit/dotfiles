@@ -2,6 +2,30 @@
 
 This repo contains my dotfiles plus a script to configure a new MacOS device.
 
+Favourite heavily configured tools:
+
+| ghostty | fish+tide | neovim | karabiner elements | opencode | aichat |
+|---|---|---|---|---|---|
+
+Cool low configuration ones:
+
+| fzf | try | yazi | ripgrep | zoxide | lazygit | uv | colima |
+|---|---|---|---|---|---|---|---|
+
+
+# How to get specific dotfiles
+
+Eg. you want to get my nvim configuration:
+
+```
+cd ~
+git clone git@github.com:diegobit/dotfiles.git
+cd dotfiles/
+stow .config/nvim
+```
+
+# Everything from scratch
+
 ## Install
 
 ### Install brew and packages:
@@ -12,16 +36,12 @@ git clone git@github.com:diegobit/dotfiles.git
 cd dotfiles
 ./install.sh
 ```
-### Install Nerd Font for terminal and neovim
-
-- https://www.nerdfonts.com/font-downloads
-
-My current font is JetBrainsMono NerdFont. For sure install the symbols only
 
 ## Setup dotfiles
 Use [GNU stow](https://www.gnu.org/software/stow/) to create symlinks. For an explanation on this dotfiles management, see [this video](https://youtu.be/y6XCebnB9gs?si=PVgjVFBUp82NuZwH).
 
 ```
+cd dotfiles
 stow .
 ```
 
@@ -58,16 +78,4 @@ Install VSCode, then:
 ```
 ./install_vscode_extensions.sh
 ```
-
-## Notes
-The most configured apps are (in order):
-- fish (.config/fish)
-- karabiner elements (.config/karabiner)
-- neovim (.config/nvim), which is customized from kickstart.vim settings
-- ghostty
-
-Customized, but older and not maintained anymore:
-- zsh
-- kitty
-- aerospace
 
