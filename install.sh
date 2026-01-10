@@ -21,6 +21,7 @@ brew install coreutils # gnu utils
 brew install zsh
 brew install git
 brew install fish
+sudo git lfs install --system
 
 # Fisher (plugin manager of fish)
 curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher
