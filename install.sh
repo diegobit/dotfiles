@@ -37,9 +37,6 @@ brew install stow
 # Terminal/zsh
 # ---------------------------------------------
 # brew install --cask kitty
-brew install zsh-autosuggestions
-brew install zsh-syntax-highlighting
-brew install powerlevel10k
 brew install ripgrep
 brew install fzf
 brew install yazi
@@ -78,9 +75,10 @@ brew install tflint # terraform lint
 # ---------------------------------------------
 # Fonts
 # ---------------------------------------------
+brew install --cask font-monaspace
 brew install --cask font-jetbrains-mono
 brew install --cask font-fira-code
-brew install --cask font-symbols-only-nerd-font # font for kitty
+# brew install --cask font-symbols-only-nerd-font # font for kitty
 
 # ---------------------------------------------
 # Tools
