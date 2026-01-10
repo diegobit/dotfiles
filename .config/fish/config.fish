@@ -55,6 +55,7 @@ if status is-interactive
     abbr -a gsw 'git switch'
     abbr -a gr 'git restore'
     abbr -a gcp 'git cherry-pick'
+    abbr -a ga 'git add -p'
     abbr -a gw 'git worktree'
     abbr -a gcm 'git commit -m'
     abbr -a n nvim
