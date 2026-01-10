@@ -11,6 +11,7 @@ fish_add_path /usr/local/go/bin
 fish_add_path $HOME/.cargo/bin    # rust
 fish_add_path $HOME/go/bin        # go
 fish_add_path $HOME/.local/bin    # my path
+fish_add_path /Users/diego/.opencode/bin
 
 # pnpm
 set -Ux PNPM_HOME $HOME/Library/pnpm
