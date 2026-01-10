@@ -46,6 +46,7 @@ brew install lazygit
 brew install fd
 brew install zoxide
 brew install tree
+brew install gum
 
 # NODEJS (yarn also required for some nvim plugins).
 # Move global to have all permissions (eg. claude complaints otherwise)
