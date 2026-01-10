@@ -1,0 +1,6 @@
+{
+  "$schema": "https://opencode.ai/config.jsonc",
+  "theme": "rosepine",
+  "autoupdate": true,
+  //"plugin": ["@mohak34/opencode-notifier@latest"]
+}
