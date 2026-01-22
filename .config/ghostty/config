@@ -107,6 +107,3 @@ keybind = performable:cmd+c=copy_to_clipboard
 
 # Add CMD+A
 keybind = cmd+a=text:ggVG
-
-# Edit current command in $EDITOR with emacs keybinding, if ALT+e is not available
-keybind = ctrl+x>ctrl+e=esc:v
