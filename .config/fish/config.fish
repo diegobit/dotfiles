@@ -276,4 +276,30 @@ if status is-interactive
         git -C $repo_dir branch -D $branch
     end
 
+    function tiktoken-len --argument-names path
+        set -l model gpt-5
+
+        # If stdin is piped (not a TTY), read from stdin
+        if not isatty stdin
+            set -l tmp (mktemp -t tiktoken-len.XXXXXX)
+            cat > "$tmp"
+            tiktoken --model $model "$tmp" | wc -l | string trim
+            rm -f "$tmp"
+            return $status
+        end
+
+        # Otherwise, require a path argument
+        if test -z "$path"
+            echo "usage: tiktoken-len <file>  OR  echo 'text' | tiktoken-len" >&2
+            return 2
+        end
+
+        if not test -f "$path"
+            echo "tiktoken-len: not a file: $path" >&2
+            return 1
+        end
+
+        tiktoken --model $model "$path" | wc -l | string trim
+    end
+
 end
