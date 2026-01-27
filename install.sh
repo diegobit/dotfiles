@@ -114,6 +114,7 @@ brew install google-cloud-sdk
 curl -LsSf https://astral.sh/uv/install.sh | sh
 # jupytext working in neovim
 uv tool install jupytext
+uv tool install tiktoken-cli
 
 # RUST
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
