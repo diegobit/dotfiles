@@ -79,3 +79,7 @@ Install VSCode, then:
 ./install_vscode_extensions.sh
 ```
 
+## Colima and docker
+
+After everything, run:
+`sudo ln -sf /Users/diego/.config/colima/default/docker.sock /var/run/docker.sock`
