@@ -20,7 +20,8 @@ font-size = 15
 font-family = Cascadia Code
 adjust-cell-height = 2
 
-# font-family = Monaspace Argon
+# font-family = Monaspace Neon
+# font-family-italic = Monaspace Argon
 # adjust-cell-width = -1
 # font-thicken
 # font-thicken-strength = 0
