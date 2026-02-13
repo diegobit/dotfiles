@@ -44,6 +44,7 @@ brew install resvg # see svg in yazi
 brew install poppler # pdf in yazi
 brew install imagemagick
 brew install lazygit
+brew install git-delta # lazygit diff theme
 brew install fd
 brew install zoxide
 brew install tree
