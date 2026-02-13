@@ -108,3 +108,7 @@ keybind = performable:cmd+c=copy_to_clipboard
 
 # Add CMD+A
 keybind = cmd+a=text:ggVG
+
+# Open settings directly with ghostty, not system editor
+keybind = super+,=text:ghostty +edit-config\n
+
