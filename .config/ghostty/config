@@ -11,6 +11,7 @@ window-save-state = always
 ### WINDOW
 macos-titlebar-style=tabs
 window-padding-color = extend
+cursor-click-to-move = false
 
 ####################
 ### FONT AND CURSOR
