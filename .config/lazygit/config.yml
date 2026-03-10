@@ -3,4 +3,4 @@ os:
 git:
   pagers:
     - colorArg: always
-      pager: delta --paging=never --line-numbers --features=arctic-fox
+      pager: delta --paging=never --features=arctic-fox
