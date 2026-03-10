@@ -89,6 +89,7 @@ split-divider-color = #aa7477
 # Keep splits keybindings similar to Ghostty defaults, or like iTerm does. Not go into vim route
 #   next tab: ctrl+tab
 #   split: cmd+d, cmd+shift+d
+# Make sure to set system keybind "Hide Ghostty" to something else than CMD+H
 keybind = cmd+j=goto_split:bottom
 keybind = cmd+k=goto_split:top
 keybind = cmd+h=goto_split:left
