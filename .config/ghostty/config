@@ -2,6 +2,8 @@
 ### GENERAL
 ####################
 
+auto-update-channel = stable
+
 ### SHELL
 command = /opt/homebrew/bin/fish
 
