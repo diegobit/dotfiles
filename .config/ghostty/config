@@ -90,28 +90,34 @@ split-divider-color = #aa7477
 #   next tab: ctrl+tab
 #   split: cmd+d, cmd+shift+d
 # Make sure to set system keybind "Hide Ghostty" to something else than CMD+H
-keybind = cmd+j=goto_split:bottom
-keybind = cmd+k=goto_split:top
-keybind = cmd+h=goto_split:left
-keybind = cmd+l=goto_split:right
+keybind = super+j=goto_split:bottom
+keybind = super+k=goto_split:top
+keybind = super+h=goto_split:left
+keybind = super+l=goto_split:right
 # because we overridden cmd+k
-keybind = cmd+ctrl+k=clear_screen
-keybind = cmd+enter=toggle_split_zoom
-keybind = cmd+backspace=equalize_splits
+keybind = super+ctrl+k=clear_screen
+keybind = super+enter=toggle_split_zoom #default is super+ctrl+enter
+keybind = super+i=toggle_split_zoom
+keybind = super+backspace=equalize_splits
+# resize with bigger steps
+keybind = super+ctrl+left=resize_split:left,50
+keybind = super+ctrl+down=resize_split:down,50
+keybind = super+ctrl+up=resize_split:up,50
+keybind = super+ctrl+right=resize_split:right,50
 
 # Enable hovering terminal like iterm
-keybind = global:cmd+shift+ctrl+g=toggle_quick_terminal
+keybind = global:super+shift+ctrl+g=toggle_quick_terminal
 
 # use CMD+F to open scrollback
-keybind = cmd+o=write_screen_file:open
-keybind = cmd+p=write_screen_file:paste
+keybind = super+o=write_screen_file:open
+keybind = super+p=write_screen_file:paste
 
 # Add CMD+C and CMD+V to copy paste from system clipboard
-keybind = performable:cmd+v=paste_from_clipboard
-keybind = performable:cmd+c=copy_to_clipboard
+keybind = performable:super+v=paste_from_clipboard
+keybind = performable:super+c=copy_to_clipboard
 
 # Add CMD+A
-keybind = cmd+a=text:ggVG
+keybind = super+a=text:ggVG
 
 # Open settings directly with ghostty, not system editor
 keybind = super+,=text:ghostty +edit-config\n
