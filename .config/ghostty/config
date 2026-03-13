@@ -96,7 +96,7 @@ keybind = super+h=goto_split:left
 keybind = super+l=goto_split:right
 # because we overridden cmd+k
 keybind = super+ctrl+k=clear_screen
-keybind = super+enter=toggle_split_zoom #default is super+ctrl+enter
+keybind = super+enter=toggle_split_zoom
 keybind = super+i=toggle_split_zoom
 keybind = super+backspace=equalize_splits
 # resize with bigger steps
