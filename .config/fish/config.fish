@@ -96,7 +96,7 @@ if status is-interactive
         end
     end
 
-    abbr -a ta 'tryait'
+    abbr -a tw 'trywork'
     abbr -a td 'trydg'
     abbr -a t 'try'
     abbr -a cdw 'cd ~/notes-work'
