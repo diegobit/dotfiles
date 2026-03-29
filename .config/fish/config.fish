@@ -70,7 +70,6 @@ if status is-interactive
     abbr -a cmd --set-cursor 'aichat -r cmd \'%\''
     abbr -a em  --set-cursor 'aichat -r emoji \'%\''
     abbr -a teach --set-cursor 'aichat -r teach \'%\''
-    abbr -a t 'try'
     abbr -a op 'opencode'
     abbr -a cl 'claude'
     abbr -a co 'codex'
@@ -79,6 +78,30 @@ if status is-interactive
     alias dust='dust -r'
     alias grep='grep --color=auto'
     alias ls='ls -G'
+
+    # TRY
+    function trywork
+        if test (count $argv) -eq 0
+            eval (env TRY_PATH=/Users/diego/notes-work try exec | string collect)
+        else
+            eval (env TRY_PATH=/Users/diego/notes-work try exec $argv | string collect)
+        end
+    end
+
+    function trydg
+        if test (count $argv) -eq 0
+            eval (env TRY_PATH=/Users/diego/notes-dg try exec | string collect)
+        else
+            eval (env TRY_PATH=/Users/diego/notes-dg try exec $argv | string collect)
+        end
+    end
+
+    abbr -a ta 'tryait'
+    abbr -a td 'trydg'
+    abbr -a t 'try'
+    abbr -a cdw 'cd ~/notes-work'
+    abbr -a cdd 'cd ~/notes-dg'
+    abbr -a cdc 'cd ~/code'
 
     # yazi with cwd handoff
     function y
