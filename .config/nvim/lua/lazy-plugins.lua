@@ -32,6 +32,7 @@ require('lazy').setup({
   require 'plugins/vim-sleuth',
 
   require 'plugins/tokyonight',
+  -- require 'plugins/rose-pine',
 
   require 'plugins/todo-comments',
 
@@ -39,13 +40,7 @@ require('lazy').setup({
 
   require 'plugins/treesitter',
 
-  -- require 'plugins/neocodeium',
-
-  -- require 'plugins/toggleterm',
-
   require 'plugins/zen-mode',
-
-  -- require 'plugins/kitty-scrollback',
 
   require 'plugins/undotree',
 
@@ -74,8 +69,6 @@ require('lazy').setup({
   require 'plugins/decipher',
 
   require 'plugins/vim-be-good',
-
-  -- require 'plugins/bg',
 
   require 'plugins/bullets',
 
