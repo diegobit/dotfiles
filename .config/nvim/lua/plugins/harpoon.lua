@@ -15,7 +15,7 @@ return {
   end,
   keys = {
     {
-      '<C-a>',
+      '<C-h>',
       function()
         require('harpoon'):list():add()
       end,
@@ -28,33 +28,27 @@ return {
       desc = 'Open harpoon window',
     },
     {
-      '<C-h>',
+      '<C-j>',
       function()
         require('harpoon'):list():select(1)
       end,
     },
     {
-      '<C-j>',
+      '<C-k>',
       function()
         require('harpoon'):list():select(2)
       end,
     },
     {
-      '<C-k>',
+      '<C-l>',
       function()
         require('harpoon'):list():select(3)
       end,
     },
     {
-      '<C-l>',
-      function()
-        require('harpoon'):list():select(4)
-      end,
-    },
-    {
       '<C-;>',
       function()
-        require('harpoon'):list():select(5)
+        require('harpoon'):list():select(4)
       end,
     },
   },
