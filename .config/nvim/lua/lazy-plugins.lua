@@ -62,8 +62,6 @@ require('lazy').setup({
 
   require 'plugins/rest',
 
-  require 'plugins/oil',
-
   require 'plugins/vim-fugitive',
 
   require 'plugins/vim-flog',

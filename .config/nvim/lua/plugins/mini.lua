@@ -35,6 +35,83 @@ return {
       -- disable s to avoid the timeout to use s alone (vim-surround)
       vim.keymap.set({ 'n', 'x' }, 's', '<Nop>')
 
+      --------------------------------------
+      -- mini.files: File explorer
+      --------------------------------------
+      require('mini.files').setup {
+        options = {
+          use_as_default_explorer = true,
+        },
+        windows = {
+          preview = false,
+          width_preview = 40,
+        },
+      }
+
+      local function get_mini_files_path()
+        if vim.bo.filetype == 'minifiles' then
+          local state = require('mini.files').get_explorer_state()
+          return state and state.anchor or vim.fn.getcwd()
+        end
+
+        local path = vim.api.nvim_buf_get_name(0)
+        if path == '' then
+          return vim.fn.getcwd()
+        end
+
+        return path
+      end
+
+      local function open_mini_files()
+        require('mini.files').open(get_mini_files_path())
+      end
+
+      local function toggle_mini_files()
+        if vim.bo.filetype == 'minifiles' then
+          require('mini.files').close()
+          return
+        end
+
+        open_mini_files()
+      end
+
+      vim.keymap.set('n', '-', function()
+        toggle_mini_files()
+      end, { desc = 'Open file explorer' })
+
+      vim.api.nvim_create_user_command('Ex', function()
+        open_mini_files()
+      end, {})
+
+      vim.api.nvim_create_user_command('Explorer', function()
+        open_mini_files()
+      end, {})
+
+      vim.api.nvim_create_autocmd('User', {
+        pattern = 'MiniFilesBufferCreate',
+        callback = function(args)
+          vim.keymap.set('n', '<CR>', function()
+            local mini_files = require('mini.files')
+            local entry = mini_files.get_fs_entry()
+            if not entry then
+              return
+            end
+
+            if entry.fs_type == 'directory' then
+              vim.cmd.lcd(vim.fn.fnameescape(entry.path))
+              vim.cmd.pwd()
+              mini_files.reveal_cwd()
+              return
+            end
+
+            mini_files.go_in { close_on_file = true }
+          end, {
+            buffer = args.data.buf_id,
+            desc = 'Open file or set local cwd',
+          })
+        end,
+      })
+
       -- Animate scrolling
       -- local animate = require('mini.animate')
       -- animate.setup {
