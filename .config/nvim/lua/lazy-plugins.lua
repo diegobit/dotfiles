@@ -74,8 +74,6 @@ require('lazy').setup({
 
   require 'plugins/vim-plist',
 
-  require 'plugins/gp',
-
   require 'plugins/jupytext',
 
   require 'plugins/uv'
