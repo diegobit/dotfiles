@@ -17,8 +17,6 @@ require('lazy').setup({
   -- require 'plugins/gitsigns',
   require 'plugins/which-key',
 
-  require 'plugins/telescope',
-
   require 'plugins/fzf-lua',
 
   require 'plugins/lspconfig',
@@ -57,8 +55,6 @@ require('lazy').setup({
   require 'plugins/lint',
 
   require 'plugins/markdown-preview',
-
-  require 'plugins/telescope-tabs',
 
   require 'plugins/rest',
 

@@ -2,16 +2,9 @@ return {
   'ThePrimeagen/harpoon',
   branch = 'harpoon2',
   dependencies = { 'nvim-lua/plenary.nvim' },
-  -- dependencies = { 'nvim-telescope/telescope.nvim' },
   config = function()
     local harpoon = require 'harpoon'
     harpoon:setup()
-    -- require('harpoon'):setup()
-
-    local ok, telescope = pcall(require, 'telescope')
-    if ok then
-      telescope.load_extension 'harpoon'
-    end
   end,
   keys = {
     {

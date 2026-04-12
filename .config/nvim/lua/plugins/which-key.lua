@@ -31,6 +31,7 @@ return {
         { '<leader>d', group = 'Debug' },
         -- { '<leader><leader>', group = 'Others' },
         { '<leader>t', group = 'Toggle' },
+        { '<leader>v', group = 'Version Control' },
 
         -- custom preset for marks
         -- { '`', function() require('which-key').show({ keys = '`', preset = 'modern' }) end },

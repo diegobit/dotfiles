@@ -6,7 +6,7 @@ return {
   dependencies = {
     --   "folke/snacks.nvim"
     -- or
-    'nvim-telescope/telescope.nvim',
+    'ibhagwan/fzf-lua',
   },
   opts = {
     picker_integration = true,
