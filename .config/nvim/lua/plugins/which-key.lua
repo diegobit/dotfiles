@@ -1,35 +1,21 @@
--- NOTE: Plugins can also be configured to run Lua code when they are loaded.
---
--- This is often very useful to both group configuration, as well as handle
--- lazy loading plugins that don't need to be loaded immediately at startup.
---
--- For example, in the following configuration, we use:
---  event = 'VimEnter'
---
--- which loads which-key before all the UI elements are loaded. Events can be
--- normal autocommands events (`:help autocmd-events`).
---
--- Then, because we use the `config` key, the configuration only runs
--- after the plugin has been loaded:
---  config = function() ... end
-
 return {
-  { -- Useful plugin to show you pending keybinds.
+  {
     'folke/which-key.nvim',
     version = '*',
-    event = 'VeryLazy', -- Sets the loading event to 'VimEnter'
-    config = function() -- This is the function that runs, AFTER loading
-      require('which-key').setup {
+    event = 'VeryLazy',
+    config = function()
+      local wk = require 'which-key'
+
+      wk.setup {
         preset = 'helix',
         icons = {
           separator = '│',
         },
       }
 
-      -- Document existing key chains
-      require('which-key').add {
+      local mappings = {
+        { '<leader>c', group = 'Code' },
         { '<leader>d', group = 'Debug' },
-        -- { '<leader><leader>', group = 'Others' },
         { '<leader>t', group = 'Toggle' },
         { '<leader>v', group = 'Version Control' },
 
@@ -37,13 +23,21 @@ return {
         -- { '`', function() require('which-key').show({ keys = '`', preset = 'modern' }) end },
 
         -- docs for MisanthropicBit/decipher.nvim
-        { 'g/', group = 'URL encoding', mode = { 'n', 'v' } },
-        { 'gb', group = 'Base64 encoding', mode = { 'n', 'v' } },
+        { 'g/', group = 'URL Encoding', mode = { 'n', 'v' } },
+        { 'gb', group = 'Base64 Encoding', mode = { 'n', 'v' } },
         { 'gbs', group = 'URL Safe', mode = { 'n', 'v' } },
 
         -- Rename commands
         { 'gx', desc = 'Open URL under cursor' },
       }
+
+      for i = 1, 9 do
+        if i > 1 then
+          table.insert(mappings, { '<leader>' .. i, hidden = true })
+        end
+      end
+
+      wk.add(mappings)
     end,
   },
 }

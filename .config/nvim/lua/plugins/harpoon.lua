@@ -6,43 +6,38 @@ return {
     local harpoon = require 'harpoon'
     harpoon:setup()
   end,
-  keys = {
-    {
-      '<C-h>',
-      function()
-        require('harpoon'):list():add()
-      end,
-    },
-    {
-      '<C-e>',
-      function()
-        require('harpoon').ui:toggle_quick_menu(require('harpoon'):list())
-      end,
-      desc = 'Open harpoon window',
-    },
-    {
-      '<C-j>',
-      function()
-        require('harpoon'):list():select(1)
-      end,
-    },
-    {
-      '<C-k>',
-      function()
-        require('harpoon'):list():select(2)
-      end,
-    },
-    {
-      '<C-l>',
-      function()
-        require('harpoon'):list():select(3)
-      end,
-    },
-    {
-      '<C-;>',
-      function()
-        require('harpoon'):list():select(4)
-      end,
-    },
-  },
+  keys = function()
+    local keys = {
+      {
+        '<leader>a',
+        function()
+          require('harpoon'):list():add()
+        end,
+        desc = 'Harpoon Add File',
+      },
+      {
+        '<leader>h',
+        function()
+          local harpoon = require 'harpoon'
+          harpoon.ui:toggle_quick_menu(harpoon:list())
+        end,
+        desc = 'Harpoon Quick Menu',
+      },
+    }
+
+    for i = 1, 9 do
+      local index = i
+      local desc = index == 1 and 'Harpoon Jump (1-9)' or 'Harpoon File ' .. index
+
+      table.insert(keys, {
+        '<leader>' .. index,
+        function()
+          require('harpoon'):list():select(index)
+        end,
+        desc = desc,
+      })
+    end
+
+    return keys
+  end,
 }

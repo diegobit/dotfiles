@@ -77,7 +77,7 @@ return {
 
       vim.keymap.set('n', '-', function()
         toggle_mini_files()
-      end, { desc = 'Open file explorer' })
+      end, { desc = 'Open File Explorer' })
 
       vim.api.nvim_create_user_command('Ex', function()
         open_mini_files()
@@ -107,7 +107,7 @@ return {
             mini_files.go_in { close_on_file = true }
           end, {
             buffer = args.data.buf_id,
-            desc = 'Open file or set local cwd',
+            desc = 'Open File or Set Local CWD',
           })
         end,
       })

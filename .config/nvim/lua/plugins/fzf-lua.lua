@@ -36,23 +36,23 @@ return {
 
     -- Keep the outer keymaps stable and accept fzf-lua's own picker UX.
     vim.keymap.set('n', '<leader><leader>', fzf.builtin, { desc = 'FzfLua Builtins' })
-    vim.keymap.set('n', '<leader>.', fzf.resume, { desc = 'Resume last search' })
+    vim.keymap.set('n', '<leader>.', fzf.resume, { desc = 'Resume Last Search' })
     vim.keymap.set('n', '<leader>:', fzf.command_history, { desc = 'Command History' })
 
     vim.keymap.set('n', '<leader>f', function()
       fzf.files {
         hidden = true,
       }
-    end, { desc = 'Find Project files' })
+    end, { desc = 'Find Project Files' })
     vim.keymap.set('n', '<leader>F', function()
       fzf.files {
         hidden = true,
         no_ignore = true,
       }
-    end, { desc = 'Find Project files (all)' })
+    end, { desc = 'Find Project Files (All)' })
     vim.keymap.set('n', '<leader>vf', fzf.vcs_files, { desc = 'Find VCS files' })
     vim.keymap.set('n', '<leader>vs', fzf.git_status, { desc = 'Git Status' })
-    vim.keymap.set('n', '<leader>R', fzf.oldfiles, { desc = 'Recently opened Files' })
+    vim.keymap.set('n', '<leader>r', fzf.oldfiles, { desc = 'Recently Opened Files' })
 
     vim.keymap.set('n', '<leader>w', fzf.grep_cword, { desc = 'Grep word in Project Files' })
     vim.keymap.set('n', '<leader>W', fzf.grep_cWORD, { desc = 'Grep WORD in Project Files' })
@@ -68,8 +68,8 @@ return {
       }
     end, { desc = 'Grep in Project Files (all)' })
 
-    vim.keymap.set('n', '<leader>b', fzf.buffers, { desc = 'List opened Buffers' })
+    vim.keymap.set('n', '<leader>b', fzf.buffers, { desc = 'Buffers' })
     vim.keymap.set('n', '<leader>D', fzf.diagnostics_workspace, { desc = 'Diagnostics' })
-    vim.keymap.set('n', '<leader>T', fzf.tabs, { desc = 'List Tabs' })
+    vim.keymap.set('n', '<leader>T', fzf.tabs, { desc = 'Tabs' })
   end,
 }
