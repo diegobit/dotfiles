@@ -98,7 +98,7 @@ return {
             end
 
             if entry.fs_type == 'directory' then
-              vim.cmd.lcd(vim.fn.fnameescape(entry.path))
+              vim.cmd.cd(vim.fn.fnameescape(entry.path))
               vim.cmd.pwd()
               mini_files.reveal_cwd()
               return
