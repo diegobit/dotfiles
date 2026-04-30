@@ -16,7 +16,7 @@ end, { desc = 'Decode Selected Text' })
 return {
   'MisanthropicBit/decipher.nvim',
   -- version = '*',
-  branch = 'add-commands',
+  branch = 'master',
   lazy = true, -- Load with keymap
   cmd = {
     'DecipherEncode',
