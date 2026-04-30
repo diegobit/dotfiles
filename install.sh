@@ -95,6 +95,7 @@ brew install php # for Alfred workflows
 brew install qlstephen # quicklook files
 brew install --cask jupyter-notebook-viewer
 brew install jq # json tool! Also required for formatting in nvim
+brew install yq # like jq, also for yaml. Often used by coding agents
 brew install parallel
 
 # ---------------------------------------------
