@@ -4,3 +4,9 @@
 **.spl
 **.sug
 .*api_key*
+.config/colima/_lima/
+.config/.colima/**
+.config/!.colima/
+.config/!.colima/*/
+.config/!.colima/*/colima.yaml
+.config/.lima/
