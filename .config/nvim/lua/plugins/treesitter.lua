@@ -17,11 +17,14 @@ return {
         'go',
         'javascript',
         'typescript',
+        'http',
       }
 
       require('nvim-treesitter').setup {
         install_dir = vim.fn.stdpath('data') .. '/site',
       }
+
+      require('nvim-treesitter').install(filetypes)
 
       vim.api.nvim_create_autocmd('FileType', {
         group = vim.api.nvim_create_augroup('kickstart-treesitter-start', { clear = true }),

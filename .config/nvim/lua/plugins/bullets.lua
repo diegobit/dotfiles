@@ -1,12 +1,40 @@
 local text_ft = { 'text', 'markdown' }
 
+local function cursor_is_between_fences()
+  local line = vim.api.nvim_get_current_line()
+  local cursor_col = vim.api.nvim_win_get_cursor(0)[2]
+  local before_cursor = line:sub(1, cursor_col)
+  local after_cursor = line:sub(cursor_col + 1)
+
+  return before_cursor:match('^%s*```.*$') ~= nil and after_cursor:match('^```%s*$') ~= nil
+end
+
+local function markdown_newline()
+  if cursor_is_between_fences() then
+    return require('nvim-autopairs').autopairs_cr()
+  end
+
+  local bullets_newline = vim.fn.maparg('<Plug>(bullets-newline)', 'i')
+  return vim.api.nvim_replace_termcodes(bullets_newline, true, false, true)
+end
+
 return {
   'bullets-vim/bullets.vim',
   ft = text_ft,
   event = 'BufReadPre',
   version = '*',
   keys = {
-    { '<CR>', '<Plug>(bullets-newline)', mode = 'i', ft = text_ft },
+    {
+      '<CR>',
+      markdown_newline,
+      mode = 'i',
+      ft = 'markdown',
+      expr = true,
+      replace_keycodes = false,
+      silent = true,
+      desc = 'Markdown newline',
+    },
+    { '<CR>', '<Plug>(bullets-newline)', mode = 'i', ft = 'text' },
     { '<C-CR>', '<Plug>(bullets-newline)', mode = 'i', ft = text_ft },
     { 'o', '<Plug>(bullets-newline)', mode = 'n', ft = text_ft },
     { 'g=', '<Plug>(bullets-renumber)', mode = { 'n', 'v' }, desc = 'Renumber paragraph', ft = text_ft },
