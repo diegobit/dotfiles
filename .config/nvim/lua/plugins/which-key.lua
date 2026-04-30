@@ -14,7 +14,7 @@ return {
       }
 
       local mappings = {
-        { '<leader>c', group = 'Code' },
+        { '<leader>c', group = 'Code', mode = { 'n', 'v' } },
         { '<leader>d', group = 'Debug' },
         { '<leader>t', group = 'Toggle' },
         { '<leader>v', group = 'Version Control' },
