@@ -7,6 +7,7 @@ fish_add_path $HOMEBREW_PREFIX/opt/icu4c/bin $HOMEBREW_PREFIX/opt/icu4c/sbin
 fish_add_path $HOMEBREW_PREFIX/opt/sqlite/bin
 fish_add_path $HOME/Library/pnpm
 fish_add_path $HOME/.lmstudio/bin
+fish_add_path "/Library/Application Support/org.pqrs/Karabiner-Elements/bin"
 fish_add_path /usr/local/go/bin
 fish_add_path $HOME/.cargo/bin    # rust
 fish_add_path $HOME/go/bin        # go
