@@ -1361,15 +1361,294 @@
                         ]
                     },
                     {
-                        "description": "[Internal] Globe/Fn alone -> F15, with other keys -> Fn",
+                        "description": "[Internal] Globe/Fn alone -> F15, Globe/Fn + F1-F12 -> Fn + F1-F12 [300ms]",
                         "manipulators": [
                             {
+                                "conditions": [
+                                    {
+                                        "identifiers": [{ "is_built_in_keyboard": true }],
+                                        "type": "device_if"
+                                    }
+                                ],
                                 "from": {
-                                    "apple_vendor_top_case_key_code": "keyboard_fn",
-                                    "modifiers": { "optional": ["any"] }
+                                    "modifiers": { "optional": ["any"] },
+                                    "simultaneous": [
+                                        { "key_code": "f15" },
+                                        { "key_code": "f1" }
+                                    ],
+                                    "simultaneous_options": { "key_down_order": "strict" }
                                 },
-                                "to": [{ "key_code": "fn" }],
-                                "to_if_alone": [{ "key_code": "f15" }],
+                                "parameters": { "basic.simultaneous_threshold_milliseconds": 300 },
+                                "to": [
+                                    {
+                                        "key_code": "f1",
+                                        "modifiers": ["fn"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [{ "is_built_in_keyboard": true }],
+                                        "type": "device_if"
+                                    }
+                                ],
+                                "from": {
+                                    "modifiers": { "optional": ["any"] },
+                                    "simultaneous": [
+                                        { "key_code": "f15" },
+                                        { "key_code": "f2" }
+                                    ],
+                                    "simultaneous_options": { "key_down_order": "strict" }
+                                },
+                                "parameters": { "basic.simultaneous_threshold_milliseconds": 300 },
+                                "to": [
+                                    {
+                                        "key_code": "f2",
+                                        "modifiers": ["fn"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [{ "is_built_in_keyboard": true }],
+                                        "type": "device_if"
+                                    }
+                                ],
+                                "from": {
+                                    "modifiers": { "optional": ["any"] },
+                                    "simultaneous": [
+                                        { "key_code": "f15" },
+                                        { "key_code": "f3" }
+                                    ],
+                                    "simultaneous_options": { "key_down_order": "strict" }
+                                },
+                                "parameters": { "basic.simultaneous_threshold_milliseconds": 300 },
+                                "to": [
+                                    {
+                                        "key_code": "f3",
+                                        "modifiers": ["fn"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [{ "is_built_in_keyboard": true }],
+                                        "type": "device_if"
+                                    }
+                                ],
+                                "from": {
+                                    "modifiers": { "optional": ["any"] },
+                                    "simultaneous": [
+                                        { "key_code": "f15" },
+                                        { "key_code": "f4" }
+                                    ],
+                                    "simultaneous_options": { "key_down_order": "strict" }
+                                },
+                                "parameters": { "basic.simultaneous_threshold_milliseconds": 300 },
+                                "to": [
+                                    {
+                                        "key_code": "f4",
+                                        "modifiers": ["fn"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [{ "is_built_in_keyboard": true }],
+                                        "type": "device_if"
+                                    }
+                                ],
+                                "from": {
+                                    "modifiers": { "optional": ["any"] },
+                                    "simultaneous": [
+                                        { "key_code": "f15" },
+                                        { "key_code": "f5" }
+                                    ],
+                                    "simultaneous_options": { "key_down_order": "strict" }
+                                },
+                                "parameters": { "basic.simultaneous_threshold_milliseconds": 300 },
+                                "to": [
+                                    {
+                                        "key_code": "f5",
+                                        "modifiers": ["fn"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [{ "is_built_in_keyboard": true }],
+                                        "type": "device_if"
+                                    }
+                                ],
+                                "from": {
+                                    "modifiers": { "optional": ["any"] },
+                                    "simultaneous": [
+                                        { "key_code": "f15" },
+                                        { "key_code": "f6" }
+                                    ],
+                                    "simultaneous_options": { "key_down_order": "strict" }
+                                },
+                                "parameters": { "basic.simultaneous_threshold_milliseconds": 300 },
+                                "to": [
+                                    {
+                                        "key_code": "f6",
+                                        "modifiers": ["fn"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [{ "is_built_in_keyboard": true }],
+                                        "type": "device_if"
+                                    }
+                                ],
+                                "from": {
+                                    "modifiers": { "optional": ["any"] },
+                                    "simultaneous": [
+                                        { "key_code": "f15" },
+                                        { "key_code": "f7" }
+                                    ],
+                                    "simultaneous_options": { "key_down_order": "strict" }
+                                },
+                                "parameters": { "basic.simultaneous_threshold_milliseconds": 300 },
+                                "to": [
+                                    {
+                                        "key_code": "f7",
+                                        "modifiers": ["fn"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [{ "is_built_in_keyboard": true }],
+                                        "type": "device_if"
+                                    }
+                                ],
+                                "from": {
+                                    "modifiers": { "optional": ["any"] },
+                                    "simultaneous": [
+                                        { "key_code": "f15" },
+                                        { "key_code": "f8" }
+                                    ],
+                                    "simultaneous_options": { "key_down_order": "strict" }
+                                },
+                                "parameters": { "basic.simultaneous_threshold_milliseconds": 300 },
+                                "to": [
+                                    {
+                                        "key_code": "f8",
+                                        "modifiers": ["fn"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [{ "is_built_in_keyboard": true }],
+                                        "type": "device_if"
+                                    }
+                                ],
+                                "from": {
+                                    "modifiers": { "optional": ["any"] },
+                                    "simultaneous": [
+                                        { "key_code": "f15" },
+                                        { "key_code": "f9" }
+                                    ],
+                                    "simultaneous_options": { "key_down_order": "strict" }
+                                },
+                                "parameters": { "basic.simultaneous_threshold_milliseconds": 300 },
+                                "to": [
+                                    {
+                                        "key_code": "f9",
+                                        "modifiers": ["fn"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [{ "is_built_in_keyboard": true }],
+                                        "type": "device_if"
+                                    }
+                                ],
+                                "from": {
+                                    "modifiers": { "optional": ["any"] },
+                                    "simultaneous": [
+                                        { "key_code": "f15" },
+                                        { "key_code": "f10" }
+                                    ],
+                                    "simultaneous_options": { "key_down_order": "strict" }
+                                },
+                                "parameters": { "basic.simultaneous_threshold_milliseconds": 300 },
+                                "to": [
+                                    {
+                                        "key_code": "f10",
+                                        "modifiers": ["fn"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [{ "is_built_in_keyboard": true }],
+                                        "type": "device_if"
+                                    }
+                                ],
+                                "from": {
+                                    "modifiers": { "optional": ["any"] },
+                                    "simultaneous": [
+                                        { "key_code": "f15" },
+                                        { "key_code": "f11" }
+                                    ],
+                                    "simultaneous_options": { "key_down_order": "strict" }
+                                },
+                                "parameters": { "basic.simultaneous_threshold_milliseconds": 300 },
+                                "to": [
+                                    {
+                                        "key_code": "f11",
+                                        "modifiers": ["fn"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [{ "is_built_in_keyboard": true }],
+                                        "type": "device_if"
+                                    }
+                                ],
+                                "from": {
+                                    "modifiers": { "optional": ["any"] },
+                                    "simultaneous": [
+                                        { "key_code": "f15" },
+                                        { "key_code": "f12" }
+                                    ],
+                                    "simultaneous_options": { "key_down_order": "strict" }
+                                },
+                                "parameters": { "basic.simultaneous_threshold_milliseconds": 300 },
+                                "to": [
+                                    {
+                                        "key_code": "f12",
+                                        "modifiers": ["fn"]
+                                    }
+                                ],
                                 "type": "basic"
                             }
                         ]
@@ -1716,6 +1995,10 @@
                         {
                             "from": { "key_code": "open_bracket" },
                             "to": [{ "key_code": "hyphen" }]
+                        },
+                        {
+                            "from": { "apple_vendor_top_case_key_code": "keyboard_fn" },
+                            "to": [{ "key_code": "f15" }]
                         }
                     ]
                 },
