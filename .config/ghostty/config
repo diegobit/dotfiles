@@ -106,7 +106,10 @@ keybind = super+ctrl+up=resize_split:up,50
 keybind = super+ctrl+right=resize_split:right,50
 
 # Enable hovering terminal like iterm
-keybind = global:super+shift+ctrl+g=toggle_quick_terminal
+keybind = global:alt+j=toggle_quick_terminal
+quick-terminal-position = center
+quick-terminal-animation-duration = 0
+quick-terminal-size = 40%,60%
 
 # use CMD+F to open scrollback
 keybind = super+o=write_screen_file:open
