@@ -56,7 +56,7 @@ require('lazy').setup({
 
   require 'plugins/markdown-preview',
 
-  require 'plugins/rest',
+  require 'plugins/kulala',
 
   require 'plugins/vim-fugitive',
 

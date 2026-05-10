@@ -18,6 +18,7 @@ return {
         { '<leader>d', group = 'Debug' },
         { '<leader>t', group = 'Toggle' },
         { '<leader>v', group = 'Version Control' },
+        { '<leader>x', group = 'HTTP (Kulala)' },
 
         -- custom preset for marks
         -- { '`', function() require('which-key').show({ keys = '`', preset = 'modern' }) end },
