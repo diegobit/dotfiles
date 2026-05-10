@@ -47,6 +47,8 @@ if status is-interactive
     end
 
     # Abbreviations
+    abbr -a . 'open .'
+    abbr -a o open
     abbr -a g git
     abbr -a gs 'git status'
     abbr -a gl 'git log'
