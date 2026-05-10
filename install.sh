@@ -33,6 +33,16 @@ fisher install IlanCosman/tide@v6
 # ---------------------------------------------
 brew install stow
 
+# NODEJS (yarn also required for some nvim plugins).
+# Move global to have all permissions (eg. claude complaints otherwise)
+# brew install node
+# brew install yarn
+# mkdir -p /Users/diego/.npm-global
+# npm -g config set prefix /Users/diego/.npm-global
+brew install node
+curl -fsSL https://get.pnpm.io/install.sh | sh -
+pnpm env use --global 22
+
 # ---------------------------------------------
 # Terminal/zsh
 # ---------------------------------------------
@@ -44,23 +54,12 @@ brew install resvg # see svg in yazi
 brew install poppler # pdf in yazi
 brew install imagemagick
 brew install lazygit
-brew install git-delta # lazygit diff theme
+brew install git-delta # lazygit diff theme # todo: remove if hunkdiff gets support
+pnpm add -g hunkdiff # better diff tool 'hunk diff FILE' #todo: check integration with lazygit or jj
 brew install fd
 brew install zoxide
 brew install tree
 brew install gum
-
-# NODEJS (yarn also required for some nvim plugins).
-# Move global to have all permissions (eg. claude complaints otherwise)
-# brew install node
-# brew install yarn
-# mkdir -p /Users/diego/.npm-global
-# npm -g config set prefix /Users/diego/.npm-global
-
-brew install node
-curl -fsSL https://get.pnpm.io/install.sh | sh -
-source ~/.zshrc
-pnpm env use --global 22
 
 # ---------------------------------------------
 # Aerospace
