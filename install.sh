@@ -101,8 +101,13 @@ brew install parallel
 # AI
 # ---------------------------------------------
 brew install aichat
-curl -fsSL https://opencode.ai/install | bash # opencode. Better for fast moving projects
+curl -fsSL https://opencode.ai/install | bash
 brew install codex
+curl -fsSL https://claude.ai/install.sh | bash
+# for document parsing skill of liteparse
+npm i -g @llamaindex/liteparse
+brew install imagemagick # to let liteparse parse images
+brew install --cask libreoffice # to let liteparse parse documents
 
 # ---------------------------------------------
 # Programming Languages and Frameworks, work
