@@ -12,7 +12,7 @@ metadata:
 
 ## Purpose
 
-Refine code for **clarity, consistency, and maintainability** while preserving **exact functionality**.
+Refine code for **clarity, consistency, maintainability, simplicity, elagance** while preserving **exact functionality**.
 
 This skill improves *how* code is written, **not** *what* it does.
 
@@ -32,23 +32,24 @@ Do **not** change:
 If you can’t be confident behavior is unchanged, **ask** for expected behavior/tests.
 
 ### Follow project standards (always)
-- If `CLAUDE.md` exists, treat it as the **source of truth**.
+- If `AGENTS.md` or `CLAUDE.md` exists, treat it as the **source of truth**.
 - Otherwise, follow repository conventions (lint/format, naming, patterns, directory structure).
 
-## Clarity heuristics (language-agnostic)
+## Principles
+
+The goal is to lower complexity.
 
 Prefer:
-- **reducing nesting** (guard clauses / early returns / extracting helpers when it clarifies intent)
 - removing **redundant code**, dead code, and unnecessary abstractions
-- improving naming to make intent obvious (variables, functions, types)
-- keeping functions/components/modules single-purpose
-- comments that explain **why** (rationale), not **what** (obvious mechanics)
-
-Hard rule:
-- **Avoid nested ternary operators** (or equivalent “dense inline branching” patterns).
-  Prefer clear multi-branch constructs (`if/else`, `switch`, pattern matching, or well-named helpers).
-
-## Balance: what *not* to do
+- Control complexity at every edit. Pick the simplest working design; refactor immediately if a change feels kludgy.
+- Favor deep modules. Expose a tiny, stable interface; hide as much logic as possible behind it.
+- Enforce information hiding. No internal data, types, or temporal ordering should leak across module boundaries.
+- Pull complexity downward. High-level code must remain obvious—push gritty details into helpers/utilities.
+- Remove duplication & special cases. Unify repeated logic; redesign so rare paths are handled automatically, not with if ladders.
+- Let names tell the story. Precise, consistent names; if naming is hard, the abstraction is wrong.
+- Comment intent, not mechanics. Explain why, constraints, and surprising decisions—never narrate what the code plainly shows.
+- Optimize for readers. Prefer clarity over clever tricks or micro-optimizations.
+- Think strategically, not tactically. Allocate steady effort to cleanup; reject “quick” hacks that create debt.
 
 Avoid “simplifications” that:
 - create clever/dense code that’s harder to read (one-liners, tricky short-circuiting, overly abstracted pipelines)
@@ -57,7 +58,7 @@ Avoid “simplifications” that:
 - prioritize fewer lines over maintainability
 - reduce debuggability (harder breakpoints/stack traces) without strong reason
 
-## When `CLAUDE.md` specifies language/framework rules
+## When `AGENTS.md` specifies language/framework rules
 
 Apply them exactly. Examples of project-standard rules you might see:
 - import/module conventions (e.g., ES modules, import sorting, extensions)
