@@ -111,6 +111,9 @@ quick-terminal-position = center
 quick-terminal-animation-duration = 0
 quick-terminal-size = 40%,60%
 
+# New window
+keybind = global:super+ctrl+alt+shift+g=new_window
+
 # use CMD+F to open scrollback
 keybind = super+o=write_screen_file:open
 keybind = super+p=write_screen_file:paste
