@@ -14,6 +14,8 @@ fish_add_path $HOME/go/bin        # go
 fish_add_path $HOME/.local/bin    # my path
 fish_add_path /Users/diego/.opencode/bin
 
+# pin colima's config dir so it never falls back to creating ~/.colima
+set -gx COLIMA_HOME "$HOME/.config/colima"
 # pnpm
 set -Ux PNPM_HOME $HOME/Library/pnpm
 fish_add_path $PNPM_HOME
