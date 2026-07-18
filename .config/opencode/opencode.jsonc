@@ -24,6 +24,15 @@
           "devtools"
         ],
         "enabled": true
+      },
+      "icloud-mail": {
+        "type": "remote",
+        "url": "https://icloud-mail.diegobit.com/mcp",
+        "enabled": true,
+        "oauth": false,
+        "headers": {
+          "Authorization": "Bearer {env:ICLOUD_MAIL_TOKEN}"
+        }
       }
     }
   //"plugin": ["@mohak34/opencode-notifier@latest"]
