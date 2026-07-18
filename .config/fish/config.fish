@@ -24,6 +24,7 @@ fish_add_path $PNPM_HOME
 set -gx EDITOR nvim
 set -gx XDG_CONFIG_HOME $HOME/.config
 set -gx GEMINI_API_KEY (cat ~/.gemini_api_key)
+set -gx ICLOUD_MAIL_TOKEN (cat ~/.icloud-mail-token)
 set -gx HOMEBREW_NO_ENV_HINTS 1
 
 # Google Cloud SDK
