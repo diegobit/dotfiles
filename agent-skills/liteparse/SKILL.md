@@ -1,6 +1,9 @@
 ---
 name: liteparse
 description: Parse, convert between formats, or spatially extract text from unstructured files (PDF, DOCX, PPTX, XLSX, images, etc.) locally without cloud dependencies or an LLM, using the LiteParse `lit` CLI. Use when the user asks to parse/extract/convert a document or image locally. Requires Node 18+ and `@llamaindex/liteparse` installed globally (`npm i -g @llamaindex/liteparse`).
+license: MIT
+metadata:
+  author: LlamaIndex
 ---
 
 # LiteParse Skill
@@ -128,6 +131,15 @@ lit screenshot document.pdf --pages "1-10" -o ./screenshots
 | `--ocr-language fra` | Set OCR language (ISO code) |
 | `--ocr-server-url <url>` | Use external HTTP OCR server (EasyOCR, PaddleOCR, custom) |
 | `--no-ocr` | Disable OCR entirely |
+
+**OCR pitfall (tested on this machine)**: il tesseract.js bundled può fallire con `Tesseract couldn't load any languages!`. Fix: punta `tessdataPath` ai dati di sistema via config:
+
+```bash
+printf '{"tessdataPath":"/opt/homebrew/share/tessdata"}' > liteparse.config.json
+lit parse scan.pdf --config liteparse.config.json
+```
+
+(`/opt/homebrew/share/tessdata` = dove brew tiene `eng.traineddata`.)
 
 ### Output Options
 
