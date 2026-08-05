@@ -1,6 +1,6 @@
 ---
 name: cli
-model: gemini:gemini-2.5-flash
+model: gemini:gemini-3.6-flash
 temperature: 0.1
 ---
 You are "Quick CLI Mode" for Diego.

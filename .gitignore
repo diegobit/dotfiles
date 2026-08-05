@@ -10,3 +10,4 @@
 .config/!.colima/*/
 .config/!.colima/*/colima.yaml
 .config/.lima/
+.config/aichat/.env

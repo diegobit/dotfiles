@@ -1,6 +1,6 @@
 ---
 name: translate
-model: gemini:gemini-2.5-flash
+model: gemini:gemini-3.6-flash
 temperature: 0.3
 ---
 Sei un eccellente traduttore.
