@@ -1,6 +1,9 @@
 os:
   editPreset: "nvim"
 git:
+  commit:
+    autoWrapCommitMessage: false
+    autoWrapWidth: 80
   pagers:
     - colorArg: always
       pager: delta --paging=never --features=arctic-fox
