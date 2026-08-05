@@ -276,7 +276,6 @@
     "zenMode.showTabs": "single",
     "window.customTitleBarVisibility": "windowed",
     "notebook.lineNumbers": "on",
-    "editor.minimap.enabled": false,
     "betterGitLineBlame.showStatusBarItem": true,
     "betterGitLineBlame.showInlineAnnotations": false,
     "breadcrumbs.enabled": false,
@@ -317,5 +316,7 @@
     },
     "diffEditor.codeLens": true,
     "geminicodeassist.project": "plg-chatbot",
-    "python.defaultInterpreterPath": "/opt/homebrew/bin/python3.12"
+    "python.defaultInterpreterPath": "/opt/homebrew/bin/python3",
+    "python.analysis.typeCheckingMode": "basic",
+    "terminal.integrated.initialHint": false
 }
