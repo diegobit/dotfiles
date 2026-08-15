@@ -13,8 +13,11 @@ fish_add_path $HOME/go/bin        # go (installed binaries)
 fish_add_path $HOME/.local/bin    # my path
 fish_add_path /Users/diego/.opencode/bin
 
+# docker host because I use colima
+set -gx DOCKER_HOST "unix://$HOME/.config/colima/default/docker.sock"
 # pin colima's config dir so it never falls back to creating ~/.colima
 set -gx COLIMA_HOME "$HOME/.config/colima"
+
 # pnpm
 set -Ux PNPM_HOME $HOME/Library/pnpm
 fish_add_path $PNPM_HOME
