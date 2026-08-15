@@ -27,6 +27,9 @@ set -gx GEMINI_API_KEY (cat ~/.gemini_api_key)
 set -gx ICLOUD_MAIL_TOKEN (cat ~/.icloud-mail-token)
 set -gx HOMEBREW_NO_ENV_HINTS 1
 
+# mise runtime manager (Node, Ruby, etc.)
+~/.local/bin/mise activate fish | source
+
 # Google Cloud SDK
 source $HOMEBREW_PREFIX/Caskroom/gcloud-cli/latest/google-cloud-sdk/path.fish.inc
 

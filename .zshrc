@@ -120,7 +120,7 @@ eval "$(zoxide init --cmd j zsh)"
 ##############################
 # MISE (ruby)
 ##############################
-eval "$(~/.local/bin/mise activate)"
+eval "$(~/.local/bin/mise activate zsh)"
 
 ##############################
 # GOOGLE CLOUD
