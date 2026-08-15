@@ -1,0 +1,10 @@
+[tools]
+ruby = "3"
+node = "lts"
+opentofu = "latest"
+go = "latest"
+terraform = "1.5.7"
+bun = "latest"
+
+[settings]
+idiomatic_version_file_enable_tools = ["node", "ruby", "go"]

@@ -32,7 +32,7 @@ export PATH="$PATH:${HOMEBREW_PREFIX}/opt/sqlite/bin"
 # things installed manually
 export PATH="$PATH:$HOME/Library/pnpm"
 export PATH="$PATH:$HOME/.lmstudio/bin" # lmstudio
-export PATH="$PATH:/usr/local/go/bin" # golang
+export PATH="$PATH:$HOME/go/bin" # go (installed binaries)
 export PATH="$PATH:$HOME/.cargo/bin" # rust
 export PATH="$PATH:$HOME/.local/bin" # python uv
 export PATH="$PATH:$HOME/bin" # my things

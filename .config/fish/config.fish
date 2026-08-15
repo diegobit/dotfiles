@@ -8,9 +8,8 @@ fish_add_path $HOMEBREW_PREFIX/opt/sqlite/bin
 fish_add_path $HOME/Library/pnpm
 fish_add_path $HOME/.lmstudio/bin
 fish_add_path "/Library/Application Support/org.pqrs/Karabiner-Elements/bin"
-fish_add_path /usr/local/go/bin
 fish_add_path $HOME/.cargo/bin    # rust
-fish_add_path $HOME/go/bin        # go
+fish_add_path $HOME/go/bin        # go (installed binaries)
 fish_add_path $HOME/.local/bin    # my path
 fish_add_path /Users/diego/.opencode/bin
 
