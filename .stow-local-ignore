@@ -26,9 +26,3 @@ _darcs
 install.sh
 .DS_Store
 
-# Colima is linked by install.sh, not stow. On a machine where
-# ~/.config/colima does not exist yet, stow would fold the whole directory
-# into a single symlink pointing at this repo -- and colima would then write
-# tens of GB of VM state (_lima, disk images, datadisk) inside the working
-# tree. Only the per-profile colima.yaml should ever be linked.
-^/\.config/colima$
