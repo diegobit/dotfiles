@@ -1,9 +1,9 @@
 ---
-name: get-harness-history
+name: harness-history
 description: Read past conversations from the 5 local AI chat stores (Claude Code, Codex, t3.code, Antigravity, opencode). Use when the user asks "leggi la chat di <provider> chiamata <nome>", "read the chat of <provider> named <title>", or wants to find/search/export conversation history, sessions, or transcripts. Use the bundled chat-read.sh script FIRST — it wraps all queries below and avoids re-deriving them.
 ---
 
-# Get Harness History — chat di 5 provider
+# Harness History — chat di 5 provider
 
 Obiettivo: trovare e leggere conversazioni passate di **Claude Code, Codex, t3.code, Antigravity, opencode**. Prima di scrivere query a mano usa sempre `scripts/chat-read.sh` (tutte le ricette sotto sono già lì dentro).
 
