@@ -4,6 +4,6 @@ git:
   commit:
     autoWrapCommitMessage: false
     autoWrapWidth: 80
-  pagers:
+  diffRenderers:
     - colorArg: always
-      pager: delta --paging=never --features=arctic-fox
+      command: delta --paging=never --features=arctic-fox
