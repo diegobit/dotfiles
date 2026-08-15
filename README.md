@@ -83,3 +83,26 @@ Install VSCode, then:
 
 After everything, run:
 `sudo ln -sf /Users/diego/.config/colima/default/docker.sock /var/run/docker.sock`
+
+### Why colima is not stowed
+
+Colima keeps its config *and* its state in the same directory, and that state
+grows to tens of GB (`_lima/`, disk images, the container `datadisk`). So
+`~/.config/colima` is a **real directory that must stay outside this repo** —
+only the per-profile `colima.yaml` is versioned here and symlinked into it:
+
+```
+~/.config/colima/                      real dir, VM state, never in git
+├── _lima/, _store/, ssh_config
+├── default/colima.yaml  ─┐
+└── amd64/colima.yaml    ─┴─→ ~/dotfiles/.config/colima/<profile>/colima.yaml
+```
+
+`.config/colima` is therefore in `.stow-local-ignore`: on a machine where
+`~/.config/colima` does not exist yet, `stow .` would fold the whole directory
+into one symlink pointing here, and colima would fill the working tree. The
+links are created by `install.sh` instead.
+
+`~/.config/colima` is also colima's own default when `COLIMA_HOME` is unset, so
+non-fish shells (`$SHELL` is zsh) resolve to the same VMs. Never create
+`~/.colima` — it silently takes precedence over everything above.

@@ -4,10 +4,15 @@
 **.spl
 **.sug
 .*api_key*
-.config/colima/_lima/
-.config/.colima/**
-.config/!.colima/
-.config/!.colima/*/
-.config/!.colima/*/colima.yaml
-.config/.lima/
+# Colima's home is ~/.config/colima, a real directory OUTSIDE this repo: it
+# holds tens of GB of VM state (_lima, disks, datadisk). Only the per-profile
+# colima.yaml lives here, symlinked into that home. These are belt-and-braces
+# in case the whole dir ever gets linked in again.
+.config/colima/*
+!.config/colima/default/
+!.config/colima/amd64/
+.config/colima/default/*
+!.config/colima/default/colima.yaml
+.config/colima/amd64/*
+!.config/colima/amd64/colima.yaml
 .config/aichat/.env

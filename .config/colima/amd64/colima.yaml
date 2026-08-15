@@ -16,7 +16,7 @@ memory: 8
 #
 # NOTE: value cannot be changed after virtual machine is created.
 # Default: host
-arch: host
+arch: x86_64
 
 # Container runtime to be used (docker, containerd).
 #
@@ -30,12 +30,12 @@ runtime: docker
 # ramalama: Uses Ramalama.
 #
 # Default: docker
-modelRunner: ""
+modelRunner: docker
 
 # Set custom hostname for the virtual machine.
 # Default: colima
 #          colima-profile_name for other profiles
-hostname: colima
+hostname: colima-amd64
 
 # Kubernetes configuration for the virtual machine.
 kubernetes:
@@ -46,7 +46,7 @@ kubernetes:
   # Kubernetes version to use.
   # This needs to exactly match a k3s version https://github.com/k3s-io/k3s/releases
   # Default: latest stable release
-  version: v1.30.2+k3s1
+  version: v1.35.0+k3s1
   
   # Additional args to pass to k3s https://docs.k3s.io/cli/server
   # Default: traefik is disabled
@@ -76,13 +76,13 @@ network:
   # Network mode for the virtual machine (shared, bridged).
   # NOTE: this is currently macOS only and ignored on Linux.
   # Default: shared
-  mode: ""
+  mode: shared
   
   # Network interface to use for bridged mode.
   # This is only used when mode is set to bridged.
   # NOTE: this is currently macOS only and ignored on Linux.
   # Default: en0
-  interface: ""
+  interface: en0
   
   # Use the assigned IP address as the preferred route for the VM.
   # Note: this only has an effect when `address` is set to true.
@@ -95,9 +95,7 @@ network:
   # dns: [8.8.8.8, 1.1.1.1]
   #
   # Default: []
-  dns:
-    - 1.1.1.1
-    - 8.8.8.8
+  dns: null
   
   # DNS hostnames to resolve to custom targets using the internal resolver.
   # This setting has no effect if a custom DNS resolver list is supplied above.
@@ -107,8 +105,7 @@ network:
   # EXAMPLE
   # dnsHosts:
   #   example.com: 1.2.3.4
-  dnsHosts:
-    host.docker.internal: host.lima.internal
+  dnsHosts: {}
   
   # Replicate host IP addresses in the VM. This enables port forwarding to specific
   # host IP addresses.
@@ -125,7 +122,7 @@ network:
   # gatewayAddress: 192.168.10.2
   #
   # Default: 192.168.5.2
-  gatewayAddress: null
+  gatewayAddress: 192.168.5.2
 
 # ===================================================================== #
 # ADVANCED CONFIGURATION
@@ -199,13 +196,13 @@ mountType: sshfs
 
 # Propagate inotify file events to the VM.
 # NOTE: this is experimental.
-mountInotify: false
+mountInotify: true
 
 # The CPU type for the virtual machine (requires vmType `qemu`).
 # Options available for host emulation can be checked with: `qemu-system-$(arch) -cpu help`.
 # Instructions are also supported by appending to the cpu type e.g. "qemu64,+ssse3".
 # Default: host
-cpuType: host
+cpuType: ""
 
 # Custom provision scripts for the virtual machine.
 # Provisioning scripts are executed on startup and therefore needs to be idempotent.
@@ -234,7 +231,7 @@ cpuType: host
 #     script: echo "everything is ready"
 #
 # Default: []
-provision: []
+provision: null
 
 # Modify ~/.ssh/config automatically to include a SSH config for the virtual machine.
 # SSH config will still be generated in $COLIMA_HOME/ssh_config regardless.

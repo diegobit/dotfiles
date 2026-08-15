@@ -185,6 +185,17 @@ ln -sfn $HOMEBREW_PREFIX/opt/docker-compose/bin/docker-compose ~/.docker/cli-plu
 ln -sfn $(which docker-buildx) ~/.docker/cli-plugins/docker-buildx
 docker buildx install
 
+# Colima's home stays OUTSIDE this repo: it grows to tens of GB of VM state
+# (_lima, disk images, the datadisk). Only the per-profile colima.yaml is
+# versioned here and linked in. ~/.config/colima is also colima's own default
+# when COLIMA_HOME is unset, so non-fish shells find the same VMs.
+echo "👉 Link colima profile configs into ~/.config/colima"
+for profile in default amd64; do
+  mkdir -p ~/.config/colima/$profile
+  ln -sfn ../../../dotfiles/.config/colima/$profile/colima.yaml \
+    ~/.config/colima/$profile/colima.yaml
+done
+
 # --------------------------------------------- 
 # MacOS settings
 # https://macos-defaults.com/
