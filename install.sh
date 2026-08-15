@@ -218,6 +218,12 @@ defaults write com.knollsoft.Rectangle sizeOffset -float 150
 defaults write com.knollsoft.Rectangle applyGapsToMaximize -int 3
 
 # ---------------------------------------------
+# Time Machine weekly exclusions background job
+# ---------------------------------------------
+echo "Setting up weekly Time Machine background exclusion daemon..."
+"$HOME/dotfiles/bin/tm-exclusions.sh" --install-daemon || true
+
+# ---------------------------------------------
 # Manual actions
 # ---------------------------------------------
 echo "⚠️  Proceed with manual steps from README.md"

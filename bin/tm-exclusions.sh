@@ -2,8 +2,27 @@
 # ==============================================================================
 # tm-exclusions.sh - Sync Time Machine exclusions (caches, node_modules, venvs)
 # ==============================================================================
+# Usage:
+#   tm-exclusions.sh                   # Run and sync all exclusions
+#   tm-exclusions.sh --dry-run         # Preview changes without modifying
+#   tm-exclusions.sh --install-daemon  # Install weekly background LaunchDaemon
+#   tm-exclusions.sh --uninstall-daemon# Remove weekly background LaunchDaemon
+# ==============================================================================
 
 set -euo pipefail
+
+DAEMON_LABEL="com.diegobit.tm-exclusions"
+DAEMON_PLIST="/Library/LaunchDaemons/${DAEMON_LABEL}.plist"
+SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
+
+# If running as root (e.g. via launchd daemon), dynamically resolve the active user's home
+if [ "${HOME:-}" = "/var/root" ] || [ -z "${HOME:-}" ]; then
+    CONSOLE_USER=$(stat -f "%Su" /dev/console 2>/dev/null || echo "")
+    if [ -n "$CONSOLE_USER" ] && [ "$CONSOLE_USER" != "root" ]; then
+        HOME=$(eval echo "~$CONSOLE_USER")
+        export HOME
+    fi
+fi
 
 # 1. Standard global caches and heavy disposable directories
 EXCLUSIONS=(
@@ -23,6 +42,87 @@ EXCLUSIONS=(
     "$HOME/Library/Application Support/Ferdium/Partitions"
     "$HOME/dotfiles/.config/colima/_lima"
 )
+
+# Install background daemon
+install_daemon() {
+    if [ "$EUID" -ne 0 ]; then
+        echo "Elevating with sudo to install LaunchDaemon..."
+        exec sudo "$0" --install-daemon
+    fi
+
+    echo "Creating LaunchDaemon at $DAEMON_PLIST..."
+    cat <<EOF > "$DAEMON_PLIST"
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>${DAEMON_LABEL}</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>${SCRIPT_PATH}</string>
+    </array>
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Weekday</key>
+        <integer>7</integer>
+        <key>Hour</key>
+        <integer>3</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+    <key>LowPriorityIO</key>
+    <true/>
+    <key>Nice</key>
+    <integer>19</integer>
+    <key>ProcessType</key>
+    <string>Background</string>
+    <key>StandardOutPath</key>
+    <string>/var/log/tm-exclusions.log</string>
+    <key>StandardErrorPath</key>
+    <string>/var/log/tm-exclusions.log</string>
+</dict>
+</plist>
+EOF
+
+    chmod 644 "$DAEMON_PLIST"
+    chown root:wheel "$DAEMON_PLIST"
+
+    # Reload daemon
+    launchctl bootout "system/${DAEMON_LABEL}" 2>/dev/null || launchctl unload "$DAEMON_PLIST" 2>/dev/null || true
+    launchctl bootstrap system "$DAEMON_PLIST" 2>/dev/null || launchctl load -w "$DAEMON_PLIST" 2>/dev/null || true
+
+    echo "✔ Weekly Time Machine exclusions daemon installed (runs Sundays at 03:00 AM, low CPU/IO background priority)."
+    exit 0
+}
+
+# Uninstall background daemon
+uninstall_daemon() {
+    if [ "$EUID" -ne 0 ]; then
+        echo "Elevating with sudo to remove LaunchDaemon..."
+        exec sudo "$0" --uninstall-daemon
+    fi
+
+    if [ -f "$DAEMON_PLIST" ]; then
+        launchctl bootout "system/${DAEMON_LABEL}" 2>/dev/null || launchctl unload "$DAEMON_PLIST" 2>/dev/null || true
+        rm -f "$DAEMON_PLIST"
+        echo "✔ LaunchDaemon removed."
+    else
+        echo "LaunchDaemon is not installed."
+    fi
+    exit 0
+}
+
+# Handle daemon install/uninstall flags
+case "${1:-}" in
+    --install-daemon)
+        install_daemon
+        ;;
+    --uninstall-daemon)
+        uninstall_daemon
+        ;;
+esac
 
 # Elevate privileges if not dry-run
 if [[ "${1:-}" != "--dry-run" && "${1:-}" != "-n" && "$EUID" -ne 0 ]]; then
