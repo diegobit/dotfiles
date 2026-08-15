@@ -62,10 +62,6 @@ FIXED_EXCLUSIONS=(
     "$HOME/dotfiles/.config/colima/_lima"
     "$HOME/.config/colima"
     "$HOME/Library/Caches/colima"
-
-    # Heavy local project datasets
-    "$HOME/code/next/next-ai-tts/dataset_creation"
-    "$HOME/code/next/next-ai-tts/generate-wav"
 )
 
 # Dynamic dependency/build patterns to exclude inside $CODE_DIR
