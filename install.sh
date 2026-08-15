@@ -194,6 +194,8 @@ defaults write com.apple.finder "FXRemoveOldTrashItems" -bool "true"
 defaults write com.apple.finder "FXEnableExtensionChangeWarning" -bool "false"
 defaults write NSGlobalDomain "AppleShowAllExtensions" -bool "true"
 defaults write NSGlobalDomain "NSCloseAlwaysConfirmsChanges" -bool "false"
+defaults -currentHost write -globalDomain NSStatusItemSpacing -int 12
+defaults -currentHost write -globalDomain NSStatusItemSelectionPadding -int 8
 killall Finder
 
 defaults write com.apple.AppleMultitouchTrackpad "FirstClickThreshold" -int "0"
