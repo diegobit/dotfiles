@@ -3,17 +3,20 @@
 # tm-exclusions.sh - Sync Time Machine exclusions (caches, node_modules, venvs)
 # ==============================================================================
 # Usage:
-#   tm-exclusions.sh                   # Run and sync all exclusions
+#   tm-exclusions.sh                   # Run and sync all exclusions (manual/forced)
 #   tm-exclusions.sh --dry-run         # Preview changes without modifying
-#   tm-exclusions.sh --install-daemon  # Install weekly background LaunchDaemon
-#   tm-exclusions.sh --uninstall-daemon# Remove weekly background LaunchDaemon
+#   tm-exclusions.sh --scheduled       # Periodic run (skips if run in last 7 days)
+#   tm-exclusions.sh --install-daemon  # Install background LaunchDaemon
+#   tm-exclusions.sh --uninstall-daemon# Remove background LaunchDaemon
 # ==============================================================================
 
 set -euo pipefail
 
 DAEMON_LABEL="com.diegobit.tm-exclusions"
 DAEMON_PLIST="/Library/LaunchDaemons/${DAEMON_LABEL}.plist"
+STAMP_FILE="/var/tmp/.tm-exclusions-last-run"
 SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
+MIN_INTERVAL_DAYS=7
 
 # If running as root (e.g. via launchd daemon), dynamically resolve the active user's home
 if [ "${HOME:-}" = "/var/root" ] || [ -z "${HOME:-}" ]; then
@@ -43,7 +46,7 @@ EXCLUSIONS=(
     "$HOME/dotfiles/.config/colima/_lima"
 )
 
-# Install background daemon
+# Install background daemon (RunAtLoad + daily interval with 7-day rate limiter)
 install_daemon() {
     if [ "$EUID" -ne 0 ]; then
         echo "Elevating with sudo to install LaunchDaemon..."
@@ -62,16 +65,12 @@ install_daemon() {
     <array>
         <string>/bin/bash</string>
         <string>${SCRIPT_PATH}</string>
+        <string>--scheduled</string>
     </array>
-    <key>StartCalendarInterval</key>
-    <dict>
-        <key>Weekday</key>
-        <integer>7</integer>
-        <key>Hour</key>
-        <integer>3</integer>
-        <key>Minute</key>
-        <integer>0</integer>
-    </dict>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>StartInterval</key>
+    <integer>86400</integer>
     <key>LowPriorityIO</key>
     <true/>
     <key>Nice</key>
@@ -93,7 +92,7 @@ EOF
     launchctl bootout "system/${DAEMON_LABEL}" 2>/dev/null || launchctl unload "$DAEMON_PLIST" 2>/dev/null || true
     launchctl bootstrap system "$DAEMON_PLIST" 2>/dev/null || launchctl load -w "$DAEMON_PLIST" 2>/dev/null || true
 
-    echo "✔ Weekly Time Machine exclusions daemon installed (runs Sundays at 03:00 AM, low CPU/IO background priority)."
+    echo "✔ Weekly background daemon installed (resilient to reboots, sleeps, and power-offs; low CPU/IO)."
     exit 0
 }
 
@@ -124,6 +123,19 @@ case "${1:-}" in
         ;;
 esac
 
+# Check rate limit if invoked with --scheduled (for launchd background runs)
+if [[ "${1:-}" == "--scheduled" ]]; then
+    if [ -f "$STAMP_FILE" ]; then
+        LAST_RUN=$(stat -f "%m" "$STAMP_FILE" 2>/dev/null || echo 0)
+        NOW=$(date +%s)
+        DIFF_DAYS=$(( (NOW - LAST_RUN) / 86400 ))
+        if [ "$DIFF_DAYS" -lt "$MIN_INTERVAL_DAYS" ]; then
+            echo "[$(date '+%Y-%m-%d %H:%M:%S')] Last sync was $DIFF_DAYS day(s) ago (< $MIN_INTERVAL_DAYS). Skipping."
+            exit 0
+        fi
+    fi
+fi
+
 # Elevate privileges if not dry-run
 if [[ "${1:-}" != "--dry-run" && "${1:-}" != "-n" && "$EUID" -ne 0 ]]; then
     echo "Elevating with sudo for tmutil SkipPaths..."
@@ -151,6 +163,7 @@ add_exclusion() {
     fi
 }
 
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting Time Machine exclusion sync..."
 echo "==> Syncing fixed caches..."
 for dir in "${EXCLUSIONS[@]}"; do
     add_exclusion "$dir"
@@ -176,5 +189,9 @@ while IFS= read -r item; do
         fi
     fi
 done <<< "$current_skippaths"
+
+if [ "$DRY_RUN" = false ]; then
+    touch "$STAMP_FILE" 2>/dev/null || true
+fi
 
 echo "✔ Done."
