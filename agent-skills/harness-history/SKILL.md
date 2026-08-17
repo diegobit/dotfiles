@@ -1,27 +1,28 @@
 ---
 name: harness-history
-description: Read past conversations from local AI chat stores (Claude Code, Codex, t3.code, Antigravity, opencode). Use when the user asks "read the chat of <provider> named <title>", "get conversation history for <provider>", or wants to find/search/export conversation history, sessions, or transcripts.
+description: Read past conversations from local AI chat stores (Claude Code, Codex, t3.code, Antigravity app, Antigravity CLI, opencode). Use when the user asks "read the chat of <provider> named <title>", "get conversation history for <provider>", or wants to find/search/export conversation history, sessions, or transcripts.
 ---
 
-# Harness History — 5 Provider Chat Stores
+# Harness History — 6 Provider Chat Stores
 
-Find and read past conversations from **Claude Code, Codex, t3.code, Antigravity, and opencode** using `scripts/chat-read.sh`.
+Find and read past conversations from **Claude Code, Codex, t3.code, Antigravity app, Antigravity CLI (agy), and opencode** using `scripts/chat-read.sh`.
 
 ## Supported Providers & Storage
 
 | Provider | Storage Location | Content Format |
 |---|---|---|
-| Claude Code | `~/.claude/projects/<project-dir>/<uuid>.jsonl` | JSONL events |
-| Codex | `~/.codex/sessions/YYYY/MM/DD/rollout-*.jsonl` | JSONL events |
-| t3.code | `/Users/diego/.t3/userdata/state.sqlite` | SQLite (`projection_threads`, `projection_thread_messages`) |
-| Antigravity | `~/.gemini/antigravity/brain/<uuid>/.system_generated/logs/transcript.jsonl` | Human-readable transcript JSONL |
-| opencode | `~/.local/share/opencode/opencode.db` | SQLite (`session`, `message`, `part`) |
+| `claude` | `~/.claude/projects/<project-dir>/<uuid>.jsonl` | JSONL events |
+| `codex` | `~/.codex/sessions/YYYY/MM/DD/rollout-*.jsonl` | JSONL events |
+| `t3` | `/Users/diego/.t3/userdata/state.sqlite` | SQLite (`projection_threads`, `projection_thread_messages`) |
+| `antigravity` | `~/.gemini/antigravity/brain/<uuid>/.system_generated/logs/transcript.jsonl` | Human-readable transcript JSONL |
+| `antigravity-cli` (alias `agy`) | `~/.gemini/antigravity-cli/brain/<uuid>/.system_generated/logs/transcript.jsonl` | Human-readable transcript JSONL |
+| `opencode` | `~/.local/share/opencode/opencode.db` | SQLite (`session`, `message`, `part`) |
 
 ## Usage
 
 ```bash
 # List conversations (columns: id | date | title/workspace | project)
-scripts/chat-read.sh list claude|codex|t3|antigravity|opencode [search-text]
+scripts/chat-read.sh list claude|codex|t3|antigravity|antigravity-cli|opencode [search-text]
 
 # Print conversation in plain text (user/assistant only)
 scripts/chat-read.sh get  <provider> <chat-id-or-title>
