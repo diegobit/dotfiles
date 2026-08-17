@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# chat-read.sh — leggi conversazioni da Claude Code, Codex, t3.code, Antigravity, opencode
-# Uso:
-#   chat-read.sh list <provider> [testo]      elenca chat: id | data | titolo/workspace | progetto
-#   chat-read.sh get  <provider> <id|titolo>  stampa la conversazione in testo puro
+# chat-read.sh — read conversations from Claude Code, Codex, t3.code, Antigravity, opencode
+# Usage:
+#   chat-read.sh list <provider> [text]      list chats: id | date | title/workspace | project
+#   chat-read.sh get  <provider> <id|title>  print conversation in plain text
 set -euo pipefail
 
 CLAUDE_ROOT="$HOME/.claude/projects"
@@ -15,8 +15,8 @@ PROVIDERS="claude|codex|t3|antigravity|opencode"
 
 usage() {
   cat <<EOF
-chat-read.sh list <provider> [testo-cerca]
-chat-read.sh get  <provider> <id-chat-o-titolo>
+chat-read.sh list <provider> [search-text]
+chat-read.sh get  <provider> <chat-id-or-title>
 provider: $PROVIDERS
 EOF
   exit 1
@@ -51,7 +51,7 @@ get_claude() {
       id="$(printf '%s\n' "$m" | cut -f1)"
       f="$CLAUDE_ROOT/$(printf '%s\n' "$m" | cut -f4)/$id.jsonl"
     else
-      printf 'Trovate %s chat per "%s", indica un id:\n%s\n' "$n" "$query" "$m"
+      printf 'Found %s chats for "%s", please specify an id:\n%s\n' "$n" "$query" "$m"
       return 1
     fi
   fi
@@ -79,7 +79,7 @@ get_codex() {
   local query="$1" f
   f="$(find "$CODEX_ROOT" -name "rollout-*${query}*.jsonl" 2>/dev/null | head -1)"
   if [ -z "$f" ]; then
-    printf 'Codex non ha titoli: passa un id (es. 019f1c7b-c38f-7931-af3d-718232a0c98e) o cerca per contenuto:\n  grep -rl "%s" %s\n' "$query" "$CODEX_ROOT"
+    printf 'Codex has no titles: pass an id (e.g. 019f1c7b-c38f-7931-af3d-718232a0c98e) or search by content:\n  grep -rl "%s" %s\n' "$query" "$CODEX_ROOT"
     return 1
   fi
   jq -r '
@@ -106,7 +106,7 @@ get_t3() {
     local m; m="$(list_t3 "$query")"
     local n; n="$(printf '%s\n' "$m" | grep -c . || true)"
     if [ "$n" = "1" ]; then id="$(printf '%s\n' "$m" | cut -f1)"
-    else printf 'Trovate %s chat per "%s", indica un id:\n%s\n' "$n" "$query" "$m"; return 1; fi
+    else printf 'Found %s chats for "%s", please specify an id:\n%s\n' "$n" "$query" "$m"; return 1; fi
   fi
   sqlite3 -separator $'\n' "$T3_DB" \
     "SELECT '['||role||'] '||text FROM projection_thread_messages WHERE thread_id='$id' ORDER BY created_at, message_id"
@@ -130,7 +130,7 @@ get_antigravity() {
     local m; m="$(list_antigravity "$query")"
     local n; n="$(printf '%s\n' "$m" | grep -c . || true)"
     if [ "$n" = "1" ]; then id="$(printf '%s\n' "$m" | cut -f1)"
-    else printf 'Trovate %s chat per "%s", indica un id:\n%s\n' "$n" "$query" "$m"; return 1; fi
+    else printf 'Found %s chats for "%s", please specify an id:\n%s\n' "$n" "$query" "$m"; return 1; fi
   }
   jq -r '
     select(.type=="USER_INPUT" or .type=="PLANNER_RESPONSE")
@@ -154,7 +154,7 @@ get_opencode() {
     local m; m="$(list_opencode "$query")"
     local n; n="$(printf '%s\n' "$m" | grep -c . || true)"
     if [ "$n" = "1" ]; then id="$(printf '%s\n' "$m" | cut -f1)"
-    else printf 'Trovate %s chat per "%s", indica un id:\n%s\n' "$n" "$query" "$m"; return 1; fi
+    else printf 'Found %s chats for "%s", please specify an id:\n%s\n' "$n" "$query" "$m"; return 1; fi
   fi
   sqlite3 -separator $'\t' "$OC_DB" \
     "SELECT json_extract(m.data,'$.role'), json_extract(p.data,'$.type'), p.data
