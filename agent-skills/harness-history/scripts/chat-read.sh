@@ -9,9 +9,10 @@ CLAUDE_ROOT="$HOME/.claude/projects"
 CODEX_ROOT="$HOME/.codex/sessions"
 T3_DB="/Users/diego/.t3/userdata/state.sqlite"
 ANTI_ROOT="$HOME/.gemini/antigravity"
+ANTI_CLI_ROOT="$HOME/.gemini/antigravity-cli"   # agy workers: separate store, same format
 OC_DB="$HOME/.local/share/opencode/opencode.db"
 
-PROVIDERS="claude|codex|t3|antigravity|opencode"
+PROVIDERS="claude|codex|t3|antigravity|antigravity-cli (agy)|opencode"
 
 usage() {
   cat <<EOF
@@ -112,10 +113,10 @@ get_t3() {
     "SELECT '['||role||'] '||text FROM projection_thread_messages WHERE thread_id='$id' ORDER BY created_at, message_id"
 }
 
-# ---------- ANTIGRAVITY ----------
+# ---------- ANTIGRAVITY (app and agy CLI: two separate stores, identical format) ----------
 list_antigravity() {
-  local q="$1"
-  for d in "$ANTI_ROOT"/brain/*/; do
+  local root="$1" q="$2"
+  for d in "$root"/brain/*/; do
     local t="$d.system_generated/logs/transcript.jsonl"
     [ -f "$t" ] || continue
     local id; id="$(basename "$d")"
@@ -125,9 +126,9 @@ list_antigravity() {
 }
 
 get_antigravity() {
-  local query="$1" id="$1"
-  [ -f "$ANTI_ROOT/brain/$id/.system_generated/logs/transcript.jsonl" ] || {
-    local m; m="$(list_antigravity "$query")"
+  local root="$1" query="$2" id="$2"
+  [ -f "$root/brain/$id/.system_generated/logs/transcript.jsonl" ] || {
+    local m; m="$(list_antigravity "$root" "$query")"
     local n; n="$(printf '%s\n' "$m" | grep -c . || true)"
     if [ "$n" = "1" ]; then id="$(printf '%s\n' "$m" | cut -f1)"
     else printf 'Found %s chats for "%s", please specify an id:\n%s\n' "$n" "$query" "$m"; return 1; fi
@@ -135,7 +136,7 @@ get_antigravity() {
   jq -r '
     select(.type=="USER_INPUT" or .type=="PLANNER_RESPONSE")
     | "\n===== \(.type) \(.created_at // "") =====\n" + (.content // "")' \
-    "$ANTI_ROOT/brain/$id/.system_generated/logs/transcript.jsonl"
+    "$root/brain/$id/.system_generated/logs/transcript.jsonl"
 }
 
 # ---------- OPENCODE ----------
@@ -177,7 +178,9 @@ case "$prov" in
   claude)      case "$cmd" in list) list_claude "$q";; get) get_claude "$q";; *) usage;; esac ;;
   codex)       case "$cmd" in list) list_codex "$q";; get) get_codex "$q";; *) usage;; esac ;;
   t3)          case "$cmd" in list) list_t3 "$q";; get) get_t3 "$q";; *) usage;; esac ;;
-  antigravity) case "$cmd" in list) list_antigravity "$q";; get) get_antigravity "$q";; *) usage;; esac ;;
+  antigravity) case "$cmd" in list) list_antigravity "$ANTI_ROOT" "$q";; get) get_antigravity "$ANTI_ROOT" "$q";; *) usage;; esac ;;
+  antigravity-cli|agy)
+               case "$cmd" in list) list_antigravity "$ANTI_CLI_ROOT" "$q";; get) get_antigravity "$ANTI_CLI_ROOT" "$q";; *) usage;; esac ;;
   opencode)    case "$cmd" in list) list_opencode "$q";; get) get_opencode "$q";; *) usage;; esac ;;
   *) usage ;;
 esac
