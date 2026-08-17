@@ -1,16 +1,12 @@
 ---
 name: flash-worker
-description: Delegate bounded implementation, refactors, test-writing, codebase audits, or parallel multi-file work to an autonomous Gemini 3.7 Flash subagent via the Antigravity CLI (`agy`). Runs either in write mode, returning an ownership-scoped diff to review, or in enforced read-only mode for investigations and second opinions — both keep verbose execution and build logs out of the main context.
+description: Delegate implementation, refactors, tests, codebase audits, or parallel multi-file work to autonomous Gemini 3.7 Flash workers, keeping verbose execution out of the main context. Write mode returns an ownership-scoped diff to review; read-only mode is enforced for investigations and second opinions.
 ---
 
 # Flash Worker Subagent
 
-Delegate implementation or investigation tasks to **Gemini 3.7 Flash** (High reasoning) through
-`scripts/flash.sh`, a wrapper around the Antigravity CLI (`agy`).
-
-Always use the wrapper. `agy` has six quirks that fail *silently* — wrong workspace, wrong resume
-target, truncated timeouts, empty-but-"successful" runs — and the wrapper makes each one impossible
-to express. They are documented in the script's header comment if you need to debug or re-verify them.
+Delegate implementation or investigation tasks to **Gemini 3.7 Flash** (High reasoning) by running
+`scripts/flash.sh`.
 
 ---
 
@@ -30,16 +26,16 @@ flash [-r] [-d DIR] [-n LANE] "task text"     spawn a worker (task may also come
 flash -c [-n LANE] "correction"               resume this lane's last worker
 flash -p [-n LANE]                            peek at live progress and partial output
 flash -k [-n LANE]                            kill a running worker
-flash --selftest                              verify the wrapper against the installed agy
+flash --selftest                              check the tooling is working end to end
 ```
 
 `-r` read-only · `-d` workspace (default `$PWD`) · `-n` lane name (default `default`).
 
 stdout is the worker's report and nothing else, so it is safe to pipe or capture.
-Model (`gemini-3.7-flash`), effort (`high`) and timeout (`10h`) are fixed in the script — the long
-timeout is deliberate, so *you* decide when a worker has run too long and kill it.
+Model and reasoning effort are fixed. Workers have no practical deadline, by design — *you* decide
+when one has run too long and kill it.
 
-**Exit codes:** `0` ok · `1` agy error (including `-k`) · `2` empty response · `3` crash · `64` usage.
+**Exit codes:** `0` ok · `1` worker error (including `-k`) · `2` empty response · `3` crash · `64` usage.
 This is your first acceptance gate — `flash … || handle`. On any failure the wrapper still prints
 whatever the worker produced, rebuilt from the stream, so partial work is never lost.
 
@@ -143,7 +139,7 @@ Model and effort are inherited from the original run.
 
 ## If Something Looks Wrong
 
-Run `flash --selftest`. It spins up a throwaway workspace and checks, against the live `agy`, that the
-worker can reach the workspace, that read-only mode really blocks writes, and that write mode really
-edits files. If it fails, the script's header comment explains each quirk, how to re-verify it by hand,
-and which line to patch — keep this file and that script in sync in the same commit.
+Run `flash --selftest`. It spins up a throwaway workspace and checks that a worker can reach the
+workspace, that read-only mode really blocks writes, and that write mode really edits files.
+If it fails, read the script's header comment: it documents the underlying behaviour, how to
+re-verify each part by hand, and which line to patch. Keep the script and this file in sync.
