@@ -50,12 +50,14 @@ Use `scripts/flash.sh` relative to this skill's base directory, or the path all 
 FLASH=~/dotfiles/agent-skills/flash-worker/scripts/flash.sh
 ```
 
-Since `-d` defaults to `$PWD`, `cd` to the workspace first (or pass `-d`).
+`-d` defaults to `$PWD`, but pass it explicitly for anything beyond a one-shot call. A worker is
+identified by `(workspace, lane)`, so `-p`, `-c` and `-k` only find it when given the same `-d` it
+was spawned with — a mismatched working directory reports the worker as missing, not as running.
 
 ### Implementation task
 
 ```bash
-cd "$REPO" && "$FLASH" -n api <<'EOF'
+"$FLASH" -d "$REPO" -n api <<'EOF'
 ROLE
 Implement the specified task. Do not change architecture, APIs, or out-of-scope files.
 
@@ -89,7 +91,7 @@ Heredocs are the natural way to pass a packet — no shell-quoting of multi-line
 ### Read-only investigation
 
 ```bash
-cd "$REPO" && "$FLASH" -r -n audit "Audit src/auth.ts for concurrency bugs. Report findings only."
+"$FLASH" -r -d "$REPO" -n audit "Audit src/auth.ts for concurrency bugs. Report findings only."
 ```
 
 `-r` blocks writes at the harness level, so `Allowed to change: NONE` is enforced rather than merely
@@ -100,21 +102,20 @@ requested. Verified: the worker still reads and runs commands, but the workspace
 Background each lane, then poll:
 
 ```bash
-cd "$REPO" && "$FLASH" -n api  "…" > /tmp/api.out  2>/tmp/api.err  &
-cd "$REPO" && "$FLASH" -n web  "…" > /tmp/web.out  2>/tmp/web.err  &
+"$FLASH" -d "$REPO" -n api "…" > /tmp/api.out 2>/tmp/api.err &
+"$FLASH" -d "$REPO" -n web "…" > /tmp/web.out 2>/tmp/web.err &
 
-"$FLASH" -p -n api        # RUNNING/finished, step feed, output so far
-"$FLASH" -k -n api        # give up on a worker; partial edits stay on disk
+"$FLASH" -p -d "$REPO" -n api    # RUNNING/finished, step feed, output so far
+"$FLASH" -k -d "$REPO" -n api    # give up on a worker; partial edits stay on disk
 ```
 
 ### Iterating
 
 ```bash
-"$FLASH" -c -n api "Test test_login failed: <error>. Fix and re-run verification."
+"$FLASH" -c -d "$REPO" -n api "Test test_login failed: <error>. Fix and re-run verification."
 ```
 
-Resume targets that lane's conversation by id, so it stays correct with many workers in flight.
-Model and effort are inherited from the original run.
+Resume targets that lane's own worker, so it stays correct with many in flight.
 
 ---
 
