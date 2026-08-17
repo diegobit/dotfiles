@@ -47,11 +47,14 @@ whatever the worker produced, rebuilt from the stream, so partial work is never 
 
 ## Usage
 
-Invoke by absolute path, or `cd` to the workspace first since `-d` defaults to `$PWD`:
+This skill is shared by several harnesses, so do not assume a harness-specific skills root.
+Use `scripts/flash.sh` relative to this skill's base directory, or the path all of them resolve to:
 
 ```bash
-FLASH=~/.claude/skills/flash-worker/scripts/flash.sh
+FLASH=~/dotfiles/agent-skills/flash-worker/scripts/flash.sh
 ```
+
+Since `-d` defaults to `$PWD`, `cd` to the workspace first (or pass `-d`).
 
 ### Implementation task
 
