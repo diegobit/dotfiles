@@ -22,7 +22,7 @@ Delegate implementation or investigation tasks to **Gemini 3.7 Flash** (High rea
 ## Interface
 
 ```
-flash [-r] [-d DIR] [-n LANE] "task text"     spawn a worker (task may also come from stdin)
+flash [-r] [-d DIR] [-n LANE] "task"          spawn a worker (packet normally arrives via stdin — see Usage)
 flash -c [-n LANE] "correction"               resume this lane's last worker
 flash -p [-n LANE]                            peek at live progress and partial output
 flash -k [-n LANE]                            kill a running worker
@@ -54,48 +54,49 @@ FLASH=~/dotfiles/agent-skills/flash-worker/scripts/flash.sh
 identified by `(workspace, lane)`, so `-p`, `-c` and `-k` only find it when given the same `-d` it
 was spawned with — a mismatched working directory reports the worker as missing, not as running.
 
-### Implementation task
+### The packet
+
+Provide a packet to every invocation. Implementation and
+read-only investigation use the same shape; only `OWNERSHIP` differs.
 
 ```bash
 "$FLASH" -d "$REPO" -n api <<'EOF'
 ROLE
-Implement the specified task. Do not change architecture, APIs, or out-of-scope files.
+<implement | investigate>. Do not exceed the scope below.
 
 OBJECTIVE
 <goal and concrete acceptance criteria>
 
 OWNERSHIP
-Allowed to change:
-- <absolute paths>
-Must NOT touch:
-- <protected/out-of-scope paths>
+Allowed to change: <absolute paths>        # read-only runs: NONE (enforced by -r)
+Must NOT touch: <protected/out-of-scope paths>
 Preserve all unrelated changes.
 
-INTERFACES & CONSTRAINTS
-- <APIs, contracts, schemas to preserve>
+METHOD & CONSTRAINTS
+- Enumerate directly with commands; never estimate, infer, or recall.
+- <APIs, contracts, schemas to preserve, or search scope>
 
 VERIFICATION
-- Command: <pytest | npm test | cargo check>
+- Command: <pytest | npm test | ls -1 X | wc -l>
   Expected: <expected outcome>
 
 RETURN
 STATUS: complete | partial | blocked
-CHANGES: <summary of edits>
-VERIFIED: <test output>
+EVIDENCE: for every number or claim, the exact command and its verbatim output,
+  pasted before the conclusion it supports. No output, no claim.
+FINDINGS / CHANGES: <only what EVIDENCE above supports>
 GAPS / BLOCKERS: <issues or none>
+
+Report nothing outside these headings. Any figure you could not produce a command
+for belongs in GAPS, not FINDINGS.
 EOF
 ```
 
 Heredocs are the natural way to pass a packet — no shell-quoting of multi-line text.
 
-### Read-only investigation
-
-```bash
-"$FLASH" -r -d "$REPO" -n audit "Audit src/auth.ts for concurrency bugs. Report findings only."
-```
-
-`-r` blocks writes at the harness level, so `Allowed to change: NONE` is enforced rather than merely
-requested. Verified: the worker still reads and runs commands, but the workspace stays untouched.
+For read-only work add `-r`, which blocks writes at the harness level so `OWNERSHIP: NONE` is
+enforced rather than merely requested. Verified: the worker still reads and runs commands, but
+the workspace stays untouched.
 
 ### Long or parallel runs
 
@@ -136,10 +137,14 @@ Resume targets that lane's own worker, so it stays correct with many in flight.
 ## Review & Acceptance Gate
 
 1. **Exit code** — non-zero means don't trust the output. Covers transport errors and empty responses.
-2. **Worker self-report** — the `STATUS:` / `VERIFIED:` lines. The exit code says the CLI ran; only
-   these say the task succeeded.
-3. **Inspect diff** — `git diff` to confirm changes stayed strictly within `OWNERSHIP`.
-4. **Iterate** — `flash -c -n <lane>` to correct in place rather than restarting.
+2. **Check EVIDENCE, not the summary** — any figure without pasted command output is unverified;
+   any breakdown that doesn't reconcile with its stated total means re-run with `-c`, don't patch
+   it by hand.
+3. **Worker self-report** — the `STATUS:` / `FINDINGS` / `CHANGES` lines. The exit code says the
+   CLI ran; only these say the task succeeded.
+4. **Inspect diff** — `git diff` to confirm changes stayed strictly within `OWNERSHIP`. Skipped
+   under `-r`, where the workspace should show no diff at all.
+5. **Iterate** — `flash -c -n <lane>` to correct in place rather than restarting.
 
 ---
 

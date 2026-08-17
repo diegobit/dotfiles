@@ -53,7 +53,7 @@
 #    response. The two flags are complementary; read-only mode needs BOTH.
 #
 # 6. status == SUCCESS does NOT mean the task succeeded — only that the CLI ran.
-#    An empty response is a failure (exit 2). The worker's own STATUS:/VERIFIED:
+#    An empty response is a failure (exit 2). The worker's own STATUS:/EVIDENCE:
 #    lines in its report are the real signal; the caller must still read them.
 #
 # Also: agy prints single-line JSON with escaped \n. Never `echo "$captured"` —
