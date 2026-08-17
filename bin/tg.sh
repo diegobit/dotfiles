@@ -2,10 +2,9 @@
 # Send a Telegram message. Usage: tg [-p <profilo>] '<text_message>'
 #
 # I segreti stanno in ~/.telegram-bot-token-<profilo> e ~/.telegram-chat-id-<profilo>.
-#   dg   -> notifiche personali (chat privata)
+#   dg   -> notifiche personali Diego
 #   ait  -> canale "AIT Alerts"
 # Il profilo di default è "dg", salvo che ~/.telegram-default-profile dica altro
-# (sul Jetson contiene "ait": lì tutto è allarme di automazione).
 #
 # Versione shell-agnostic della funzione tg in ~/.config/fish/config.fish:
 # serve a cron, agli script e alle shell non interattive.
