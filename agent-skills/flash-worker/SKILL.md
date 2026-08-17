@@ -102,12 +102,17 @@ requested. Verified: the worker still reads and runs commands, but the workspace
 Background each lane, then poll:
 
 ```bash
-"$FLASH" -d "$REPO" -n api "…" > /tmp/api.out 2>/tmp/api.err &
-"$FLASH" -d "$REPO" -n web "…" > /tmp/web.out 2>/tmp/web.err &
+mkdir -p /tmp/flash
+"$FLASH" -d "$REPO" -n api "…" > /tmp/flash/api.out 2>/tmp/flash/api.err &
+"$FLASH" -d "$REPO" -n web "…" > /tmp/flash/web.out 2>/tmp/flash/web.err &
 
 "$FLASH" -p -d "$REPO" -n api    # RUNNING/finished, step feed, output so far
 "$FLASH" -k -d "$REPO" -n api    # give up on a worker; partial edits stay on disk
 ```
+
+Keep these redirect files under `/tmp/flash/` so they cannot collide with unrelated temp files.
+Lane names only have to be unique *within* a workspace, so if you run the same lane name against
+two workspaces at once, qualify the filenames too (`/tmp/flash/<project>-api.out`).
 
 ### Iterating
 
