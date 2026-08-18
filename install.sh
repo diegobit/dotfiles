@@ -18,7 +18,6 @@ brew upgrade
 # ---------------------------------------------
 brew install coreutils # gnu utils
 # brew install bash
-brew install zsh
 brew install git
 brew install fish
 sudo git lfs install --system
@@ -44,7 +43,7 @@ curl -fsSL https://get.pnpm.io/install.sh | sh -
 pnpm env use --global 22
 
 # ---------------------------------------------
-# Terminal/zsh
+# Terminal
 # ---------------------------------------------
 # brew install --cask kitty
 brew install ripgrep
