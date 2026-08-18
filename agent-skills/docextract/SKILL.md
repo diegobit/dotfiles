@@ -102,6 +102,8 @@ Add `--no-recursive` to stay at the top level, `--no-page-marks` to drop the
 | `--json` | per-page structured records (implies max-fidelity text) |
 | `--pages "1-5,10"` | page selection, 1-based (PDF only) |
 | `--force-ocr` | OCR every page even where a text layer exists |
+| `--image-ocr` | also OCR large images on pages that *do* have a text layer, to recover text baked into a picture (off by default — it adds lower-confidence text beside the exact text layer) |
+| `--probe` | report what the document contains and which mode suits it, then exit |
 | `--screenshot DIR` | render pages to PNG instead of extracting |
 | `--dpi N` | screenshot DPI (default 150); OCR always renders at 300 |
 | `--no-page-marks` | omit the page-marker comments |
@@ -111,19 +113,43 @@ Add `--no-recursive` to stay at the top level, `--no-page-marks` to drop the
 Exit codes: `0` ok, `1` hard failure, `3` ran but extracted no text at all. **Check for exit 3** —
 it means the document defeated every engine, which is the signal to look at a screenshot.
 
-## Choosing the mode
+## Choosing the mode — don't guess, ask the document
 
-- Default (markdown) is for *humans and storage*: headings and tables are reconstructed, which
-  costs a little raw fidelity (F1 0.9568 vs 0.9964).
-- `--text` / `--json` are for *answering questions*: nothing is reformatted, so figures and
-  identifiers survive verbatim. Prefer these when you will quote or compute from the output.
+The two table shapes want opposite modes, so a fixed rule would be wrong half the time.
+Rather than remember that, **run `--probe` once** and let the document tell you:
 
-**For tables, use `--text`.** Measured on real engineering fee schedules and financial
-statements: `--text` keeps every row's label bound to its own value (cell-binding 1.00, tied
-best of 8 tools) and survives a table continuing across a page break; the markdown mode scores
-0.98 and an independent grader rated it 8/20 vs 18/20 on multi-page tables, because markdown
-forces a fresh table per page. Markdown mode also occasionally runs words together
-(`direzionelavori`) via `pymupdf4llm`.
+```bash
+$SK/docextract.py report.pdf --probe
+```
+
+```jsonc
+{ "pages": 7,
+  "scanned_pages": [],              // no text layer -> OCR'd either way
+  "table_pages": [1,3,4,5,6,7],
+  "stacked_header_pages": [6,7],    // markdown likely better on THESE pages
+  "row_group_pages": [],            // sideways group labels -> read the row-group comments
+  "figure_pages": [1],              // only vision can answer about these
+  "image_text_pages": [],           // add --image-ocr to read text baked into a picture
+  "recommend": "--text",
+  "then_recheck_pages_with_markdown": [6,7],
+  "because": ["6 ruled table page(s): --text keeps every row bound to its own value …"] }
+```
+
+The decision procedure:
+
+1. **Start with `--text`.** It is best or tied-best on every axis measured — born-digital 0.9949,
+   OCR 0.9712, table cell-binding 1.0000 — and it is the fastest. When in doubt, this is the answer.
+2. **Use the default markdown mode** when you are converting *for storage or for a human*, or for
+   the pages `--probe` lists in `stacked_header_pages`. Re-extract just those:
+   `--pages "6,7"` without `--text`.
+3. **Use `--json`** when the document is long and you want to read only some pages, or you need
+   `engine` / `row_groups` / `figures` per page. Its text is the same max-fidelity text as `--text`.
+4. **Use `--screenshot` and look** for anything in `figure_pages`, to confirm a
+   `stacked_header_pages` flag, or whenever a row reads oddly. No text mode substitutes for this.
+5. **Add `--image-ocr`** for pages in `image_text_pages` if the answer might be inside a picture.
+
+`--probe` is a heuristic and says so: `stacked_header_pages` over-flags (a wrapped single-level
+header can trip it), which is why step 2 says confirm with a screenshot rather than trusting it.
 
 ## Tables: what you get
 
@@ -171,9 +197,13 @@ $SK/docextract.py report.pdf --screenshot /tmp/shots --pages "22" --dpi 150
 
 - Vision OCR normalizes some punctuation (an em-dash may come back as `-`). Don't treat OCR'd
   punctuation as byte-exact.
-- A page holding a *text layer plus text baked into an image* is treated as a text page, so the
-  in-image text is not OCR'd. Use `--force-ocr` if you need it (this costs the text layer's
-  exactness, so prefer running both and comparing).
+- A page holding a *text layer plus text baked into an image* keeps only the text layer by
+  default. `--image-ocr` recovers the in-image text and appends it under an explicit
+  `<!-- text found inside an image on this page (OCR) -->` marker, keeping the exact text layer
+  intact; lines already covered by the text layer are dropped so the page is not duplicated.
+  It is off by default because it mixes OCR guesses in beside exact text (it costs ~2 s per page
+  with a full-page image, and drops token precision from 0.996 to 0.816 against a text-layer-only
+  reference — the added text is real, but it is not in the reference).
 - Rotated/overlapping text in figures comes out garbled by every engine tested.
 - Superscripts flatten (`10^20` → `1020`). If exponents matter, check a screenshot.
 - Stacked multi-level column headers (a group header over sub-columns) survive better in

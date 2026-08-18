@@ -225,6 +225,120 @@ def rotated_group_labels(page, min_chars=3, left_frac=0.25):
     return out
 
 
+def image_regions(page, min_area_frac=0.15):
+    """Raster images big enough to plausibly carry text, as page rectangles."""
+    page_area = abs(page.rect.width * page.rect.height) or 1.0
+    rects = []
+    for img in page.get_images(full=True):
+        try:
+            for r in page.get_image_rects(img[0]):
+                if abs(r.width * r.height) / page_area >= min_area_frac:
+                    rects.append(r)
+        except Exception:  # noqa: BLE001 - a broken xref must not kill extraction
+            continue
+    return rects
+
+
+def new_lines_only(ocr_text, known_tokens, min_new=0.4):
+    """Keep OCR lines that are not already covered by the page's text layer.
+
+    A full-page image sits under the text layer, so OCR-ing it returns the page's own
+    words again plus whatever is baked into the picture. Only the latter is worth adding.
+    """
+    out = []
+    for line in ocr_text.split('\n'):
+        toks = [t for t in re.findall(r"[0-9A-Za-zÀ-ÿ']+", line.lower()) if len(t) > 2]
+        if not toks:
+            continue
+        fresh = sum(1 for t in toks if t not in known_tokens)
+        if fresh / len(toks) >= min_new:
+            out.append(line.strip())
+    return out
+
+
+def has_stacked_header(page, band=14, min_hits=6):
+    """Detect a multi-level column header: a spanning row above finer sub-columns.
+
+    Slice the page horizontally and count how many vertical rules cross each slice; a
+    slice with noticeably FEWER column boundaries sitting directly above one with more
+    is a header cell spanning sub-columns. Measured on this corpus: 12 hits on the
+    stacked-header page versus 3, 1 and 1 on a simple 3-column table, a financial
+    statement and a prose page. Heuristic, hence the margin.
+    """
+    verts = []
+    for d in page.get_drawings():
+        for it in d.get('items', []):
+            if it[0] == 'l' and abs(it[1].x - it[2].x) < 1.5 and abs(it[1].y - it[2].y) > 3:
+                verts.append((round(it[1].x, 1), min(it[1].y, it[2].y), max(it[1].y, it[2].y)))
+            elif it[0] == 're' and it[1].height > 3:
+                r = it[1]
+                verts += [(round(r.x0, 1), r.y0, r.y1), (round(r.x1, 1), r.y0, r.y1)]
+    if len(verts) < 6:
+        return False
+    counts, y = [], page.rect.y0
+    while y < page.rect.y1:
+        counts.append(len({x for x, a, b in verts if a <= y + band / 2 <= b}))
+        y += band
+    hits = sum(1 for i in range(len(counts) - 1)
+               if 2 <= counts[i] < counts[i + 1] and counts[i + 1] - counts[i] >= 2)
+    return hits >= min_hits
+
+
+def probe(path):
+    """Report what a PDF contains so the caller can pick a mode from data, not a guess."""
+    import pymupdf
+    doc = pymupdf.open(path)
+    info = {'file': path, 'pages': doc.page_count, 'scanned_pages': [], 'table_pages': [],
+            'stacked_header_pages': [], 'row_group_pages': [], 'figure_pages': [],
+            'image_text_pages': []}
+    for i in range(doc.page_count):
+        pg = doc[i]
+        n = len((pg.get_text(sort=True) or '').strip())
+        if n < TEXT_LAYER_MIN_CHARS:
+            info['scanned_pages'].append(i + 1)
+            continue
+        if is_table_page(pg):
+            info['table_pages'].append(i + 1)
+            if has_stacked_header(pg):
+                info['stacked_header_pages'].append(i + 1)
+        if rotated_group_labels(pg):
+            info['row_group_pages'].append(i + 1)
+        if count_figures(pg):
+            info['figure_pages'].append(i + 1)
+        if image_regions(pg):
+            info['image_text_pages'].append(i + 1)
+    doc.close()
+
+    # The recommendation is per page, not per document: a single file often mixes
+    # row-per-record tables (which want --text) with stacked-header tables (which want
+    # markdown), so a single document-level verdict would be wrong for half of it.
+    why = []
+    if info['scanned_pages']:
+        why.append(f'{len(info["scanned_pages"])} page(s) have no text layer; those are OCR\'d '
+                   f'with Apple Vision either way')
+    if info['table_pages']:
+        why.append(f'{len(info["table_pages"])} ruled table page(s): --text keeps every row '
+                   f'bound to its own value (cell binding 1.00)')
+    if info['stacked_header_pages']:
+        why.append(f'pages {info["stacked_header_pages"][:8]} look like they have stacked '
+                   f'multi-level headers, where markdown scored better (18/20 vs 9/20). This is '
+                   f'a heuristic and does over-flag (a wrapped single-level header can trip it) '
+                   f'-- confirm with --screenshot before re-extracting those pages')
+    if info['row_group_pages']:
+        why.append(f'pages {info["row_group_pages"][:8]} have sideways row-group labels; read '
+                   f'the row-group comments before attributing a row to a group')
+    if info['figure_pages']:
+        why.append(f'pages {info["figure_pages"][:8]} hold figures; no text mode can answer a '
+                   f'question about those, use --screenshot and look')
+    if info['image_text_pages']:
+        why.append(f'pages {info["image_text_pages"][:8]} carry a large image that may have text '
+                   f'baked in; add --image-ocr to recover it')
+    info['recommend'] = '--text'
+    info['then_recheck_pages_with_markdown'] = info['stacked_header_pages']
+    info['because'] = why
+    return info
+
+
 def strip_rotated_fragments(text, groups):
     """Remove sideways-label glyphs that landed inside unrelated table rows.
 
@@ -310,7 +424,7 @@ def count_figures(page, min_area_frac=0.03):
 
 
 # --------------------------------------------------------------------------- PDF
-def extract_pdf(path, pages_spec=None, force_ocr=False, want='md'):
+def extract_pdf(path, pages_spec=None, force_ocr=False, want='md', image_ocr=False):
     """Returns (list_of_page_dicts, meta). Each page: {page, text, engine, chars}."""
     try:
         import pymupdf
@@ -323,7 +437,7 @@ def extract_pdf(path, pages_spec=None, force_ocr=False, want='md'):
         die(f'no pages selected from {path} (document has {doc.page_count})')
 
     # classify each page
-    text_pages, ocr_pages, chars = [], [], {}
+    text_pages, ocr_pages, chars, img_pages = [], [], {}, []
     for i in idxs:
         n = 0 if force_ocr else len((doc[i].get_text(sort=True) or '').strip())
         chars[i] = n
@@ -416,6 +530,26 @@ def extract_pdf(path, pages_spec=None, force_ocr=False, want='md'):
                             t = marker + '\n' + t
                     else:
                         t = marker + '\n' + t
+                # A page can carry a text layer AND text baked into a picture; the text
+                # layer alone silently loses the latter. OCR just the image regions and
+                # append whatever the text layer does not already cover.
+                regions = image_regions(doc[i])
+                if regions:
+                    img_pages.append(i + 1)
+                if regions and t and image_ocr:
+                    known = set(re.findall(r"[0-9a-zà-ÿ']+", t.lower()))
+                    extra = []
+                    for n, r in enumerate(regions):
+                        if tmpdir is None:
+                            tmpdir = tempfile.mkdtemp(prefix='docextract_')
+                        png = os.path.join(tmpdir, f'img{i+1}_{n}.png')
+                        z = OCR_DPI / 72.0
+                        doc[i].get_pixmap(matrix=pymupdf.Matrix(z, z), clip=r).save(png)
+                        got = vision_ocr(png) or ''
+                        extra += new_lines_only(got, known)
+                    if extra:
+                        t += ('\n\n<!-- text found inside an image on this page (OCR) -->\n'
+                              + '\n'.join(extra))
                 groups = rotated_group_labels(doc[i])
                 if groups:
                     t = strip_rotated_fragments(t, groups)
@@ -434,7 +568,8 @@ def extract_pdf(path, pages_spec=None, force_ocr=False, want='md'):
 
     meta = {'pages_total': doc.page_count, 'pages_done': len(out),
             'ocr_pages': [p + 1 for p in ocr_pages],
-            'figure_pages': [p['page'] for p in out if p.get('figures')]}
+            'figure_pages': [p['page'] for p in out if p.get('figures')],
+            'image_text_pages': sorted(set(img_pages))}
     doc.close()
     return out, meta
 
@@ -518,10 +653,10 @@ def extract_office(path):
 
 
 # --------------------------------------------------------------------- top level
-def extract(path, pages=None, force_ocr=False, want='md'):
+def extract(path, pages=None, force_ocr=False, want='md', image_ocr=False):
     ext = os.path.splitext(path)[1].lower()
     if ext in PDF_EXT:
-        return extract_pdf(path, pages, force_ocr, want)
+        return extract_pdf(path, pages, force_ocr, want, image_ocr)
     if ext in IMG_EXT:
         return extract_image(path)
     if ext in OFFICE_EXT:
@@ -586,6 +721,13 @@ def main():
     ap.add_argument('--pages', help='page selection, e.g. "1-5,10" (PDF only)')
     ap.add_argument('--force-ocr', action='store_true',
                     help='OCR every page even if a text layer exists')
+    ap.add_argument('--image-ocr', action='store_true',
+                    help='also OCR large images sitting on pages that DO have a text layer, '
+                         'to recover text baked into a picture (off by default: it adds '
+                         'lower-confidence text beside the exact text layer)')
+    ap.add_argument('--probe', action='store_true',
+                    help='report what the document contains and which mode suits it, '
+                         'then exit (cheap; reads no page twice)')
     ap.add_argument('--screenshot', metavar='DIR',
                     help='render pages to PNG in DIR instead of extracting')
     ap.add_argument('--dpi', type=int, default=150, help='screenshot DPI (default 150)')
@@ -595,6 +737,13 @@ def main():
     args = ap.parse_args()
 
     want = 'json' if args.json else ('text' if args.text else 'md')
+
+    if args.probe:
+        for src in iter_inputs(args.inputs, not args.no_recursive):
+            if os.path.splitext(src)[1].lower() not in PDF_EXT:
+                continue
+            print(json.dumps(probe(src), indent=1, ensure_ascii=False))
+        return
 
     if args.screenshot:
         for src in iter_inputs(args.inputs, not args.no_recursive):
@@ -614,7 +763,8 @@ def main():
 
     for src in files:
         try:
-            pages, meta = extract(src, args.pages, args.force_ocr, want)
+            pages, meta = extract(src, args.pages, args.force_ocr, want,
+                                  image_ocr=args.image_ocr)
         except SystemExit:
             raise
         except Exception as e:  # noqa: BLE001 - one bad file must not kill a batch

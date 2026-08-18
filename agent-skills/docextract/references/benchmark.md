@@ -89,6 +89,33 @@ table's continuation row to a fake header, severing its section (8-9/20 vs 18/20
 tools); and stacked multi-level headers invert that ranking (markdown 18/20, --text 9/20).
 docextract now handles the first two explicitly.
 
+## Mode selection
+
+The two table shapes want opposite modes (row-per-record -> `--text` at cell binding 1.00;
+stacked multi-level header -> markdown, graded 18/20 vs 9/20), so no fixed rule is right for a
+document that contains both. `--probe` reports the page-level facts instead and recommends
+`--text` as the base, listing which pages to re-check in markdown. The stacked-header detector is
+a heuristic: it separated the stacked page (12 hits) from a simple 3-column table (3), a financial
+statement (1) and a prose page (1), but it over-flags a wrapped single-level header -- confirmed
+one false positive on a Gantt-style table -- so the skill tells you to confirm with a screenshot.
+
+## Images inside PDFs
+
+Three distinct cases, measured:
+
+- **Page with no text layer** -> whole page rendered at 300 dpi and OCR'd with Apple Vision
+  (F1 0.9712).
+- **Page with a text layer plus a large image** -> by default only the text layer is read, so text
+  baked into the picture is silently missed. Verified on a ticket PDF whose full-page JPEG carries
+  real copy ("Picnic sul prato al tramonto...") that the default path does not return.
+  `--image-ocr` renders just the image rectangles, OCRs them, drops lines already covered by the
+  text layer, and appends the rest under an explicit marker. Off by default because it costs ~2 s
+  per such page and drops token precision 0.996 -> 0.816 against a text-layer-only reference.
+  `--probe` lists these pages as `image_text_pages`.
+- **Charts and diagrams** are usually *vector*, not raster: `pdfimages` on the page holding a line
+  chart returned only the header logos. Nothing can extract them as text -- render the page with
+  `--screenshot` and look. `--probe` lists them as `figure_pages`.
+
 ## Things that will trip you up in other tools
 
 - **liteparse** reports `fontSize: 1` and ~5×-too-small bounding boxes for WinAnsi-encoded fonts
