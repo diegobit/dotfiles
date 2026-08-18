@@ -193,6 +193,30 @@ $SK/docextract.py report.pdf --screenshot /tmp/shots --pages "22" --dpi 150
 # then Read /tmp/shots/page_22.png and describe the chart yourself
 ```
 
+## Performance and platform
+
+Measured on an Apple M4 Max (16 cores), warm. Directory mode fans out across processes
+(`-j`, default CPU-2); single files are single-threaded.
+
+| workload | `--text` | markdown |
+|---|---|---|
+| 100-page born-digital PDF | **4.8 s** (0.05 s/page) | 19.5 s (0.2 s/page) |
+| real 103-page technical doc | 4.4 s (0.043 s/page) | — |
+| scanned pages (every page OCR'd) | **0.86 s/page** | same |
+| 1000 mixed documents / ~5 100 pages / 230 MB | **29 s** | 299 s (5 min) |
+| `--probe` on a 100-page PDF | 2.9 s | — |
+
+Process startup is ~0.03 s, so per-file overhead is negligible. Parallelism gives ~7.8× on
+this machine (100 docs: 26.8 s serial → 3.4 s with 14 workers) and the output is byte-identical
+to serial. Rule of thumb: **born-digital ≈ 0.05 s/page, scanned ≈ 0.9 s/page**; OCR dominates
+whenever it is involved.
+
+**Platform.** PDF text, Office formats and markdown conversion are plain Python and portable.
+**OCR is macOS-only** — it uses Apple's Vision framework through a small Swift helper. On a
+non-macOS host, born-digital documents work unchanged and scanned pages fail with an explicit
+error rather than returning silence; supporting them elsewhere would mean wiring in `tesseract`,
+which measured 0.9512 against Vision's 0.9712 on the same pages.
+
 ## Known limits
 
 - Vision OCR normalizes some punctuation (an em-dash may come back as `-`). Don't treat OCR'd
@@ -221,6 +245,13 @@ $SK/docextract.py report.pdf --screenshot /tmp/shots --pages "22" --dpi 150
 - The routing threshold is 80 chars of text layer per page. A page with a tiny caption and a big
   scanned body can fall on the wrong side of it; `--force-ocr` is the override.
 - Encrypted PDFs are not handled; decrypt first (`qpdf --decrypt`).
+- **A table pasted in as a low-resolution image is only partly recoverable.** `--image-ocr`
+  returns the words but not the row-to-value binding: a 783×274 px matrix embedded in a table
+  cell came back as fragments in jumbled order (`request by / by SCP / YES / failure / YES`).
+  For those, `--screenshot` the page and read it. Rendering the page region at 300 dpi was
+  measured to beat extracting the embedded image at native resolution, so that is what it does.
+- Technical drawings yield their label text in roughly spatial order, which is usable for finding
+  a tag number but not for understanding the drawing — that needs the screenshot.
 
 ## Why not the other tools
 

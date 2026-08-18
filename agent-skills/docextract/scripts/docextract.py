@@ -225,17 +225,38 @@ def rotated_group_labels(page, min_chars=3, left_frac=0.25):
     return out
 
 
-def image_regions(page, min_area_frac=0.15):
-    """Raster images big enough to plausibly carry text, as page rectangles."""
+def image_regions(page, min_pixels=120_000, min_area_frac=0.15,
+                  aspect_range=(0.12, 8.0), max_regions=8):
+    """Raster images big enough to plausibly carry readable text, as page rectangles.
+
+    Gating on page-area fraction alone is wrong: a matrix pasted into a table cell can
+    cover only ~3% of the page and still hold a full table, while a header logo covers a
+    similar fraction and holds nothing. Pixel count separates them (a logo here is ~28k
+    pixels, the smallest real content image ~214k), so either test can admit a region.
+    """
     page_area = abs(page.rect.width * page.rect.height) or 1.0
-    rects = []
+    rects, seen = [], set()
     for img in page.get_images(full=True):
+        xref, w, h = img[0], img[2], img[3]
+        big_enough = (w * h) >= min_pixels
+        ratio = (w / h) if h else 0
+        if not (aspect_range[0] <= ratio <= aspect_range[1]):
+            continue
         try:
-            for r in page.get_image_rects(img[0]):
-                if abs(r.width * r.height) / page_area >= min_area_frac:
-                    rects.append(r)
+            for r in page.get_image_rects(xref):
+                if not big_enough and abs(r.width * r.height) / page_area < min_area_frac:
+                    continue
+                key = (round(r.x0), round(r.y0), round(r.x1), round(r.y1))
+                if key in seen:
+                    continue
+                seen.add(key)
+                rects.append(r)
         except Exception:  # noqa: BLE001 - a broken xref must not kill extraction
             continue
+    if len(rects) > max_regions:
+        warn(f'page has {len(rects)} large images; OCR-ing the {max_regions} biggest')
+        rects.sort(key=lambda r: -abs(r.width * r.height))
+        rects = rects[:max_regions]
     return rects
 
 
@@ -710,6 +731,25 @@ def iter_inputs(targets, recursive=True):
             warn(f'not found: {t}')
 
 
+def _one_file(job):
+    """Extract one file and write its markdown. Runs in a worker process."""
+    src, indir, outdir, want, pages_spec, force_ocr, image_ocr, marks = job
+    try:
+        page_list, meta = extract(src, pages_spec, force_ocr, want, image_ocr=image_ocr)
+    except SystemExit as e:
+        return src, None, f'exit {e.code}'
+    except Exception as e:  # noqa: BLE001 - one bad file must not kill the batch
+        return src, None, str(e)
+    body = render_text(page_list, want, marks)
+    rel = os.path.relpath(src, indir)
+    dst = os.path.join(outdir, os.path.splitext(rel)[0] + '.md')
+    os.makedirs(os.path.dirname(dst), exist_ok=True)
+    with open(dst, 'w', encoding='utf-8') as f:
+        f.write(f'# {os.path.basename(src)}\n\n{body}\n')
+    return src, {'dst': dst, 'chars': sum(len(p['text']) for p in page_list),
+                 'ocr': len(meta.get('ocr_pages', []))}, None
+
+
 def main():
     ap = argparse.ArgumentParser(
         prog='docextract',
@@ -734,6 +774,9 @@ def main():
     ap.add_argument('--no-page-marks', action='store_true',
                     help='omit the "<!-- page N -->" comments')
     ap.add_argument('--no-recursive', action='store_true', help='do not walk subdirectories')
+    ap.add_argument('-j', '--jobs', type=int, default=0,
+                    help='parallel workers for directory mode '
+                         '(default: CPU count minus 2; 1 disables)')
     args = ap.parse_args()
 
     want = 'json' if args.json else ('text' if args.text else 'md')
@@ -760,6 +803,31 @@ def main():
     dir_mode = len(args.inputs) == 1 and os.path.isdir(args.inputs[0]) and args.output
     produced_any = False
     results = []
+
+    # Directory work is CPU-bound and per-file independent, so fan it out. Only for
+    # markdown/text output: --json accumulates one document per record in order.
+    if dir_mode and want != 'json' and len(files) > 1:
+        jobs = args.jobs or max(1, (os.cpu_count() or 2) - 2)
+        if jobs > 1:
+            import concurrent.futures as cf
+            payload = [(f, args.inputs[0], args.output, want, args.pages, args.force_ocr,
+                        args.image_ocr, not args.no_page_marks) for f in files]
+            done = 0
+            with cf.ProcessPoolExecutor(max_workers=jobs) as pool:
+                for src, ok, err in pool.map(_one_file, payload):
+                    done += 1
+                    if err:
+                        warn(f'FAILED {src}: {err}')
+                    elif ok['chars']:
+                        produced_any = True
+                        print(f'{src} -> {ok["dst"]}  ({ok["chars"]} chars, '
+                              f'{ok["ocr"]} OCR page(s))')
+                    else:
+                        warn(f'no text extracted from {src}')
+            print(f'{done} file(s) with {jobs} workers', file=sys.stderr)
+            if not produced_any:
+                sys.exit(3)
+            return
 
     for src in files:
         try:

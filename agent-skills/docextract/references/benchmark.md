@@ -132,6 +132,24 @@ Three distinct cases, measured:
 - **pymupdf4llm writes progress banners to fd 1 from PyMuPDF's C layer**, which corrupts markdown
   on stdout. `contextlib.redirect_stdout` does not catch it; `os.dup2` does. Handled internally.
 
+## Throughput (Apple M4 Max, 16 cores, warm)
+
+| workload | --text | markdown |
+|---|---|---|
+| 100-page born-digital PDF | 4.8 s | 19.5 s |
+| scanned pages (all OCR'd) | 0.86 s/page | 0.86 s/page |
+| 1000 mixed docs, ~5 100 pages, 230 MB | 29 s | 299 s |
+
+Directory mode fans out over processes (~7.8x here: 100 docs 26.8 s serial -> 3.4 s on 14
+workers, byte-identical output). Born-digital ~0.05 s/page, scanned ~0.9 s/page.
+
+Validated against a second, independent corpus (34 documents / ~400 pages of Italian plant
+engineering: tabelloni, nested matrices, technical drawings) with no failures and no empty
+outputs. That corpus also exposed the image gate: matrices pasted into table cells cover only
+~3% of a page, so the original page-fraction threshold skipped them; the gate is now pixel count
+plus an aspect-ratio filter, because one page embeds ~37 decorative 2112x118 strips beside the
+783x274 matrix that actually holds data.
+
 ## Reproduce
 
 ```bash
