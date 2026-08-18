@@ -16,3 +16,7 @@
 .config/colima/amd64/*
 !.config/colima/amd64/colima.yaml
 .config/aichat/.env
+
+# docextract: compiled Swift helper is built on first use
+agent-skills/docextract/scripts/vision_ocr
+agent-skills/docextract/scripts/__pycache__/

@@ -97,6 +97,10 @@ brew install jq # json tool! Also required for formatting in nvim
 brew install yq # like jq, also for yaml. Often used by coding agents
 brew install parallel
 
+# General-purpose tools
+brew install imagemagick
+brew install --cask libreoffice
+
 # ---------------------------------------------
 # AI
 # ---------------------------------------------
@@ -104,10 +108,12 @@ brew install aichat
 curl -fsSL https://opencode.ai/install | bash
 brew install codex
 curl -fsSL https://claude.ai/install.sh | bash
-# for document parsing skill of liteparse
-npm i -g @llamaindex/liteparse
-brew install imagemagick # to let liteparse parse images
-brew install --cask libreoffice # to let liteparse parse documents
+
+# for docextract skill (uv is installed below via astral.sh; swiftc for Vision OCR helper)
+xcode-select -p &>/dev/null || xcode-select --install
+
+# Symlink agent skills across harnesses
+"$HOME/dotfiles/bin/link-agent-skills.sh"
 
 # ---------------------------------------------
 # Programming Languages and Frameworks, work
