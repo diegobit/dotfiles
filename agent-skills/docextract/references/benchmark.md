@@ -1,7 +1,9 @@
 # Why these engines — the measurements
 
-Benchmarked 2026-08-18 on an Apple M4 Max (macOS 15, arm64). Full write-up, method, and caveats:
-`dotfiles/liteparse-exp/reports/macos-document-extraction.md`.
+Benchmarked 2026-08-18 on an Apple M4 Max (macOS 15, arm64). Full write-up, method, caveats, the
+harness and a worked-examples gallery live in the private companion repo
+**[diegobit/doc-extraction-eval](https://github.com/diegobit/doc-extraction-eval)** — it is separate
+because the round-2 corpus is client tender documentation.
 
 ## Method in one paragraph
 
@@ -153,12 +155,15 @@ plus an aspect-ratio filter, because one page embeds ~37 decorative 2112x118 str
 ## Reproduce
 
 ```bash
-cd dotfiles/liteparse-exp
-python3 bench/run_macos.py              # every tool, records timings
-.venv-tools/bin/python bench/score.py   # both tables
+git clone git@github.com:diegobit/doc-extraction-eval.git
+cd doc-extraction-eval
+python3 bench/run_macos.py   # every tool, records timings
+python3 bench/score.py       # both tables
+python3 r2/score_cells.py    # table cell binding
 ```
 
-Per-document scores: `bench/scores.json`. Raw outputs: `bench/out/`.
+Per-document scores are committed as `bench/scores.json`; the corpora are not (see that repo's
+README for the paths the scripts expect).
 
 ## Caveats
 
