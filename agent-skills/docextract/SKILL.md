@@ -4,7 +4,7 @@ description: Extract text, markdown, or structured JSON from documents (PDF, DOC
 license: MIT
 metadata:
   benchmarked: "2026-08-18, macOS 15 arm64; see references/benchmark.md"
-  wins: "best-in-class on BOTH born-digital text (F1 0.9964) and scanned OCR (F1 0.9712)"
+  wins: "best-in-class on born-digital text (F1 0.9964), scanned OCR (F1 0.9712) and table cell-binding (1.00)"
 ---
 
 # docextract
@@ -56,9 +56,13 @@ $SK/docextract.py report.pdf --json -o /tmp/report.json
 
 ```jsonc
 { "file": "report.pdf", "pages_total": 40, "pages_done": 40,
-  "ocr_pages": [7, 8],                       // these pages had no text layer
+  "ocr_pages": [7, 8],          // no text layer -> OCR'd; treat exact figures with care
+  "figure_pages": [3, 22],      // hold a chart/diagram -> --screenshot and look
   "chars": 91234,
-  "pages": [ { "page": 1, "text": "...", "engine": "pymupdf", "text_layer_chars": 3670 } ] }
+  "pages": [ { "page": 1, "text": "...", "engine": "pymupdf",
+               "text_layer_chars": 3670,
+               "figures": 0,
+               "row_groups": [ { "label": "LAVORI", "covers": ["A1", "A2"] } ] } ] }
 ```
 
 When the question is visual — "what does the chart show?", "is the box ticked?", "what's the
@@ -114,6 +118,55 @@ it means the document defeated every engine, which is the signal to look at a sc
 - `--text` / `--json` are for *answering questions*: nothing is reformatted, so figures and
   identifiers survive verbatim. Prefer these when you will quote or compute from the output.
 
+**For tables, use `--text`.** Measured on real engineering fee schedules and financial
+statements: `--text` keeps every row's label bound to its own value (cell-binding 1.00, tied
+best of 8 tools) and survives a table continuing across a page break; the markdown mode scores
+0.98 and an independent grader rated it 8/20 vs 18/20 on multi-page tables, because markdown
+forces a fresh table per page. Markdown mode also occasionally runs words together
+(`direzionelavori`) via `pymupdf4llm`.
+
+## Tables: what you get
+
+**Rotated row-group labels.** Financial tables often print a group name sideways in the left
+column, spanning the rows it governs. Every other tool tested either drops it, reverses it into
+single characters, or strands it mid-table — which actively misleads, because the rows then read
+as belonging to the previous group. docextract states the grouping explicitly:
+
+```
+<!-- row-group "LAVORI" covers rows: A1, A2, A) -->
+<!-- row-group "SOMME A DISPOSIZIONE DELL'AMMINISTRAZIONE" covers rows: B1, B2.2, ..., B) -->
+```
+
+`--json` exposes the same thing as `row_groups` per page. **When a table has sideways labels,
+read this comment before attributing any row to a group.**
+
+**Tables spanning a page break** get an explicit `<!-- table continues from page N -->` marker in
+markdown mode, and the continuation's first row is kept as data rather than being promoted to a
+header.
+
+**Spreadsheets with merged cells** are read natively (openpyxl): every cell covered by a merge
+repeats its anchor's value, so each row stands alone and stacked headers stay column-aligned.
+This matters — pandas-backed readers leave `NaN` (ambiguous with a genuinely empty cell) and
+spatial extractors put the label at the merge's visual centre, silently binding it to the *wrong*
+row (liteparse attributes an `EMEA` block spanning three rows to only its middle row).
+
+## Figures
+
+Pages holding a chart, diagram or photo are flagged, because text extraction cannot answer a
+question about them:
+
+```
+<!-- page 22 (pymupdf4llm) — 1 figure(s), inspect with --screenshot -->
+```
+
+`--json` lists them as `figure_pages`. Charts in office documents are usually **vector graphics,
+not embedded images**, so `pdfimages` finds nothing — render the page instead:
+
+```bash
+$SK/docextract.py report.pdf --screenshot /tmp/shots --pages "22" --dpi 150
+# then Read /tmp/shots/page_22.png and describe the chart yourself
+```
+
 ## Known limits
 
 - Vision OCR normalizes some punctuation (an em-dash may come back as `-`). Don't treat OCR'd
@@ -123,6 +176,18 @@ it means the document defeated every engine, which is the signal to look at a sc
   exactness, so prefer running both and comparing).
 - Rotated/overlapping text in figures comes out garbled by every engine tested.
 - Superscripts flatten (`10^20` → `1020`). If exponents matter, check a screenshot.
+- Stacked multi-level column headers (a group header over sub-columns) survive better in
+  markdown mode than in `--text`; formula-ish header labels (`∑(Qi)`, `V*G*P*∑Qi`) may lose
+  symbols. If the header hierarchy is the point, check a screenshot.
+- Row-group detection needs ruled cells; a table that groups rows by whitespace alone will not
+  produce a `row-group` comment. Detection is gated to ruled tables and to labels in the left
+  quarter of the page, so rotated text in a figure is not mistaken for one.
+- In `--text`, two short table rows sitting side by side can end up on one output line. Cell
+  binding still holds (each value stays with its key), but check a screenshot before reading such
+  a line as a single row.
+- Markdown mode inherits a `pymupdf4llm` defect on wrapped table cells: words can run together
+  (`direzionelavori`) and a row code can lose its dot. `--text` does not have this — another
+  reason to prefer it for tables.
 - The routing threshold is 80 chars of text layer per page. A page with a tiny caption and a big
   scanned body can fall on the wrong side of it; `--force-ocr` is the override.
 - Encrypted PDFs are not handled; decrypt first (`qpdf --decrypt`).

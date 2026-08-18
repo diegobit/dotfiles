@@ -61,6 +61,34 @@ liteparse missed **111** where Vision missed **14**.
 Nothing else is top-tier on both, which is the whole reason this skill routes per page rather than
 picking one engine.
 
+## Round 2 — table cell binding (105 key->value pairs, real fee schedules)
+
+Token overlap is blind to the failure that matters most in a table: a tool can emit every token
+and still bind the wrong number to the wrong row. Row keys and values were taken from the PDF's
+own word geometry, then each tool was asked whether the value stayed on its key's line.
+
+| tool | cell binding |
+|---|---|
+| **docextract --text** | **1.0000** |
+| docling | 1.0000 |
+| liteparse | 1.0000 |
+| pdftotext -layout | 1.0000 |
+| docextract (markdown) | 0.9810 |
+| pymupdf4llm | 0.9810 |
+| pdfplumber (tuned) | 0.9619 |
+| markitdown | 0.7905 |
+
+This is why the skill says **use `--text` for tables**. It also caught a real bug here:
+PyMuPDF's default `get_text()` emits block order, which scored **0.1429**; `get_text(sort=True)`
+lifted it to 1.0000 and improved round-1 CER from 0.2498 to 0.1308 at unchanged token F1.
+
+Independent vision graders (page screenshot + each tool's output) added three findings no metric
+caught: rotated row-group labels are dropped, reversed or stranded mid-table by most tools
+(docling and markitdown were the only ones correct); markdown emitters promote a multi-page
+table's continuation row to a fake header, severing its section (8-9/20 vs 18/20 for plain-text
+tools); and stacked multi-level headers invert that ranking (markdown 18/20, --text 9/20).
+docextract now handles the first two explicitly.
+
 ## Things that will trip you up in other tools
 
 - **liteparse** reports `fontSize: 1` and ~5×-too-small bounding boxes for WinAnsi-encoded fonts
@@ -70,6 +98,10 @@ picking one engine.
   (`Providedproperattributionisprovided,Google…`). pdfminer's default `x_tolerance=3` is too wide;
   `x_tolerance=1` fixes pdfplumber, but MarkItDown exposes no such knob. MarkItDown is still the
   best choice for Office formats, which is where this skill uses it.
+- **liteparse and merged spreadsheet cells**: it places a merged label at the merge's *visual
+  centre*, so a group spanning three rows gets bound to only the middle one -- silently wrong
+  data. pandas-backed readers instead leave `NaN`, ambiguous with a genuinely empty cell.
+  docextract reads .xlsx via openpyxl and repeats the anchor value across every covered cell.
 - **pymupdf4llm writes progress banners to fd 1 from PyMuPDF's C layer**, which corrupts markdown
   on stdout. `contextlib.redirect_stdout` does not catch it; `os.dup2` does. Handled internally.
 
