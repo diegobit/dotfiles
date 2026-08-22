@@ -114,6 +114,19 @@ xcode-select -p &>/dev/null || xcode-select --install
 # Symlink agent skills across harnesses
 "$HOME/dotfiles/bin/link-agent-skills.sh"
 
+# Expose bin scripts as commands (PATH includes ~/.local/bin)
+mkdir -p "$HOME/.local/bin"
+ln -sf "$HOME/dotfiles/bin/tg.sh" "$HOME/.local/bin/tg"
+ln -sf "$HOME/dotfiles/bin/spotlight-exclusions.sh" "$HOME/.local/bin/spotlight-exclusions"
+
+# Global agent instructions: one canonical file symlinked into every harness
+# (Claude Code, Codex, opencode, Gemini)
+for f in "$HOME/.claude/CLAUDE.md" "$HOME/.codex/AGENTS.md" \
+         "$HOME/.config/opencode/AGENTS.md" "$HOME/.gemini/GEMINI.md"; do
+    mkdir -p "$(dirname "$f")"
+    ln -sf "$HOME/dotfiles/AGENTS.md" "$f"
+done
+
 # ---------------------------------------------
 # Programming Languages and Frameworks, work
 # ---------------------------------------------

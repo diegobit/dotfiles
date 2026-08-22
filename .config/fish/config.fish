@@ -215,45 +215,6 @@ if status is-interactive
             https://api.pushover.net/1/messages.json >/dev/null
     end
 
-    # tg 'messaggio'            -> profilo di default (dg = chat privata)
-    # tg -p ait 'messaggio'     -> canale "AIT Alerts"
-    # I segreti stanno in ~/.telegram-{bot-token,chat-id}-<profilo>.
-    function tg --description 'Send a Telegram message (-p <profilo>, default dg)'
-        argparse 'p/profile=' -- $argv; or return 1
-        set -l msg $argv[1]
-
-        set -l profile dg
-        if set -q _flag_profile
-            set profile $_flag_profile
-        else if test -r ~/.telegram-default-profile
-            set profile (string trim -- (cat ~/.telegram-default-profile))
-        end
-
-        set -l token_file ~/.telegram-bot-token-$profile
-        set -l chat_file  ~/.telegram-chat-id-$profile
-        for f in $token_file $chat_file
-            if not test -r $f
-                echo "tg: profilo '$profile': manca $f" >&2
-                return 1
-            end
-        end
-
-        set -l token (string trim -- (cat $token_file))
-        set -l chat  (string trim -- (cat $chat_file))
-        set -l where (prompt_pwd)
-
-        if test -n "$msg"
-            set msg "$msg ($where)"
-        else
-            set msg "Plin plon! ($where)"
-        end
-
-        curl -sS --fail --max-time 10 \
-            --form-string "chat_id=$chat" \
-            --form-string "text=$msg" \
-            "https://api.telegram.org/bot$token/sendMessage" >/dev/null
-    end
-
     # Create a new worktree and branch from within current git directory.
     function gwa
         if test (count $argv) -lt 1
