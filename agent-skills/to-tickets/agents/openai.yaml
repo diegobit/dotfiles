@@ -1,0 +1,5 @@
+interface:
+  display_name: "To Plans"
+  short_description: "Break work into tracer-bullet plan files"
+policy:
+  allow_implicit_invocation: false

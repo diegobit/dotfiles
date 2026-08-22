@@ -1,0 +1,5 @@
+interface:
+  display_name: "Create Verification Skill"
+  short_description: "Create a real user-path verification skill for a project"
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,3 @@
+interface:
+  display_name: "Unslop"
+  short_description: "Remove AI tells while preserving meaning and voice"

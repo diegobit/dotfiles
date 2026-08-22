@@ -1,0 +1,5 @@
+interface:
+  display_name: "Wayfinder"
+  short_description: "Chart big foggy work as a map of decision plan files"
+policy:
+  allow_implicit_invocation: false

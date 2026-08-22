@@ -6,7 +6,7 @@ is the single source of truth for how to use it. This file only covers the two t
 
 ## Wiring
 
-One directory per skill here, symlinked into the five places the harnesses read from:
+One directory per skill here, symlinked into the six discovery locations the harnesses read from:
 
 | harness | reads from |
 |---|---|
@@ -14,6 +14,7 @@ One directory per skill here, symlinked into the five places the harnesses read 
 | Claude Code (user) | `~/.claude/skills/` |
 | opencode | `.config/opencode/skills/` |
 | Gemini CLI | `.gemini/config/skills/` |
+| Codex (user) | `~/.codex/skills/` |
 | generic / `AGENTS.md` | `.agents/skills/` |
 
 Edit the skill once in `agent-skills/`, and every harness sees it. To create or repair the links:
@@ -38,6 +39,19 @@ Nothing here needs a global Python environment. `docextract` declares its Python
 | **harness-history** | `python3`, `jq` | `brew install jq` |
 | **code-simplifier** | none | — |
 
+The adapted engineering/productivity set (`grilling`, `grill-me`, `grill-with-docs`,
+`diagnosing-bugs`, `handoff`, `to-spec`, `to-tickets`, `wayfinder`, `deep-review`,
+`domain-modeling`, `writing-for-agents`, `research`, `prototype`, `to-questionnaire`, plus the
+local `plan-tracker`) needs nothing installed: pure markdown.
+Two deliberate divergences from upstream: there is no issue tracker, so anything that would have
+been published to one is written as markdown under `docs/plans/` per `plan-tracker`; and upstream's
+`code-review` is installed as `deep-review` to avoid collisions with existing review commands.
+
+The adapted `arena`, `create-verification-skill`, and `unslop` skills are also pure Markdown. Their
+shared instructions contain no harness-specific model IDs, paths, rules, manifests, or commands.
+`create-verification-skill` uses the repository's existing skill root and defaults to
+`.agents/skills/` when none exists.
+
 `docextract` is macOS-only *for OCR* — that path uses Apple's Vision framework. PDF text, Office
 formats and markdown conversion are portable Python and work anywhere; on a non-macOS host a
 scanned page fails with an explicit error rather than returning silence.
@@ -55,3 +69,10 @@ earlier document skill needed the first three; `docextract` was tested without t
   it rebuilds itself on first use).
 - Measured claims in a SKILL.md should say where the numbers come from — `docextract` points at
   `references/benchmark.md`.
+
+## Sources
+
+- The engineering/productivity set was adapted from
+  [mattpocock/skills](https://github.com/mattpocock/skills).
+- `arena`, `create-verification-skill`, and `unslop` were adapted from
+  [Pstack](https://github.com/cursor/plugins/tree/main/pstack).

@@ -8,6 +8,7 @@
 #   .config/opencode/skills/ -> ../../../agent-skills/<name>
 #   .gemini/config/skills/   -> ../../../agent-skills/<name>
 #   ~/.claude/skills/        -> <relative path to>/.claude/skills/<name>
+#   ~/.codex/skills/         -> <relative path to>/agent-skills/<name>
 #
 # Usage:
 #   link-agent-skills.sh         # Create/update all symlinks
@@ -59,14 +60,16 @@ fi
 
 # Locations configuration: array of "parent_dir|relative_target_prefix"
 # For each skill: target is "${relative_target_prefix}${skill}"
-# The four in-repo locations use fixed relative depths. The one under $HOME must be
-# computed, because the repo is not necessarily at ~/dotfiles -- hardcoding that produced
-# broken links when the clone lived elsewhere.
+# The four in-repo locations use fixed relative depths. The locations under $HOME must be
+# computed because the repo is not necessarily at ~/dotfiles; hardcoding that produces
+# broken links when the clone lives elsewhere.
 relpath() {  # relpath <target> <start-dir>
     python3 -c 'import os,sys; print(os.path.relpath(sys.argv[1], sys.argv[2]))' "$1" "$2"
 }
 HOME_SKILLS="$HOME/.claude/skills"
 HOME_PREFIX="$(relpath "$DOTFILES_DIR/.claude/skills" "$HOME_SKILLS")/"
+CODEX_SKILLS="$HOME/.codex/skills"
+CODEX_PREFIX="$(relpath "$AGENT_SKILLS_DIR" "$CODEX_SKILLS")/"
 
 locations=(
     "$DOTFILES_DIR/.agents/skills|../../agent-skills/"
@@ -74,6 +77,7 @@ locations=(
     "$DOTFILES_DIR/.config/opencode/skills|../../../agent-skills/"
     "$DOTFILES_DIR/.gemini/config/skills|../../../agent-skills/"
     "$HOME_SKILLS|$HOME_PREFIX"
+    "$CODEX_SKILLS|$CODEX_PREFIX"
 )
 
 errors=0

@@ -1,0 +1,3 @@
+interface:
+  display_name: "Deep Review"
+  short_description: "Three-axis review: Standards, Spec, Quality"
