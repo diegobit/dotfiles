@@ -6,7 +6,10 @@
 #   tm-exclusions.sh                   # Run and sync all exclusions (manual/forced)
 #   tm-exclusions.sh --dry-run         # Preview changes without modifying
 #   tm-exclusions.sh --scheduled       # Periodic run (skips if run in last 7 days)
-#   tm-exclusions.sh --install-daemon  # Install background LaunchDaemon
+#   tm-exclusions.sh --install-daemon [daily|weekly]
+#                                     # Install background LaunchDaemon
+#                                     #   weekly (default): Sundays at 03:00
+#                                     #   daily: run-at-load + daily retry (7-day limiter)
 #   tm-exclusions.sh --uninstall-daemon# Remove background LaunchDaemon
 # ==============================================================================
 
@@ -46,11 +49,34 @@ EXCLUSIONS=(
     "$HOME/dotfiles/.config/colima/_lima"
 )
 
-# Install background daemon (RunAtLoad + daily interval with 7-day rate limiter)
+# Install background daemon (weekly: Sundays 03:00; daily: RunAtLoad + daily interval with 7-day rate limiter)
 install_daemon() {
+    local schedule="${1:-weekly}"
+    if [ "$schedule" != "daily" ] && [ "$schedule" != "weekly" ]; then
+        echo "Unknown schedule '$schedule' (expected 'daily' or 'weekly')."
+        exit 1
+    fi
     if [ "$EUID" -ne 0 ]; then
         echo "Elevating with sudo to install LaunchDaemon..."
-        exec sudo "$0" --install-daemon
+        exec sudo "$0" --install-daemon "$schedule"
+    fi
+
+    local schedule_keys
+    if [ "$schedule" = "daily" ]; then
+        schedule_keys="    <key>RunAtLoad</key>
+    <true/>
+    <key>StartInterval</key>
+    <integer>86400</integer>"
+    else
+        schedule_keys="    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Weekday</key>
+        <integer>7</integer>
+        <key>Hour</key>
+        <integer>3</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>"
     fi
 
     echo "Creating LaunchDaemon at $DAEMON_PLIST..."
@@ -67,10 +93,7 @@ install_daemon() {
         <string>${SCRIPT_PATH}</string>
         <string>--scheduled</string>
     </array>
-    <key>RunAtLoad</key>
-    <true/>
-    <key>StartInterval</key>
-    <integer>86400</integer>
+${schedule_keys}
     <key>LowPriorityIO</key>
     <true/>
     <key>Nice</key>
@@ -92,7 +115,11 @@ EOF
     launchctl bootout "system/${DAEMON_LABEL}" 2>/dev/null || launchctl unload "$DAEMON_PLIST" 2>/dev/null || true
     launchctl bootstrap system "$DAEMON_PLIST" 2>/dev/null || launchctl load -w "$DAEMON_PLIST" 2>/dev/null || true
 
-    echo "✔ Weekly background daemon installed (resilient to reboots, sleeps, and power-offs; low CPU/IO)."
+    if [ "$schedule" = "weekly" ]; then
+        echo "✔ Background daemon installed: Sundays at 03:00 (low CPU/IO)."
+    else
+        echo "✔ Background daemon installed: run-at-load + daily retry with 7-day limiter (resilient to reboots, sleeps, and power-offs; low CPU/IO)."
+    fi
     exit 0
 }
 
@@ -116,7 +143,7 @@ uninstall_daemon() {
 # Handle daemon install/uninstall flags
 case "${1:-}" in
     --install-daemon)
-        install_daemon
+        install_daemon "${2:-}"
         ;;
     --uninstall-daemon)
         uninstall_daemon

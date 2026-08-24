@@ -117,7 +117,6 @@ xcode-select -p &>/dev/null || xcode-select --install
 # Expose bin scripts as commands (PATH includes ~/.local/bin)
 mkdir -p "$HOME/.local/bin"
 ln -sf "$HOME/dotfiles/bin/tg.sh" "$HOME/.local/bin/tg"
-ln -sf "$HOME/dotfiles/bin/spotlight-exclusions.sh" "$HOME/.local/bin/spotlight-exclusions"
 
 # Global agent instructions: one canonical file symlinked into every harness
 # (Claude Code, Codex, opencode, Gemini)
@@ -239,10 +238,10 @@ defaults write com.knollsoft.Rectangle applyGapsToMaximize -int 3
 # Time Machine & Spotlight weekly exclusions background jobs
 # ---------------------------------------------
 echo "Setting up weekly Time Machine background exclusion daemon..."
-"$HOME/dotfiles/bin/tm-exclusions.sh" --install-daemon || true
+"$HOME/dotfiles/utils/tm-exclusions.sh" --install-daemon || true
 
 echo "Setting up weekly Spotlight background exclusion job..."
-"$HOME/dotfiles/bin/spotlight-exclusions.sh" --install-daemon || true
+"$HOME/dotfiles/utils/spotlight-exclusions.sh" --install-daemon || true
 
 # ---------------------------------------------
 # Manual actions

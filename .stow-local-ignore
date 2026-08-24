@@ -25,4 +25,5 @@ _darcs
 # Extra stuff
 install.sh
 .DS_Store
+^/utils
 
