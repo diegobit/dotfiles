@@ -9,6 +9,7 @@
 #   .gemini/config/skills/   -> ../../../agent-skills/<name>
 #   ~/.claude/skills/        -> <relative path to>/.claude/skills/<name>
 #   ~/.codex/skills/         -> <relative path to>/agent-skills/<name>
+#   ~/.cursor/skills/        -> <relative path to>/agent-skills/<name>
 #
 # Usage:
 #   link-agent-skills.sh         # Create/update all symlinks
@@ -70,6 +71,8 @@ HOME_SKILLS="$HOME/.claude/skills"
 HOME_PREFIX="$(relpath "$DOTFILES_DIR/.claude/skills" "$HOME_SKILLS")/"
 CODEX_SKILLS="$HOME/.codex/skills"
 CODEX_PREFIX="$(relpath "$AGENT_SKILLS_DIR" "$CODEX_SKILLS")/"
+CURSOR_SKILLS="$HOME/.cursor/skills"
+CURSOR_PREFIX="$(relpath "$AGENT_SKILLS_DIR" "$CURSOR_SKILLS")/"
 
 locations=(
     "$DOTFILES_DIR/.agents/skills|../../agent-skills/"
@@ -78,6 +81,7 @@ locations=(
     "$DOTFILES_DIR/.gemini/config/skills|../../../agent-skills/"
     "$HOME_SKILLS|$HOME_PREFIX"
     "$CODEX_SKILLS|$CODEX_PREFIX"
+    "$CURSOR_SKILLS|$CURSOR_PREFIX"
 )
 
 errors=0

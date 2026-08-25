@@ -6,12 +6,13 @@ is the single source of truth for how to use it. This file only covers the two t
 
 ## Wiring
 
-One directory per skill here, symlinked into the six discovery locations the harnesses read from:
+One directory per skill here, symlinked into the discovery locations the harnesses read from:
 
 | harness | reads from |
 |---|---|
 | Claude Code (project) | `.claude/skills/` |
 | Claude Code (user) | `~/.claude/skills/` |
+| Cursor (user) | `~/.cursor/skills/` |
 | opencode | `.config/opencode/skills/` |
 | Gemini CLI | `.gemini/config/skills/` |
 | Codex (user) | `~/.codex/skills/` |
@@ -37,6 +38,7 @@ Nothing here needs a global Python environment. `docextract` declares its Python
 | **docextract** | `uv`; Xcode CLT (for `swiftc`, builds the Vision OCR helper once) | `brew install uv` · `xcode-select --install` |
 | **flash-worker** | Gemini CLI, authenticated | see the skill |
 | **claude-worker** | Claude Code CLI, authenticated; `jq` | `brew install jq` |
+| **cursor-worker** | Cursor CLI (`agent`), authenticated; `jq` | `curl https://cursor.com/install -fsS \| bash` · `brew install jq` |
 | **harness-history** | `python3`, `jq` | `brew install jq` |
 | **code-simplifier** | none | — |
 
