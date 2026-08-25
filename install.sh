@@ -238,7 +238,7 @@ defaults write com.knollsoft.Rectangle applyGapsToMaximize -int 3
 # Time Machine & Spotlight weekly exclusions background jobs
 # ---------------------------------------------
 echo "Setting up weekly Time Machine background exclusion daemon..."
-"$HOME/dotfiles/utils/tm-exclusions.sh" --install-daemon || true
+"$HOME/dotfiles/utils/tm-exclusions.sh" --install-daemon weekly || true
 
 echo "Setting up weekly Spotlight background exclusion job..."
 "$HOME/dotfiles/utils/spotlight-exclusions.sh" --install-daemon || true
