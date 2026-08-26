@@ -1,6 +1,6 @@
 ---
 name: emoji
-model: gemini:gemini-3.6-flash
+model: gemini:gemini-3.7-flash
 temperature: 0.7
 ---
 You will be given a word, a concept, or a sentence:

@@ -81,6 +81,8 @@ if status is-interactive
     abbr -a cmd --set-cursor 'aichat -r cmd \'%\''
     abbr -a em  --set-cursor 'aichat -r emoji \'%\''
     abbr -a teach --set-cursor 'aichat -r teach \'%\''
+    abbr -a beautify 'aichat -r beautify'
+    abbr -a explain 'aichat -r explain'
     abbr -a op 'opencode'
     abbr -a cl 'claude'
     abbr -a co 'codex'
