@@ -50,8 +50,9 @@ Two deliberate divergences from upstream: there is no issue tracker, so anything
 been published to one is written as markdown under `docs/plans/` per `plan-tracker`; and upstream's
 `code-review` is installed as `deep-review` to avoid collisions with existing review commands.
 
-The adapted `arena`, `create-verification-skill`, and `unslop` skills are also pure Markdown. Their
-shared instructions contain no harness-specific model IDs, paths, rules, manifests, or commands.
+The adapted `arena`, `create-verification-skill`, and `writing-for-humans` skills are also pure
+Markdown. Their shared instructions contain no harness-specific model IDs, paths, rules,
+manifests, or commands.
 `create-verification-skill` uses the repository's existing skill root and defaults to
 `.agents/skills/` when none exists.
 
@@ -77,5 +78,5 @@ earlier document skill needed the first three; `docextract` was tested without t
 
 - The engineering/productivity set was adapted from
   [mattpocock/skills](https://github.com/mattpocock/skills).
-- `arena`, `create-verification-skill`, and `unslop` were adapted from
+- `arena`, `create-verification-skill`, and `writing-for-humans` were adapted from
   [Pstack](https://github.com/cursor/plugins/tree/main/pstack).

@@ -57,8 +57,8 @@ cursor-worker --selftest                         check the tooling is working en
 
 stdout is the worker's report and nothing else, so it is safe to pipe or capture.
 Model is fixed (`CRW_MODEL` overrides; High is the model id `cursor-grok-4.6-high`, not an
-effort flag — the CLI rejects a bare `cursor-grok-4.6`). Workers have no deadline, by design — *you*
-decide when one has run too long and kill it.
+effort flag — the CLI rejects a bare `cursor-grok-4.6`). `CRW_MODEL=auto` is Cursor Auto.
+Workers have no deadline, by design — *you* decide when one has run too long and kill it.
 
 **Exit codes:** `0` ok · `1` worker error (including a killed run) · `2` empty response · `3` crash · `64` usage.
 This is your first acceptance gate — `cursor-worker … || handle`. On any failure the wrapper still
@@ -195,6 +195,9 @@ that resume returns to the same session. Selftest uses `composer-2.5-fast` so it
 does not bill the production model. If it fails, read the script's header comment: it documents the underlying
 CLI behaviour, how to re-verify each part by hand, and which line to patch. Keep the script and this
 file in sync.
+
+If Grok is unreachable (network / provider errors), retry as a **fresh spawn** with
+`CRW_MODEL=auto`. `-c` inherits the original model and cannot switch.
 
 The one failure mode to watch for: dropping `--plan` on a read-only run (or forgetting `-r`).
 `--force` is required in print mode and does **not** re-enable writes under `--plan` — the inverse
