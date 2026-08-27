@@ -118,6 +118,19 @@ xcode-select -p &>/dev/null || xcode-select --install
 mkdir -p "$HOME/.local/bin"
 ln -sf "$HOME/dotfiles/bin/tg.sh" "$HOME/.local/bin/tg"
 
+# Tailscale CLI wrapper and fish completion (App Store or standalone app)
+if [ -x "/Applications/Tailscale.app/Contents/MacOS/Tailscale" ]; then
+    cat << 'EOF' > "$HOME/.local/bin/tailscale"
+#!/usr/bin/env bash
+exec /Applications/Tailscale.app/Contents/MacOS/Tailscale "$@"
+EOF
+    chmod +x "$HOME/.local/bin/tailscale"
+    if command -v fish &>/dev/null; then
+        mkdir -p "$HOME/.config/fish/completions"
+        "$HOME/.local/bin/tailscale" completion fish > "$HOME/.config/fish/completions/tailscale.fish" 2>/dev/null || true
+    fi
+fi
+
 # Global agent instructions: one canonical file symlinked into every harness
 # (Claude Code, Codex, opencode, Gemini)
 for f in "$HOME/.claude/CLAUDE.md" "$HOME/.codex/AGENTS.md" \
