@@ -72,7 +72,8 @@ if status is-interactive
     abbr -a gw 'git worktree'
     abbr -a gcm 'git commit -m'
     abbr -a n nvim
-    abbr -a l 'ls -lah'
+    abbr -a ls 'eza --icons=always'
+    abbr -a l 'eza -lah --git'
     abbr -a lg lazygit
     abbr -a sa 'source .venv/bin/activate.fish'
     abbr -a sd deactivate
@@ -90,7 +91,6 @@ if status is-interactive
     # Aliases
     alias dust='dust -r'
     alias grep='grep --color=auto'
-    alias ls='ls -G'
 
     # TRY
     function trywork

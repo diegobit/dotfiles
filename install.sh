@@ -58,6 +58,7 @@ pnpm add -g hunkdiff # better diff tool 'hunk diff FILE' #todo: check integratio
 brew install fd
 brew install zoxide
 brew install tree
+brew install eza
 brew install gum
 
 # ---------------------------------------------
