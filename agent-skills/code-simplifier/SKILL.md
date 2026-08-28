@@ -45,6 +45,7 @@ Prefer:
 - Favor deep modules. Expose a tiny, stable interface; hide as much logic as possible behind it.
 - Enforce information hiding. No internal data, types, or temporal ordering should leak across module boundaries.
 - Pull complexity downward. High-level code must remain obvious—push gritty details into helpers/utilities.
+- Enforce low cyclomatic complexity. Keep execution paths shallow and linear; minimize nested branches, complex conditions, and sprawling decision trees.
 - Remove duplication & special cases. Unify repeated logic; redesign so rare paths are handled automatically, not with if ladders.
 - Let names tell the story. Precise, consistent names; if naming is hard, the abstraction is wrong.
 - Comment intent, not mechanics. Explain why, constraints, and surprising decisions—never narrate what the code plainly shows.
