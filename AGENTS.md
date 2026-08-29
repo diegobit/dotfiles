@@ -1,8 +1,12 @@
-# Environment
+# Host System & Hardware
 
-Local dev platform: macOS, Apple Silicon; Fish shell.
+- OS: macOS / Apple Silicon arm64
+- Shell: Fish interactive, Bash for scripts
+- CPU: Apple M4 Max
+- GPU/NPU: Apple integrated GPU + Neural Engine, no CUDA
 
 # Notifications
 
-- The `tg` command sends Diego a notification on his phone via Telegram: `tg '<text_message>'`. It's a standalone script at `~/.local/bin/tg`, runnable from any shell, including non-interactive ones (cron, scripts).
-- `-p ait '<text_message>'` posts to the "AIT Alerts" channel instead of Diego's private chat (default profile: `dg`).
+- The `tg` command sends Diego a Telegram notification: `tg '<text_message>'`.
+  Use it at the end of every long-running execution.
+
