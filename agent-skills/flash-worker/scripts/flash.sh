@@ -11,9 +11,9 @@
 #   -r        read-only (plan mode; writes blocked by the harness, not by the prompt)
 #   -d        workspace directory (default: $PWD)
 #   -n        lane name (default: "default") — one concurrent worker per lane
-#   --spill N cap stdout at N lines; full report saved to file
+#   --spill N cap report at N lines plus a file notice; 0 means unlimited
 #
-# stdout is the worker's report and nothing else, so it is safe to pipe.
+# stdout is the report, plus a full-report path notice when capped.
 # Exit: 0 ok · 1 agy reported ERROR (includes -k kill) · 2 empty response
 #       3 no result event at all (crash) · 64 usage.
 # On any failure, whatever the worker had already produced is still printed to
@@ -77,7 +77,7 @@ lane=default
 dir=$PWD
 plan=0
 action=run
-spill_lines=${FLASH_SPILL_LINES:-}
+spill_lines=${FLASH_SPILL_LINES-0}
 
 while [ $# -gt 0 ]; do
     case $1 in
@@ -96,6 +96,11 @@ while [ $# -gt 0 ]; do
     esac
 done
 
+case $spill_lines in
+    ''|*[!0-9]*) die "--spill / FLASH_SPILL_LINES must be a nonnegative integer (0 means unlimited)" ;;
+esac
+[ "$spill_lines" -ge 0 ] 2>/dev/null || die "spill line count is too large"
+
 command -v "$AGY" >/dev/null 2>&1 || die "agy not found in PATH"
 command -v jq    >/dev/null 2>&1 || die "jq not found in PATH"
 
@@ -104,7 +109,7 @@ dir=$(cd "$dir" && pwd)                              # quirk 1: must be absolute
 
 key=$(printf '%s' "$dir" | shasum | cut -c1-12)
 state=$STATE_ROOT/$key
-mkdir -p "$state" /tmp/flash
+mkdir -p "$state"
 raw=$state/$lane.stream
 err=$state/$lane.err
 out=$state/$lane.out
@@ -117,6 +122,16 @@ alive()    { p=$(lane_pid); [ -n "$p" ] && kill -0 "$p" 2>/dev/null; }
 # Text the worker has emitted so far, rebuilt from streamed deltas. This is the
 # only way to recover work from a run that was killed or errored mid-flight.
 partial() { jq -j 'select(.event=="step_update").step_update.text_delta // ""' "$raw" 2>/dev/null || true; }
+
+save_report() {
+    printf '%s\n' "$body" > "$out"
+    if [ "$spill_lines" -gt 0 ] && [ "$(wc -l < "$out")" -gt "$spill_lines" ]; then
+        head -n "$spill_lines" "$out"
+        printf '\n[flash: report capped at %s lines. Full report: %s]\n' "$spill_lines" "$out"
+    else
+        cat "$out"
+    fi
+}
 
 render() {
     [ -f "$raw" ] || die "no run recorded for lane '$lane' in $dir" 3
@@ -214,7 +229,8 @@ rm -f "$pidf"
 
 result=$(jq -c 'select(.event=="result").result' "$raw" 2>/dev/null | tail -n1)
 if [ -z "$result" ]; then
-    partial                                    # salvage whatever was produced
+    body=$(partial)                            # salvage whatever was produced
+    save_report
     [ -s "$err" ] && cut -c1-500 "$err" >&2
     die "no result event (crash, or agy exited $rc) — see $raw" 3
 fi
@@ -224,21 +240,7 @@ body=$(printf '%s' "$result" | jq -r '.response // ""')
 # A killed or errored run reports an empty response even though the worker may
 # have done real work; fall back to the streamed deltas rather than lose it.
 [ -n "$body" ] || body=$(partial)
-printf '%s\n' "$body" > "$out"
-cp -f "$out" "/tmp/flash/$lane.out" 2>/dev/null || true
-
-if [ -n "$spill_lines" ] && [ "$spill_lines" -gt 0 ] 2>/dev/null; then
-    lines=$(printf '%s\n' "$body" | wc -l | tr -d ' ')
-    if [ "$lines" -gt "$spill_lines" ]; then
-        printf '%s\n' "$body" | head -n "$spill_lines"
-        printf '\n[flash: output capped at %s lines (total %s). Full report saved to %s (and /tmp/flash/%s.out) — leggi qui]\n' \
-            "$spill_lines" "$lines" "$out" "$lane"
-    else
-        printf '%s\n' "$body"
-    fi
-else
-    printf '%s\n' "$body"
-fi
+save_report
 
 if [ "$status" != SUCCESS ]; then
     printf 'flash: agy status %s — %s (partial output above, if any; peek: flash -p -n %s -d %s)\n' \

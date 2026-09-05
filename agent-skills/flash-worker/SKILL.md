@@ -29,15 +29,18 @@ flash -k [-n LANE]                                 kill a running worker
 flash --selftest                                   check the tooling is working end to end
 ```
 
-`-r` read-only · `-d` workspace (default `$PWD`) · `-n` lane name (default `default`) · `--spill N` cap stdout at N lines.
+`-r` read-only · `-d` workspace (default `$PWD`) · `-n` lane name (default `default`).
+`--spill N` prints up to N report lines, followed by a full-report path notice when truncated.
+N must be a nonnegative decimal integer supported by the shell; `0` means unlimited.
+`FLASH_SPILL_LINES` sets the default (otherwise `0`); `--spill` overrides it.
 
-stdout is the worker's report and nothing else, so it is safe to pipe or capture.
+stdout contains the report and, when capped, its file notice. It is safe to pipe or capture.
 Model and reasoning effort are fixed. Workers have no practical deadline, by design — *you* decide
 when one has run too long and kill it.
 
 **Exit codes:** `0` ok · `1` worker error (including `-k`) · `2` empty response · `3` crash · `64` usage.
-This is your first acceptance gate — `flash … || handle`. On any failure the wrapper still prints
-whatever the worker produced, rebuilt from the stream, so partial work is never lost.
+This is your first acceptance gate — `flash … || handle`. On worker errors and crashes, the
+wrapper saves available partial output rebuilt from the stream and applies the same stdout cap.
 
 ---
 
@@ -75,7 +78,10 @@ Preserve all unrelated changes.
 METHOD & CONSTRAINTS
 - Enumerate directly with commands; never estimate, infer, or recall.
 - For voluminous command output (> ~20 lines, test suites, deep listings, diffs),
-  redirect the full raw output to /tmp/flash/<lane>-<topic>.log.
+  run `mkdir -p /tmp/flash`, then `mktemp -d /tmp/flash/evidence.XXXXXX` once per
+  invocation. Save each command's stdout and stderr to a distinct topic.log in
+  that directory and capture its exit code. If the harness blocks log creation,
+  return essential excerpts and record the missing full log in GAPS.
 - <APIs, contracts, schemas to preserve, or search scope>
 
 VERIFICATION
@@ -87,8 +93,8 @@ STATUS: complete | partial | blocked
 EVIDENCE: for every number or claim, the exact command and its output:
   - Short output (< ~20 lines): paste verbatim before the conclusion it supports.
   - Voluminous output: cite the command, exit code, log file path
-    ("Full output: /tmp/flash/<lane>-<topic>.log (leggi qui per i dettagli)"),
-    and paste only the essential excerpt/summary lines supporting the claim.
+    ("Full output: <absolute log path>"),
+    and paste only the essential verbatim lines supporting the claim.
   No command/output (or cited log file), no claim.
 FINDINGS / CHANGES: <only what EVIDENCE above supports>
 GAPS / BLOCKERS: <issues or none>
@@ -117,11 +123,15 @@ mkdir -p /tmp/flash
 "$FLASH" -k -d "$REPO" -n api    # give up on a worker; partial edits stay on disk
 ```
 
-Keep these redirect files under `/tmp/flash/` so they cannot collide with unrelated temp files.
-The wrapper also automatically persists the worker's latest report to `/tmp/flash/<lane>.out`
-(and `~/.cache/flash/<hash>/<lane>.out`).
-Lane names only have to be unique *within* a workspace, so if you run the same lane name against
-two workspaces at once, qualify the filenames too (`/tmp/flash/<project>-api.out`).
+The wrapper saves the full latest report, including partial reports from worker errors and
+crashes, to `${XDG_CACHE_HOME:-$HOME/.cache}/flash/<workspace-hash>/<lane>.out`.
+Find the exact path with `flash -p` or the notice from a capped run. This file is replaced when
+the lane's next invocation finishes; copy it elsewhere first if you need to retain it.
+
+The `/tmp/flash/` redirects above belong to the caller; the wrapper never copies reports there.
+Keep captures separate from the wrapper's cache files. Lane names are unique only *within*
+a workspace: for concurrent projects, qualify capture filenames (`/tmp/flash/<project>-api.out`)
+or create a unique capture directory with `mktemp -d /tmp/flash/capture.XXXXXX`.
 
 ### Iterating
 
@@ -145,10 +155,11 @@ Resume targets that lane's own worker, so it stays correct with many in flight.
 ## Review & Acceptance Gate
 
 1. **Exit code** — non-zero means don't trust the output. Covers transport errors and empty responses.
-2. **Check EVIDENCE, not the summary** — any figure without pasted command output or a cited log
-   file under `/tmp/flash/` is unverified; any breakdown that doesn't reconcile with its stated
-   total means re-run with `-c`, don't patch it by hand. For voluminous commands, inspect the cited
-   log file directly on disk (`cat /tmp/flash/...`) without polluting the primary orchestrator context.
+2. **Check EVIDENCE, not the summary** — verify figures against command output. A log citation
+   points to evidence; it does not verify the claim. Inspect relevant excerpts with `rg -n`
+   or `sed -n 'START,ENDp'` and reconcile breakdowns with their totals. If the log is missing,
+   an excerpt is insufficient, or totals disagree, re-run with `-c` for the needed evidence.
+   When stdout is capped, inspect the saved report's remaining findings and gaps before acceptance.
 3. **Worker self-report** — the `STATUS:` / `FINDINGS` / `CHANGES` lines. The exit code says the
    CLI ran; only these say the task succeeded.
 4. **Inspect diff** — `git diff` to confirm changes stayed strictly within `OWNERSHIP`. Skipped
@@ -158,6 +169,9 @@ Resume targets that lane's own worker, so it stays correct with many in flight.
 ---
 
 ## If Something Looks Wrong
+
+For report persistence, capping, and exit-code regressions, run
+`python3 scripts/test_flash.py`. It uses a fake CLI and temporary workspaces.
 
 Run `flash --selftest`. It spins up a throwaway workspace and checks that a worker can reach the
 workspace, that read-only mode really blocks writes, and that write mode really edits files.
