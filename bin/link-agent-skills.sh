@@ -91,6 +91,22 @@ for loc in "${locations[@]}"; do
     dest_dir="${loc%%|*}"
     rel_prefix="${loc##*|}"
 
+    # Retire the worker links after their sources have been consolidated. Match
+    # only links this installer owns; leave user files and other targets alone.
+    for retired in flash-worker claude-worker cursor-worker; do
+        [ ! -d "$AGENT_SKILLS_DIR/$retired" ] || continue
+        link_path="$dest_dir/$retired"
+        [ -L "$link_path" ] || continue
+        [ "$(readlink "$link_path")" = "${rel_prefix}${retired}" ] || continue
+        if [ "$CHECK_MODE" -eq 1 ]; then
+            echo "RETIRED: $link_path (run link-agent-skills.sh to remove)"
+            errors=$((errors + 1))
+        else
+            rm "$link_path"
+            echo "Removed retired skill link: $link_path"
+        fi
+    done
+
     for skill in "${skills[@]}"; do
         total=$((total + 1))
         link_path="$dest_dir/$skill"

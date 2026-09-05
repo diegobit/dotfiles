@@ -36,9 +36,7 @@ Nothing here needs a global Python environment. `docextract` declares its Python
 | skill | needs | install |
 |---|---|---|
 | **docextract** | `uv`; Xcode CLT (for `swiftc`, builds the Vision OCR helper once) | `brew install uv` · `xcode-select --install` |
-| **flash-worker** | Antigravity CLI (agy), authenticated | see the skill |
-| **claude-worker** | Claude Code CLI, authenticated; `jq` | `brew install jq` |
-| **cursor-worker** | Cursor CLI (`agent`), authenticated; `jq` | `curl https://cursor.com/install -fsS \| bash` · `brew install jq` |
+| **external-worker** | `jq`, macOS CLI utilities; selected authenticated CLI: `agy` (default), `claude`, or Cursor `agent` | `brew install jq`; see the skill |
 | **harness-history** | `python3`, `jq` | `brew install jq` |
 | **code-simplifier** | none | — |
 
