@@ -1,11 +1,11 @@
 ---
 name: flash-worker
-description: Delegate implementation, refactors, tests, codebase audits, or parallel multi-file work to autonomous Gemini 3.7 Flash workers, keeping verbose execution out of the main context. Write mode returns an ownership-scoped diff to review; read-only mode is enforced for investigations and second opinions.
+description: Delegate implementation, refactors, tests, codebase audits, or parallel multi-file work to autonomous Gemini 3.8 Flash workers, keeping verbose execution out of the main context. Write mode returns an ownership-scoped diff to review; read-only mode is enforced for investigations and second opinions.
 ---
 
 # Flash Worker Subagent
 
-Delegate implementation or investigation tasks to **Gemini 3.7 Flash** (High reasoning) by running
+Delegate implementation or investigation tasks to **Gemini 3.8 Flash** (High reasoning) by running
 `scripts/flash.sh`.
 
 ---
@@ -22,14 +22,14 @@ Delegate implementation or investigation tasks to **Gemini 3.7 Flash** (High rea
 ## Interface
 
 ```
-flash [-r] [-d DIR] [-n LANE] "task"          spawn a worker (packet normally arrives via stdin — see Usage)
-flash -c [-n LANE] "correction"               resume this lane's last worker
-flash -p [-n LANE]                            peek at live progress and partial output
-flash -k [-n LANE]                            kill a running worker
-flash --selftest                              check the tooling is working end to end
+flash [-r] [-d DIR] [-n LANE] [--spill N] "task"   spawn a worker (packet normally arrives via stdin — see Usage)
+flash -c [-n LANE] "correction"                    resume this lane's last worker
+flash -p [-n LANE]                                 peek at live progress and partial output
+flash -k [-n LANE]                                 kill a running worker
+flash --selftest                                   check the tooling is working end to end
 ```
 
-`-r` read-only · `-d` workspace (default `$PWD`) · `-n` lane name (default `default`).
+`-r` read-only · `-d` workspace (default `$PWD`) · `-n` lane name (default `default`) · `--spill N` cap stdout at N lines.
 
 stdout is the worker's report and nothing else, so it is safe to pipe or capture.
 Model and reasoning effort are fixed. Workers have no practical deadline, by design — *you* decide
@@ -74,6 +74,8 @@ Preserve all unrelated changes.
 
 METHOD & CONSTRAINTS
 - Enumerate directly with commands; never estimate, infer, or recall.
+- For voluminous command output (> ~20 lines, test suites, deep listings, diffs),
+  redirect the full raw output to /tmp/flash/<lane>-<topic>.log.
 - <APIs, contracts, schemas to preserve, or search scope>
 
 VERIFICATION
@@ -82,8 +84,12 @@ VERIFICATION
 
 RETURN
 STATUS: complete | partial | blocked
-EVIDENCE: for every number or claim, the exact command and its verbatim output,
-  pasted before the conclusion it supports. No output, no claim.
+EVIDENCE: for every number or claim, the exact command and its output:
+  - Short output (< ~20 lines): paste verbatim before the conclusion it supports.
+  - Voluminous output: cite the command, exit code, log file path
+    ("Full output: /tmp/flash/<lane>-<topic>.log (leggi qui per i dettagli)"),
+    and paste only the essential excerpt/summary lines supporting the claim.
+  No command/output (or cited log file), no claim.
 FINDINGS / CHANGES: <only what EVIDENCE above supports>
 GAPS / BLOCKERS: <issues or none>
 
@@ -112,6 +118,8 @@ mkdir -p /tmp/flash
 ```
 
 Keep these redirect files under `/tmp/flash/` so they cannot collide with unrelated temp files.
+The wrapper also automatically persists the worker's latest report to `/tmp/flash/<lane>.out`
+(and `~/.cache/flash/<hash>/<lane>.out`).
 Lane names only have to be unique *within* a workspace, so if you run the same lane name against
 two workspaces at once, qualify the filenames too (`/tmp/flash/<project>-api.out`).
 
@@ -137,9 +145,10 @@ Resume targets that lane's own worker, so it stays correct with many in flight.
 ## Review & Acceptance Gate
 
 1. **Exit code** — non-zero means don't trust the output. Covers transport errors and empty responses.
-2. **Check EVIDENCE, not the summary** — any figure without pasted command output is unverified;
-   any breakdown that doesn't reconcile with its stated total means re-run with `-c`, don't patch
-   it by hand.
+2. **Check EVIDENCE, not the summary** — any figure without pasted command output or a cited log
+   file under `/tmp/flash/` is unverified; any breakdown that doesn't reconcile with its stated
+   total means re-run with `-c`, don't patch it by hand. For voluminous commands, inspect the cited
+   log file directly on disk (`cat /tmp/flash/...`) without polluting the primary orchestrator context.
 3. **Worker self-report** — the `STATUS:` / `FINDINGS` / `CHANGES` lines. The exit code says the
    CLI ran; only these say the task succeeded.
 4. **Inspect diff** — `git diff` to confirm changes stayed strictly within `OWNERSHIP`. Skipped

@@ -1,5 +1,5 @@
 #!/bin/sh
-# flash — spawn a Gemini 3.7 Flash worker via the Antigravity CLI (agy).
+# flash — spawn a Gemini 3.8 Flash worker via the Antigravity CLI (agy).
 #
 # Usage:
 #   flash [-r] [-d DIR] [-n LANE] "task text"     spawn a worker (task may also come from stdin)
@@ -8,9 +8,10 @@
 #   flash -k [-n LANE]                            kill a running worker
 #   flash --selftest                              verify this wrapper against the real agy
 #
-#   -r  read-only (plan mode; writes blocked by the harness, not by the prompt)
-#   -d  workspace directory (default: $PWD)
-#   -n  lane name (default: "default") — one concurrent worker per lane
+#   -r        read-only (plan mode; writes blocked by the harness, not by the prompt)
+#   -d        workspace directory (default: $PWD)
+#   -n        lane name (default: "default") — one concurrent worker per lane
+#   --spill N cap stdout at N lines; full report saved to file
 #
 # stdout is the worker's report and nothing else, so it is safe to pipe.
 # Exit: 0 ok · 1 agy reported ERROR (includes -k kill) · 2 empty response
@@ -34,7 +35,7 @@
 #    process cwd and looks correct even when the workspace is wrong.
 #    Verify behaviourally instead (this is what --selftest does):
 #      mkdir /tmp/p && printf 'MARKER\n' > /tmp/p/probe.txt && cd /tmp/p
-#      agy -p "read probe.txt, else reply NOTFOUND" --model gemini-3.7-flash \
+#      agy -p "read probe.txt, else reply NOTFOUND" --model gemini-3.8-flash \
 #          --effort low --dangerously-skip-permissions --output-format json
 #    Without --add-dir that returns NOTFOUND; with it, MARKER.
 #
@@ -44,7 +45,7 @@
 #
 # 3. --model <alias> REQUIRES --effort, or agy exits immediately with
 #    'invalid model selection'. Canonical ids from `agy models` are
-#    gemini-3.7-flash-high|-medium|-low. Effort is fixed at high below.
+#    gemini-3.8-flash-high|-medium|-low. Effort is fixed at high below.
 #
 # 4. On resume, --print-timeout silently reverts to 5m. We always pass it.
 #
@@ -65,7 +66,7 @@
 set -eu
 
 AGY=${FLASH_AGY:-agy}
-MODEL=${FLASH_MODEL:-gemini-3.7-flash}
+MODEL=${FLASH_MODEL:-gemini-3.8-flash}
 EFFORT=${FLASH_EFFORT:-high}          # quirk 3: must always be passed
 TIMEOUT=${FLASH_TIMEOUT:-10h}         # quirk 4: long by design; caller kills via -k
 STATE_ROOT=${XDG_CACHE_HOME:-$HOME/.cache}/flash
@@ -76,17 +77,19 @@ lane=default
 dir=$PWD
 plan=0
 action=run
+spill_lines=${FLASH_SPILL_LINES:-}
 
 while [ $# -gt 0 ]; do
     case $1 in
         -r|--read-only) plan=1; shift ;;
         -d|--dir)       [ $# -ge 2 ] || die "-d needs a path"; dir=$2; shift 2 ;;
         -n|--lane)      [ $# -ge 2 ] || die "-n needs a name"; lane=$2; shift 2 ;;
+        --spill)        [ $# -ge 2 ] || die "--spill needs a line count"; spill_lines=$2; shift 2 ;;
         -c|--continue)  action=continue; shift ;;
         -p|--peek)      action=peek; shift ;;
         -k|--kill)      action=kill; shift ;;
         --selftest)     action=selftest; shift ;;
-        -h|--help)      sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+        -h|--help)      sed -n '2,17p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
         --)             shift; break ;;
         -*)             die "unknown option: $1" ;;
         *)              break ;;
@@ -101,9 +104,10 @@ dir=$(cd "$dir" && pwd)                              # quirk 1: must be absolute
 
 key=$(printf '%s' "$dir" | shasum | cut -c1-12)
 state=$STATE_ROOT/$key
-mkdir -p "$state"
+mkdir -p "$state" /tmp/flash
 raw=$state/$lane.stream
 err=$state/$lane.err
+out=$state/$lane.out
 idf=$state/$lane.id
 pidf=$state/$lane.pid
 
@@ -128,6 +132,7 @@ render() {
         printf 'output so far:\n'
         printf '%s\n' "$p" | sed 's/^/  /' | tail -30
     fi
+    [ -f "$out" ] && printf 'last report: %s\n' "$out"
     printf 'raw stream: %s\n' "$raw"
 }
 
@@ -219,7 +224,21 @@ body=$(printf '%s' "$result" | jq -r '.response // ""')
 # A killed or errored run reports an empty response even though the worker may
 # have done real work; fall back to the streamed deltas rather than lose it.
 [ -n "$body" ] || body=$(partial)
-printf '%s\n' "$body"
+printf '%s\n' "$body" > "$out"
+cp -f "$out" "/tmp/flash/$lane.out" 2>/dev/null || true
+
+if [ -n "$spill_lines" ] && [ "$spill_lines" -gt 0 ] 2>/dev/null; then
+    lines=$(printf '%s\n' "$body" | wc -l | tr -d ' ')
+    if [ "$lines" -gt "$spill_lines" ]; then
+        printf '%s\n' "$body" | head -n "$spill_lines"
+        printf '\n[flash: output capped at %s lines (total %s). Full report saved to %s (and /tmp/flash/%s.out) — leggi qui]\n' \
+            "$spill_lines" "$lines" "$out" "$lane"
+    else
+        printf '%s\n' "$body"
+    fi
+else
+    printf '%s\n' "$body"
+fi
 
 if [ "$status" != SUCCESS ]; then
     printf 'flash: agy status %s — %s (partial output above, if any; peek: flash -p -n %s -d %s)\n' \
