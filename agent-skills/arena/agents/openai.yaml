@@ -1,5 +1,0 @@
-interface:
-  display_name: "Arena"
-  short_description: "Compare independent candidates and synthesize the best"
-policy:
-  allow_implicit_invocation: false

@@ -43,14 +43,13 @@ Nothing here needs a global Python environment. `docextract` declares its Python
 | **code-simplifier** | none | — |
 
 The adapted engineering/productivity set (`grilling`, `grill-me`, `grill-with-docs`,
-`diagnosing-bugs`, `handoff`, `to-spec`, `to-tickets`, `wayfinder`, `deep-review`,
-`domain-modeling`, `writing-for-agents`, `research`, `prototype`, `to-questionnaire`, plus the
-local `plan-tracker`) needs nothing installed: pure markdown.
+`diagnosing-bugs`, `to-spec`, `to-tickets`, `wayfinder`, `deep-review`, `domain-modeling`,
+`writing-for-agents`, `prototype`, plus the local `plan-tracker`) needs nothing installed: pure markdown.
 Two deliberate divergences from upstream: there is no issue tracker, so anything that would have
 been published to one is written as markdown under `docs/plans/` per `plan-tracker`; and upstream's
 `code-review` is installed as `deep-review` to avoid collisions with existing review commands.
 
-The adapted `arena`, `create-verification-skill`, and `writing-for-humans` skills are also pure
+The adapted `create-verification-skill` and `writing-for-humans` skills are also pure
 Markdown. Their shared instructions contain no harness-specific model IDs, paths, rules,
 manifests, or commands.
 `create-verification-skill` uses the repository's existing skill root and defaults to
@@ -78,5 +77,5 @@ earlier document skill needed the first three; `docextract` was tested without t
 
 - The engineering/productivity set was adapted from
   [mattpocock/skills](https://github.com/mattpocock/skills).
-- `arena`, `create-verification-skill`, and `writing-for-humans` were adapted from
+- `create-verification-skill` and `writing-for-humans` were adapted from
   [Pstack](https://github.com/cursor/plugins/tree/main/pstack).
