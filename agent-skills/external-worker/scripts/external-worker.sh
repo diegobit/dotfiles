@@ -448,8 +448,14 @@ esac
 : > "$raw"
 : > "$err"
 
+# Give the worker a local no-op tg command so its run stays notification-free.
+worker_bin=$(mktemp -d)
+printf '#!/bin/sh\nexit 0\n' > "$worker_bin/tg"
+chmod +x "$worker_bin/tg"
+trap 'rm -rf "$worker_bin"; release_my_lock' EXIT
+
 # Launch worker CLI
-( cd "$dir" && exec "$bin" "${cmd[@]}" ) > "$raw" 2>"$err" &
+( cd "$dir" && PATH="$worker_bin:$PATH" exec "$bin" "${cmd[@]}" ) > "$raw" 2>"$err" &
 worker_pid=$!
 printf '%s\n' "$worker_pid" > "$lockdir/worker.pid"
 wls=$(ps -p "$worker_pid" -o lstart= 2>/dev/null || true)
