@@ -2,13 +2,13 @@
 # external-worker — unified launcher for external AI coding workers.
 #
 # Usage:
-#   external-worker [--executor gemini|claude|cursor] [-r] [-d DIR] [--spill N] "task"
-#   external-worker [--executor gemini|claude|cursor] -c [-d DIR] [--spill N] "correction"
-#   external-worker [--executor gemini|claude|cursor] -p [-d DIR]
-#   external-worker [--executor gemini|claude|cursor] -k [-d DIR]
-#   external-worker [--executor gemini|claude|cursor] --selftest
+#   external-worker [--executor gemini|claude|cursor|codex] [-r] [-d DIR] [--spill N] "task"
+#   external-worker [--executor gemini|claude|cursor|codex] -c [-d DIR] [--spill N] "correction"
+#   external-worker [--executor gemini|claude|cursor|codex] -p [-d DIR]
+#   external-worker [--executor gemini|claude|cursor|codex] -k [-d DIR]
+#   external-worker [--executor gemini|claude|cursor|codex] --selftest
 #
-#   -e, --executor  worker backend (gemini | claude | cursor; default: gemini)
+#   -e, --executor  worker backend (gemini | claude | cursor | codex; default: gemini)
 #   -r, --read-only read-only mode (provider permission mode)
 #   -d, --dir       workspace directory (default: $PWD)
 #   -c, --continue  resume last session for this workspace and executor
@@ -51,6 +51,9 @@ EW_CLAUDE_EFFORT="high"
 EW_CLAUDE_BUDGET="${EW_CLAUDE_BUDGET:-}"
 
 EW_CURSOR_MODEL="cursor-grok-4.6-high"
+
+EW_CODEX_MODEL="gpt-6-astra"
+EW_CODEX_EFFORT="medium"
 
 # --- Argument parsing ---
 while [ $# -gt 0 ]; do
@@ -116,8 +119,8 @@ while [ $# -gt 0 ]; do
 done
 
 case "$executor" in
-    gemini|claude|cursor) ;;
-    *) die "unknown executor '$executor' (expected gemini, claude, or cursor)" 64 ;;
+    gemini|claude|cursor|codex) ;;
+    *) die "unknown executor '$executor' (expected gemini, claude, cursor, or codex)" 64 ;;
 esac
 
 case "$spill_lines" in
@@ -182,6 +185,10 @@ provider_partial() {
             jq -j 'select(.type=="assistant").message.content[]?
                    | select(.type=="text") | .text + "\n"' "$raw" 2>/dev/null || true
             ;;
+        codex)
+            jq -j 'select(.type=="item.completed" and .item.type=="agent_message")
+                   | .item.text + "\n"' "$raw" 2>/dev/null || true
+            ;;
     esac
 }
 
@@ -207,6 +214,17 @@ provider_steps() {
                      elif .grepToolCall then "  grep: " + (.grepToolCall.args.pattern // "")
                      elif .globToolCall then "  glob: " + (.globToolCall.args.globPattern // .globToolCall.args.glob_pattern // "")
                      else "  " + ((keys - ["hookAdditionalContexts","startedAtMs","toolCallId"]) | join(","))
+                     end' "$raw" 2>/dev/null | cut -c1-120 | tail -40
+            ;;
+        codex)
+            jq -r 'select(.type=="item.completed") | .item
+                   | select(.type != "agent_message")
+                   | if .type=="command_execution" then "  shell: " + (.command // "")
+                     elif .type=="file_change" then "  patch: " + ((.changes // []) | map(.path) | join(", "))
+                     elif .type=="mcp_tool_call" then "  mcp: " + ((.server // "") + "." + (.tool // ""))
+                     elif .type=="web_search" then "  web: " + (.query // "")
+                     elif .type=="reasoning" then "  think:"
+                     else "  " + .type
                      end' "$raw" 2>/dev/null | cut -c1-120 | tail -40
             ;;
     esac
@@ -237,7 +255,7 @@ if [ "$action" = "peek" ]; then
     if [ -f "$idf" ]; then
         case "$executor" in
             gemini) printf 'conversation: %s\n' "$(cat "$idf")" ;;
-            claude|cursor) printf 'session: %s\n' "$(cat "$idf")" ;;
+            claude|cursor|codex) printf 'session: %s\n' "$(cat "$idf")" ;;
         esac
     fi
     printf 'workspace: %s\nsteps:\n' "$dir"
@@ -269,6 +287,7 @@ case "$executor" in
     gemini) bin=${EW_GEMINI_BIN:-agy} ;;
     claude) bin=${EW_CLAUDE_BIN:-claude} ;;
     cursor) bin=${EW_CURSOR_BIN:-agent} ;;
+    codex) bin=${EW_CODEX_BIN:-codex} ;;
 esac
 command -v "$bin" >/dev/null 2>&1 || die "$executor binary not found in PATH: $bin" 64
 
@@ -443,13 +462,40 @@ case "$executor" in
             cmd+=(--mode ask)
         fi
         ;;
+
+    codex)
+        # Codex does not persist model/effort in the recorded session, so both are
+        # re-specified on continuation to avoid silently falling back to the user's
+        # config default. `resume` rejects -s/--sandbox and -C, so mode is passed as
+        # a config override there.
+        if [ "$action" = "continue" ]; then
+            sid=$(cat "$idf")
+            cmd=(exec resume --json --skip-git-repo-check
+                 -m "$EW_CODEX_MODEL" -c "model_reasoning_effort=$EW_CODEX_EFFORT")
+            if [ "$read_only" -eq 1 ]; then
+                cmd+=(-c "sandbox_mode=read-only")
+            else
+                cmd+=(--dangerously-bypass-approvals-and-sandbox)
+            fi
+            cmd+=("$sid" "$task")
+        else
+            cmd=(exec --json --skip-git-repo-check
+                 -m "$EW_CODEX_MODEL" -c "model_reasoning_effort=$EW_CODEX_EFFORT" -C "$dir")
+            if [ "$read_only" -eq 1 ]; then
+                cmd+=(-s read-only)
+            else
+                cmd+=(--dangerously-bypass-approvals-and-sandbox)
+            fi
+            cmd+=("$task")
+        fi
+        ;;
 esac
 
 : > "$raw"
 : > "$err"
 
 # Launch worker CLI
-( cd "$dir" && exec "$bin" "${cmd[@]}" ) > "$raw" 2>"$err" &
+( cd "$dir" && exec "$bin" "${cmd[@]}" </dev/null ) > "$raw" 2>"$err" &
 worker_pid=$!
 printf '%s\n' "$worker_pid" > "$lockdir/worker.pid"
 wls=$(ps -p "$worker_pid" -o lstart= 2>/dev/null || true)
@@ -460,6 +506,7 @@ if [ -z "$sid" ]; then
     case "$executor" in
         gemini) session_field=conversation_id ;;
         cursor) session_field=session_id ;;
+        codex) session_field=thread_id ;;
     esac
     n=0
     while [ "$n" -lt 200 ]; do
@@ -515,6 +562,24 @@ case "$executor" in
             fi
             body=$(printf '%s' "$res" | jq -r '.result // ""')
             error_detail="$subtype"
+        fi
+        ;;
+
+    codex)
+        done_evt=$(jq -c 'select(.type=="turn.completed")' "$raw" 2>/dev/null | tail -n1)
+        fail_evt=$(jq -c 'select(.type=="turn.failed")' "$raw" 2>/dev/null | tail -n1)
+        if [ -n "$done_evt" ] || [ -n "$fail_evt" ]; then
+            result_present=1
+            if [ -n "$fail_evt" ]; then
+                is_error=1
+                subtype="turn.failed"
+                error_detail=$(printf '%s' "$fail_evt" | jq -r '.error.message // "no detail"')
+            else
+                is_error=0
+                subtype="turn.completed"
+            fi
+            body=$(jq -s -r 'map(select(.type=="item.completed" and .item.type=="agent_message")
+                                   | .item.text) | (last // "")' "$raw" 2>/dev/null || true)
         fi
         ;;
 esac

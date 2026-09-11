@@ -70,7 +70,7 @@ if os.environ.get("EW_TEST_HANG") == "1":
 exit_code = int(os.environ.get("EW_TEST_EXIT_CODE", "0"))
 sys.exit(exit_code)
 """
-        for bin_name in ("fake_agy", "fake_claude", "fake_agent"):
+        for bin_name in ("fake_agy", "fake_claude", "fake_agent", "fake_codex"):
             p = self.bin_dir / bin_name
             p.write_text(fake_cli_code)
             p.chmod(0o755)
@@ -80,6 +80,7 @@ sys.exit(exit_code)
             "EW_GEMINI_BIN": str(self.bin_dir / "fake_agy"),
             "EW_CLAUDE_BIN": str(self.bin_dir / "fake_claude"),
             "EW_CURSOR_BIN": str(self.bin_dir / "fake_agent"),
+            "EW_CODEX_BIN": str(self.bin_dir / "fake_codex"),
             "XDG_CACHE_HOME": str(self.root / "cache"),
             "EW_TEST_INVOCATIONS": str(self.invocations_file),
             "EW_TEST_EVENTS": str(self.events_file),
@@ -147,6 +148,27 @@ sys.exit(exit_code)
                     "is_error": is_err,
                     "result": self.body if body is None else body,
                 })
+        elif executor == "codex":
+            events.append({"type": "thread.started", "thread_id": session_id})
+            events.append({"type": "turn.started"})
+            if partial is not None:
+                events.append({"type": "item.completed", "item": {
+                    "id": "item_1", "type": "command_execution", "command": "cat probe",
+                    "aggregated_output": partial, "exit_code": 0, "status": "completed",
+                }})
+                events.append({"type": "item.completed", "item": {
+                    "id": "item_2", "type": "agent_message", "text": partial,
+                }})
+            if not crash:
+                if status != "SUCCESS":
+                    events.append({"type": "turn.failed",
+                                   "error": {"message": "simulated failure"}})
+                else:
+                    events.append({"type": "item.completed", "item": {
+                        "id": "item_3", "type": "agent_message",
+                        "text": self.body if body is None else body,
+                    }})
+                    events.append({"type": "turn.completed", "usage": {}})
 
         self.events_file.write_text("\n".join(json.dumps(e) for e in events) + "\n")
 
@@ -226,6 +248,8 @@ class OptionParsingTests(ExternalWorkerTestBase):
             ("claude", "--executor", "fake_claude"),
             ("cursor", "-e", "fake_agent"),
             ("cursor", "--executor", "fake_agent"),
+            ("codex", "-e", "fake_codex"),
+            ("codex", "--executor", "fake_codex"),
         ]
         for executor, flag, expected_bin in cases:
             with self.subTest(executor=executor, flag=flag):
@@ -398,6 +422,32 @@ class ProviderArgvTests(ExternalWorkerTestBase):
         self.assertIn("--force", argv)
         self.assertNotIn("--mode", argv)
 
+    def test_codex_read_only_and_write_argv(self):
+        # Read-only Codex: read-only sandbox, no bypass
+        self.write_stream("codex", body="ok")
+        res = self.run_cmd("-e", "codex", "-r", "task ro")
+        self.assertEqual(res.returncode, 0, res.stderr)
+        argv = self.get_invocations()[0]["argv"]
+        self.assertEqual(argv[0], "exec")
+        self.assertIn("--json", argv)
+        self.assertIn("-C", argv)
+        self.assertEqual(argv[argv.index("-C") + 1], str(self.workspace))
+        self.assertEqual(argv[argv.index("-s") + 1], "read-only")
+        self.assertNotIn("--dangerously-bypass-approvals-and-sandbox", argv)
+        self.assertIn("-m", argv)
+        self.assertEqual(argv[argv.index("-m") + 1], "gpt-6-astra")
+        self.assertIn("model_reasoning_effort=medium", argv)
+
+        # Write Codex: full bypass, no sandbox flag
+        self.invocations_file.unlink()
+        self.write_stream("codex", body="ok")
+        res = self.run_cmd("-e", "codex", "task rw")
+        self.assertEqual(res.returncode, 0, res.stderr)
+        argv = self.get_invocations()[0]["argv"]
+        self.assertIn("--dangerously-bypass-approvals-and-sandbox", argv)
+        self.assertNotIn("-s", argv)
+        self.assertNotIn("sandbox_mode=read-only", argv)
+
     def test_continuation_flags_and_session_inheritance(self):
         # Gemini continuation
         self.write_stream("gemini", body="init", session_id="gem-session-42")
@@ -449,6 +499,29 @@ class ProviderArgvTests(ExternalWorkerTestBase):
         self.assertEqual(resume_argv[resume_argv.index("--resume") + 1], "cur-sess-99")
         self.assertNotIn("--model", resume_argv)
 
+        # Codex continuation: thread id discovered from the stream, model/effort
+        # re-specified because the recorded session does not persist them
+        self.invocations_file.unlink()
+        self.write_stream("codex", body="init", session_id="cdx-thread-7")
+        res = self.run_cmd("-e", "codex", "task 1")
+        self.assertEqual(res.returncode, 0, res.stderr)
+        first_argv = self.get_invocations()[0]["argv"]
+        self.assertEqual(first_argv[:2], ["exec", "--json"])
+        self.assertEqual((self.state_dir("codex") / "id").read_text().strip(),
+                         "cdx-thread-7")
+
+        self.invocations_file.unlink()
+        self.write_stream("codex", body="resumed")
+        res = self.run_cmd("-e", "codex", "-c", "task continue")
+        self.assertEqual(res.returncode, 0, res.stderr)
+        resume_argv = self.get_invocations()[0]["argv"]
+        self.assertEqual(resume_argv[:2], ["exec", "resume"])
+        self.assertIn("cdx-thread-7", resume_argv)
+        self.assertEqual(resume_argv[-1], "task continue")
+        self.assertIn("-m", resume_argv)
+        self.assertEqual(resume_argv[resume_argv.index("-m") + 1], "gpt-6-astra")
+        self.assertIn("model_reasoning_effort=medium", resume_argv)
+
     def test_continuation_mode_inheritance_and_rejection(self):
         # Read-only run continued without -r MUST inherit read-only mode
         self.write_stream("gemini", body="first")
@@ -478,7 +551,7 @@ class ProviderArgvTests(ExternalWorkerTestBase):
 
 class ReportHandlingAndExitCodeTests(ExternalWorkerTestBase):
     def test_failures_replace_old_reports_and_cap_partial_output(self):
-        for executor in ["gemini", "claude", "cursor"]:
+        for executor in ["gemini", "claude", "cursor", "codex"]:
             for crash, code in [(False, 1), (True, 3)]:
                 with self.subTest(executor=executor, crash=crash):
                     self.write_stream(executor, body="old report")
@@ -491,7 +564,7 @@ class ReportHandlingAndExitCodeTests(ExternalWorkerTestBase):
                     self.assertEqual(self.report_path(executor).read_text(), self.body + "\n")
 
     def test_all_executors_capping_and_full_report(self):
-        for executor in ["gemini", "claude", "cursor"]:
+        for executor in ["gemini", "claude", "cursor", "codex"]:
             with self.subTest(executor=executor):
                 self.write_stream(executor, body=self.body)
                 res = self.run_cmd("-e", executor, "--spill", "2", "task")
@@ -518,7 +591,7 @@ class ReportHandlingAndExitCodeTests(ExternalWorkerTestBase):
         self.assertEqual(self.report_path("claude").read_text(), self.body + "\n")
 
     def test_empty_success_returns_exit_2(self):
-        for executor in ["gemini", "claude", "cursor"]:
+        for executor in ["gemini", "claude", "cursor", "codex"]:
             for empty_body in ["", "   \n\t  \n"]:
                 with self.subTest(executor=executor, empty_body=repr(empty_body)):
                     self.write_stream(executor, body=empty_body)
@@ -527,7 +600,7 @@ class ReportHandlingAndExitCodeTests(ExternalWorkerTestBase):
                     self.assertEqual(self.report_path(executor).read_text().strip(), "")
 
     def test_provider_error_returns_exit_1_and_salvages_output(self):
-        for executor in ["gemini", "claude", "cursor"]:
+        for executor in ["gemini", "claude", "cursor", "codex"]:
             with self.subTest(executor=executor):
                 partial_text = "partial salvage before error\n"
                 self.write_stream(executor, body="", status="ERROR", partial=partial_text)
@@ -544,7 +617,7 @@ class ReportHandlingAndExitCodeTests(ExternalWorkerTestBase):
         self.assertIn("result with error exit", res.stdout)
 
     def test_crash_returns_exit_3_and_salvages_partial(self):
-        for executor in ["gemini", "claude", "cursor"]:
+        for executor in ["gemini", "claude", "cursor", "codex"]:
             with self.subTest(executor=executor):
                 partial_text = "salvaged chunk 1\nsalvaged chunk 2\n"
                 self.write_stream(executor, partial=partial_text, crash=True)
@@ -669,7 +742,7 @@ class IsolationAndConcurrencyTests(ExternalWorkerTestBase):
 class ResumeGuaranteesTests(ExternalWorkerTestBase):
     def test_all_providers_inherit_read_only_and_reject_missing_mode(self):
         for executor, flag in [("gemini", "--mode"), ("claude", "--permission-mode"),
-                               ("cursor", "--mode")]:
+                               ("cursor", "--mode"), ("codex", "sandbox_mode=read-only")]:
             with self.subTest(executor=executor):
                 self.write_stream(executor, body="done")
                 self.assertEqual(self.run_cmd("-e", executor, "-r", "task").returncode, 0)
