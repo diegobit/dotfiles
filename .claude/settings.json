@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(grep -E \"\\\\.xml$|\\\\.java$|pom|Dockerfile\")",
+      "Bash(grep -r \"CREATE\\\\|CREATE TABLE\" /Users/diego/code/finv/ait-our-repo/backend/src/main/resources/db/changelog/*.xml)",
+      "Bash(grep -n \"createTable\" /Users/diego/code/finv/ait-our-repo/backend/src/main/resources/db/changelog/*.xml)",
+      "Bash(git config:*)",
+      "Bash(grep -r \"postgres\\\\|postgresql\\\\|database\\\\|sql\" /Users/diego/code/finv/ait-our-repo/backend/src/main/resources/application*.properties)",
+      "Bash(xargs cat:*)",
+      "Bash(find:*)",
+      "Bash(git:*)",
+      "Bash(./mvnw clean:*)",
+      "Bash(pnpm run:*)",
+      "Bash(grep:*)",
+      "Bash(ls -la /Users/diego/code/finv/fpc-app/backend/src/main/resources/db/changelog/*.xml)",
+      "Bash(ls -1 /Users/diego/code/finv/fpc-app/backend/src/main/java/it/aitechnologies/finvers/services/*.java)"
+    ],
+    "defaultMode": "auto"
+  },
+  "model": "sonnet",
+  "_disabledHooks": {
+    "_comment": "Commented-out hooks (settings.json must be strict JSON, no // comments). To re-enable, move these entries under the \"hooks\" key and delete _disabledHooks.",
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "terminal-notifier -title \"🔔 Claude Code\" -message \"$(basename $(pwd)) Claude needs your input\" -sender com.apple.Terminal"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "terminal-notifier -title \"✅ Claude Code\" -message \"$(basename $(pwd)) Claude completed your task!\" -sender com.apple.Terminal"
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "sh /Users/diego/.claude/statusline-command.sh"
+  },
+  "enabledPlugins": {},
+  "extraKnownMarketplaces": {},
+  "effortLevel": "high",
+  "awaySummaryEnabled": false,
+  "tui": "fullscreen",
+  "skipDangerousModePermissionPrompt": true,
+  "preferredNotifChannel": "auto",
+  "inputNeededNotifEnabled": true,
+  "agentPushNotifEnabled": true,
+  "skipAutoPermissionPrompt": true
+}
