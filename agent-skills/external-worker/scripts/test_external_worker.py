@@ -35,6 +35,7 @@ class ExternalWorkerTestBase(unittest.TestCase):
 import json
 import os
 from pathlib import Path
+import subprocess
 import sys
 import time
 
@@ -51,6 +52,9 @@ if log_path:
 called = os.environ.get("EW_TEST_CALLED")
 if called:
     Path(called).touch()
+
+if os.environ.get("EW_TEST_CALL_TG") == "1":
+    subprocess.run(["tg", "worker test notification"], check=True)
 
 events_file = os.environ.get("EW_TEST_EVENTS")
 if events_file and os.path.exists(events_file):
@@ -74,6 +78,10 @@ sys.exit(exit_code)
             p = self.bin_dir / bin_name
             p.write_text(fake_cli_code)
             p.chmod(0o755)
+
+        tg = self.bin_dir / "tg"
+        tg.write_text('#!/bin/sh\nexit 42\n')
+        tg.chmod(0o755)
 
         self.env = {k: v for k, v in os.environ.items() if not k.startswith("EW_") and not k.startswith("FLASH_") and not k.startswith("CW_") and not k.startswith("CRW_")}
         self.env.update({
@@ -262,6 +270,11 @@ class OptionParsingTests(ExternalWorkerTestBase):
         self.assertIn("--add-dir", argv)
         self.assertIn(str(self.workspace), argv)
         self.assertIn("--dangerously-skip-permissions", argv)
+
+    def test_worker_shadows_tg(self):
+        self.write_stream("gemini", body="worker response")
+        res = self.run_cmd("task", env_extra={"EW_TEST_CALL_TG": "1"})
+        self.assertEqual(res.returncode, 0, res.stderr)
 
     def test_explicit_executors(self):
         cases = [
