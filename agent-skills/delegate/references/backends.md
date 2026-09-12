@@ -84,8 +84,8 @@ the report, exit status, evidence, and diff are separate acceptance checks.
 ## Configuration and diagnosis
 
 Only the selected CLI must be installed and authenticated. The launcher also
-requires Bash, jq, and the macOS command-line utilities used for process and state
-handling. `EW_CLAUDE_BUDGET` optionally caps Claude spend in USD. Executable overrides
+requires Bash, jq, a SHA-1 utility (`shasum` or `sha1sum`), and the standard
+process and state utilities; it runs on macOS and Linux. `EW_CLAUDE_BUDGET` optionally caps Claude spend in USD. Executable overrides
 `EW_GEMINI_BIN`, `EW_CLAUDE_BIN`, `EW_CURSOR_BIN`, `EW_CODEX_BIN`, and
 `EW_OPENCODE_BIN` support offline testing.
 Production model choices are fixed in the command builders. A provider failure

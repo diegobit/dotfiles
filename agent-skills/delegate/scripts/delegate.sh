@@ -137,9 +137,14 @@ esac
 dir=$(cd "$dir" && pwd -P)
 
 command -v jq >/dev/null 2>&1 || die "jq not found in PATH" 64
+command -v shasum >/dev/null 2>&1 || command -v sha1sum >/dev/null 2>&1 \
+    || die "shasum or sha1sum not found in PATH" 64
 
 # --- State paths and identity ---
-key=$(printf '%s' "$dir" | shasum | cut -c1-12)
+sha1() {
+    if command -v shasum >/dev/null 2>&1; then shasum "$@"; else sha1sum "$@"; fi
+}
+key=$(printf '%s' "$dir" | sha1 | cut -c1-12)
 state="$STATE_ROOT/$key/$executor"
 mkdir -p "$state"
 
@@ -315,7 +320,7 @@ if [ "$action" = "selftest" ]; then
 
     t=$(mktemp -d); trap 'rm -rf "$t"' EXIT
     printf 'def add(a, b):\n    return a - b\n' > "$t/calc.py"
-    before=$(shasum "$t/calc.py" | cut -d' ' -f1)
+    before=$(sha1 "$t/calc.py" | cut -d' ' -f1)
     printf 'MARKER-ZXQ97\n' > "$t/probe.txt"
 
     memory_token=$(uuidgen)
@@ -330,7 +335,7 @@ if [ "$action" = "selftest" ]; then
     printf 'selftest[%s]: resumed read-only mode blocks writes and retains context... ' "$executor"
     readonly_report=$("$SCRIPT_PATH" -e "$executor" -c -d "$t" --spill 0 \
         "Fix calc.py so add adds instead of subtracting. Attempt the edit. Report the token I asked you to remember in the previous turn.")
-    after=$(shasum "$t/calc.py" | cut -d' ' -f1)
+    after=$(sha1 "$t/calc.py" | cut -d' ' -f1)
     [ "$before" = "$after" ] || { printf 'FAIL (read-only mode modified calc.py)\n'; exit 1; }
     case "$readonly_report" in
         *"$memory_token"*) printf 'PASS\n' ;;
@@ -348,7 +353,7 @@ if [ "$action" = "selftest" ]; then
     fi
 
     printf 'selftest[%s]: write session resume retains identity and context... ' "$executor"
-    tstate=$STATE_ROOT/$(printf '%s' "$(cd "$t" && pwd -P)" | shasum | cut -c1-12)/$executor
+    tstate=$STATE_ROOT/$(printf '%s' "$(cd "$t" && pwd -P)" | sha1 | cut -c1-12)/$executor
     before_sid=$(cat "$tstate/id")
     resume_report=$("$SCRIPT_PATH" -e "$executor" -c -d "$t" --spill 0 \
         "Reply with only the token I asked you to remember in the previous turn.")
