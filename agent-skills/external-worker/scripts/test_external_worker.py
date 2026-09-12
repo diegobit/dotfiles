@@ -70,7 +70,7 @@ if os.environ.get("EW_TEST_HANG") == "1":
 exit_code = int(os.environ.get("EW_TEST_EXIT_CODE", "0"))
 sys.exit(exit_code)
 """
-        for bin_name in ("fake_agy", "fake_claude", "fake_agent", "fake_codex"):
+        for bin_name in ("fake_agy", "fake_claude", "fake_agent", "fake_codex", "fake_opencode"):
             p = self.bin_dir / bin_name
             p.write_text(fake_cli_code)
             p.chmod(0o755)
@@ -81,6 +81,7 @@ sys.exit(exit_code)
             "EW_CLAUDE_BIN": str(self.bin_dir / "fake_claude"),
             "EW_CURSOR_BIN": str(self.bin_dir / "fake_agent"),
             "EW_CODEX_BIN": str(self.bin_dir / "fake_codex"),
+            "EW_OPENCODE_BIN": str(self.bin_dir / "fake_opencode"),
             "XDG_CACHE_HOME": str(self.root / "cache"),
             "EW_TEST_INVOCATIONS": str(self.invocations_file),
             "EW_TEST_EVENTS": str(self.events_file),
@@ -169,6 +170,28 @@ sys.exit(exit_code)
                         "text": self.body if body is None else body,
                     }})
                     events.append({"type": "turn.completed", "usage": {}})
+        elif executor == "opencode":
+            events.append({"type": "step_start", "sessionID": session_id,
+                           "part": {"type": "step-start", "messageID": "msg_1"}})
+            if partial is not None:
+                events.append({"type": "tool_use", "sessionID": session_id,
+                               "part": {"type": "tool", "tool": "read",
+                                        "state": {"status": "completed",
+                                                  "input": {"filePath": "probe.txt"}}}})
+                events.append({"type": "text", "sessionID": session_id,
+                               "part": {"type": "text", "messageID": "msg_1",
+                                        "text": partial}})
+            if not crash:
+                if status != "SUCCESS":
+                    events.append({"type": "error", "sessionID": session_id,
+                                   "error": {"name": "UnknownError",
+                                             "data": {"message": "simulated failure"}}})
+                else:
+                    events.append({"type": "text", "sessionID": session_id,
+                                   "part": {"type": "text", "messageID": "msg_2",
+                                            "text": self.body if body is None else body}})
+                    events.append({"type": "step_finish", "sessionID": session_id,
+                                   "part": {"type": "step-finish", "reason": "stop"}})
 
         self.events_file.write_text("\n".join(json.dumps(e) for e in events) + "\n")
 
@@ -250,6 +273,8 @@ class OptionParsingTests(ExternalWorkerTestBase):
             ("cursor", "--executor", "fake_agent"),
             ("codex", "-e", "fake_codex"),
             ("codex", "--executor", "fake_codex"),
+            ("opencode", "-e", "fake_opencode"),
+            ("opencode", "--executor", "fake_opencode"),
         ]
         for executor, flag, expected_bin in cases:
             with self.subTest(executor=executor, flag=flag):
@@ -448,6 +473,29 @@ class ProviderArgvTests(ExternalWorkerTestBase):
         self.assertNotIn("-s", argv)
         self.assertNotIn("sandbox_mode=read-only", argv)
 
+    def test_opencode_read_only_and_write_argv(self):
+        # Read-only OpenCode: plan agent, no auto-approval
+        self.write_stream("opencode", body="ok")
+        res = self.run_cmd("-e", "opencode", "-r", "task ro")
+        self.assertEqual(res.returncode, 0, res.stderr)
+        argv = self.get_invocations()[0]["argv"]
+        self.assertEqual(argv[0], "run")
+        self.assertIn("--format", argv)
+        self.assertEqual(argv[argv.index("--format") + 1], "json")
+        self.assertEqual(argv[argv.index("-m") + 1], "opencode-go/deepseek-v4.1-flash")
+        self.assertEqual(argv[argv.index("--variant") + 1], "max")
+        self.assertEqual(argv[argv.index("--agent") + 1], "plan")
+        self.assertNotIn("--auto", argv)
+
+        # Write OpenCode: build agent with auto-approval
+        self.invocations_file.unlink()
+        self.write_stream("opencode", body="ok")
+        res = self.run_cmd("-e", "opencode", "task rw")
+        self.assertEqual(res.returncode, 0, res.stderr)
+        argv = self.get_invocations()[0]["argv"]
+        self.assertEqual(argv[argv.index("--agent") + 1], "build")
+        self.assertIn("--auto", argv)
+
     def test_continuation_flags_and_session_inheritance(self):
         # Gemini continuation
         self.write_stream("gemini", body="init", session_id="gem-session-42")
@@ -522,6 +570,27 @@ class ProviderArgvTests(ExternalWorkerTestBase):
         self.assertEqual(resume_argv[resume_argv.index("-m") + 1], "gpt-6-astra")
         self.assertIn("model_reasoning_effort=medium", resume_argv)
 
+        # OpenCode continuation: session discovered from the stream, model and
+        # variant re-specified, write agent inherited
+        self.invocations_file.unlink()
+        self.write_stream("opencode", body="init", session_id="ses_open_42")
+        res = self.run_cmd("-e", "opencode", "task 1")
+        self.assertEqual(res.returncode, 0, res.stderr)
+        self.assertEqual((self.state_dir("opencode") / "id").read_text().strip(),
+                         "ses_open_42")
+
+        self.invocations_file.unlink()
+        self.write_stream("opencode", body="resumed")
+        res = self.run_cmd("-e", "opencode", "-c", "task continue")
+        self.assertEqual(res.returncode, 0, res.stderr)
+        resume_argv = self.get_invocations()[0]["argv"]
+        self.assertEqual(resume_argv[0], "run")
+        self.assertEqual(resume_argv[resume_argv.index("-s") + 1], "ses_open_42")
+        self.assertEqual(resume_argv[resume_argv.index("-m") + 1],
+                         "opencode-go/deepseek-v4.1-flash")
+        self.assertEqual(resume_argv[resume_argv.index("--variant") + 1], "max")
+        self.assertEqual(resume_argv[resume_argv.index("--agent") + 1], "build")
+
     def test_continuation_mode_inheritance_and_rejection(self):
         # Read-only run continued without -r MUST inherit read-only mode
         self.write_stream("gemini", body="first")
@@ -551,7 +620,7 @@ class ProviderArgvTests(ExternalWorkerTestBase):
 
 class ReportHandlingAndExitCodeTests(ExternalWorkerTestBase):
     def test_failures_replace_old_reports_and_cap_partial_output(self):
-        for executor in ["gemini", "claude", "cursor", "codex"]:
+        for executor in ["gemini", "claude", "cursor", "codex", "opencode"]:
             for crash, code in [(False, 1), (True, 3)]:
                 with self.subTest(executor=executor, crash=crash):
                     self.write_stream(executor, body="old report")
@@ -564,7 +633,7 @@ class ReportHandlingAndExitCodeTests(ExternalWorkerTestBase):
                     self.assertEqual(self.report_path(executor).read_text(), self.body + "\n")
 
     def test_all_executors_capping_and_full_report(self):
-        for executor in ["gemini", "claude", "cursor", "codex"]:
+        for executor in ["gemini", "claude", "cursor", "codex", "opencode"]:
             with self.subTest(executor=executor):
                 self.write_stream(executor, body=self.body)
                 res = self.run_cmd("-e", executor, "--spill", "2", "task")
@@ -591,7 +660,7 @@ class ReportHandlingAndExitCodeTests(ExternalWorkerTestBase):
         self.assertEqual(self.report_path("claude").read_text(), self.body + "\n")
 
     def test_empty_success_returns_exit_2(self):
-        for executor in ["gemini", "claude", "cursor", "codex"]:
+        for executor in ["gemini", "claude", "cursor", "codex", "opencode"]:
             for empty_body in ["", "   \n\t  \n"]:
                 with self.subTest(executor=executor, empty_body=repr(empty_body)):
                     self.write_stream(executor, body=empty_body)
@@ -600,7 +669,7 @@ class ReportHandlingAndExitCodeTests(ExternalWorkerTestBase):
                     self.assertEqual(self.report_path(executor).read_text().strip(), "")
 
     def test_provider_error_returns_exit_1_and_salvages_output(self):
-        for executor in ["gemini", "claude", "cursor", "codex"]:
+        for executor in ["gemini", "claude", "cursor", "codex", "opencode"]:
             with self.subTest(executor=executor):
                 partial_text = "partial salvage before error\n"
                 self.write_stream(executor, body="", status="ERROR", partial=partial_text)
@@ -617,7 +686,7 @@ class ReportHandlingAndExitCodeTests(ExternalWorkerTestBase):
         self.assertIn("result with error exit", res.stdout)
 
     def test_crash_returns_exit_3_and_salvages_partial(self):
-        for executor in ["gemini", "claude", "cursor", "codex"]:
+        for executor in ["gemini", "claude", "cursor", "codex", "opencode"]:
             with self.subTest(executor=executor):
                 partial_text = "salvaged chunk 1\nsalvaged chunk 2\n"
                 self.write_stream(executor, partial=partial_text, crash=True)
@@ -742,7 +811,8 @@ class IsolationAndConcurrencyTests(ExternalWorkerTestBase):
 class ResumeGuaranteesTests(ExternalWorkerTestBase):
     def test_all_providers_inherit_read_only_and_reject_missing_mode(self):
         for executor, flag in [("gemini", "--mode"), ("claude", "--permission-mode"),
-                               ("cursor", "--mode"), ("codex", "sandbox_mode=read-only")]:
+                               ("cursor", "--mode"), ("codex", "sandbox_mode=read-only"),
+                               ("opencode", "--agent")]:
             with self.subTest(executor=executor):
                 self.write_stream(executor, body="done")
                 self.assertEqual(self.run_cmd("-e", executor, "-r", "task").returncode, 0)
@@ -751,6 +821,8 @@ class ResumeGuaranteesTests(ExternalWorkerTestBase):
                 self.assertIn(flag, argv)
                 if executor == "claude":
                     self.assertNotIn("--dangerously-skip-permissions", argv)
+                if executor == "opencode":
+                    self.assertEqual(argv[argv.index("--agent") + 1], "plan")
                 (self.state_dir(executor) / "mode").unlink()
                 count = len(self.get_invocations())
                 result = self.run_cmd("-e", executor, "-c", "correct")

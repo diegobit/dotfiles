@@ -2,13 +2,13 @@
 # external-worker — unified launcher for external AI coding workers.
 #
 # Usage:
-#   external-worker [--executor gemini|claude|cursor|codex] [-r] [-d DIR] [--spill N] "task"
-#   external-worker [--executor gemini|claude|cursor|codex] -c [-d DIR] [--spill N] "correction"
-#   external-worker [--executor gemini|claude|cursor|codex] -p [-d DIR]
-#   external-worker [--executor gemini|claude|cursor|codex] -k [-d DIR]
-#   external-worker [--executor gemini|claude|cursor|codex] --selftest
+#   external-worker [--executor gemini|claude|cursor|codex|opencode] [-r] [-d DIR] [--spill N] "task"
+#   external-worker [--executor gemini|claude|cursor|codex|opencode] -c [-d DIR] [--spill N] "correction"
+#   external-worker [--executor gemini|claude|cursor|codex|opencode] -p [-d DIR]
+#   external-worker [--executor gemini|claude|cursor|codex|opencode] -k [-d DIR]
+#   external-worker [--executor gemini|claude|cursor|codex|opencode] --selftest
 #
-#   -e, --executor  worker backend (gemini | claude | cursor | codex; default: gemini)
+#   -e, --executor  worker backend (gemini | claude | cursor | codex | opencode; default: gemini)
 #   -r, --read-only read-only mode (provider permission mode)
 #   -d, --dir       workspace directory (default: $PWD)
 #   -c, --continue  resume last session for this workspace and executor
@@ -54,6 +54,11 @@ EW_CURSOR_MODEL="cursor-grok-4.6-high"
 
 EW_CODEX_MODEL="gpt-6-astra"
 EW_CODEX_EFFORT="medium"
+
+EW_OPENCODE_MODEL="opencode-go/deepseek-v4.1-flash"
+EW_OPENCODE_VARIANT="max"
+EW_OPENCODE_AGENT_WRITE="build"
+EW_OPENCODE_AGENT_READ="plan"
 
 # --- Argument parsing ---
 while [ $# -gt 0 ]; do
@@ -119,8 +124,8 @@ while [ $# -gt 0 ]; do
 done
 
 case "$executor" in
-    gemini|claude|cursor|codex) ;;
-    *) die "unknown executor '$executor' (expected gemini, claude, cursor, or codex)" 64 ;;
+    gemini|claude|cursor|codex|opencode) ;;
+    *) die "unknown executor '$executor' (expected gemini, claude, cursor, codex, or opencode)" 64 ;;
 esac
 
 case "$spill_lines" in
@@ -189,6 +194,9 @@ provider_partial() {
             jq -j 'select(.type=="item.completed" and .item.type=="agent_message")
                    | .item.text + "\n"' "$raw" 2>/dev/null || true
             ;;
+        opencode)
+            jq -j 'select(.type=="text") | .part.text + "\n"' "$raw" 2>/dev/null || true
+            ;;
     esac
 }
 
@@ -227,6 +235,15 @@ provider_steps() {
                      else "  " + .type
                      end' "$raw" 2>/dev/null | cut -c1-120 | tail -40
             ;;
+        opencode)
+            jq -r 'select(.type=="tool_use") | .part as $p
+                   | ($p.state.input // {}) as $i
+                   | "  \($p.tool)\(if $i.command then ": " + ($i.command|tostring)
+                                      elif $i.filePath then ": " + ($i.filePath|tostring)
+                                      elif $i.pattern then ": " + ($i.pattern|tostring)
+                                      else "" end)"' \
+               "$raw" 2>/dev/null | cut -c1-120 | tail -40
+            ;;
     esac
 }
 
@@ -255,7 +272,7 @@ if [ "$action" = "peek" ]; then
     if [ -f "$idf" ]; then
         case "$executor" in
             gemini) printf 'conversation: %s\n' "$(cat "$idf")" ;;
-            claude|cursor|codex) printf 'session: %s\n' "$(cat "$idf")" ;;
+            claude|cursor|codex|opencode) printf 'session: %s\n' "$(cat "$idf")" ;;
         esac
     fi
     printf 'workspace: %s\nsteps:\n' "$dir"
@@ -288,6 +305,7 @@ case "$executor" in
     claude) bin=${EW_CLAUDE_BIN:-claude} ;;
     cursor) bin=${EW_CURSOR_BIN:-agent} ;;
     codex) bin=${EW_CODEX_BIN:-codex} ;;
+    opencode) bin=${EW_OPENCODE_BIN:-opencode} ;;
 esac
 command -v "$bin" >/dev/null 2>&1 || die "$executor binary not found in PATH: $bin" 64
 
@@ -489,6 +507,24 @@ case "$executor" in
             cmd+=("$task")
         fi
         ;;
+
+    opencode)
+        # `opencode run` has no sandbox flag. Read-only uses the built-in `plan`
+        # agent (edit denied); write uses `build` with --auto. Model and variant
+        # are re-specified on continuation. Plan is a harness permission mode:
+        # bash stays allowed, so it blocks the edit tool, not a shell write.
+        cmd=(run --format json --dir "$dir" -m "$EW_OPENCODE_MODEL" --variant "$EW_OPENCODE_VARIANT")
+        if [ "$action" = "continue" ]; then
+            sid=$(cat "$idf")
+            cmd+=(-s "$sid")
+        fi
+        if [ "$read_only" -eq 1 ]; then
+            cmd+=(--agent "$EW_OPENCODE_AGENT_READ")
+        else
+            cmd+=(--agent "$EW_OPENCODE_AGENT_WRITE" --auto)
+        fi
+        cmd+=("$task")
+        ;;
 esac
 
 : > "$raw"
@@ -507,6 +543,7 @@ if [ -z "$sid" ]; then
         gemini) session_field=conversation_id ;;
         cursor) session_field=session_id ;;
         codex) session_field=thread_id ;;
+        opencode) session_field=sessionID ;;
     esac
     n=0
     while [ "$n" -lt 200 ]; do
@@ -580,6 +617,27 @@ case "$executor" in
             fi
             body=$(jq -s -r 'map(select(.type=="item.completed" and .item.type=="agent_message")
                                    | .item.text) | (last // "")' "$raw" 2>/dev/null || true)
+        fi
+        ;;
+
+    opencode)
+        stop_evt=$(jq -c 'select(.type=="step_finish" and .part.reason=="stop")' "$raw" 2>/dev/null | tail -n1)
+        err_evt=$(jq -c 'select(.type=="error")' "$raw" 2>/dev/null | tail -n1)
+        if [ -n "$stop_evt" ] || [ -n "$err_evt" ]; then
+            result_present=1
+            if [ -n "$err_evt" ] && [ -z "$stop_evt" ]; then
+                is_error=1
+                subtype=$(printf '%s' "$err_evt" | jq -r '.error.name // "error"')
+                error_detail=$(printf '%s' "$err_evt" | jq -r '.error.data.message // .error.message // "no detail"')
+            else
+                is_error=0
+                subtype="stop"
+            fi
+            body=$(jq -s -r '[.[] | select(.type=="text") | .part]
+                             | if length == 0 then "" else
+                                 (.[-1].messageID) as $mid
+                                 | map(select(.messageID == $mid) | .text) | join("\n\n")
+                               end' "$raw" 2>/dev/null || true)
         fi
         ;;
 esac

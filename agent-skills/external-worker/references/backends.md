@@ -16,6 +16,7 @@ prove file tools resolve the right workspace.
 | claude | `claude`, Opus 5, high effort | process cwd | `--permission-mode plan` **without** `--dangerously-skip-permissions` |
 | cursor | `agent`, Grok 4.6 High | `--workspace` plus matching cwd | `--mode ask --force` |
 | codex | `codex exec`, GPT-6-Astra, medium effort | `-C` plus `--skip-git-repo-check` (else Codex roots at the enclosing Git repo) | `-s read-only` on start, `-c sandbox_mode=read-only` on resume |
+| opencode | `opencode run`, DeepSeek V4.1 Flash, variant `max` | `--dir` plus matching cwd | `--agent plan` (edit denied; bash still allowed) |
 
 Claude's skip-permissions flag overrides its plan mode and re-enables writes.
 Gemini needs the skip flag even in plan mode to avoid auto-denying reads. Cursor
@@ -31,6 +32,14 @@ Codex is the exception on two points. Its read-only mode is a real OS sandbox
 unattended authority. `codex exec resume` rejects `-s/--sandbox` and `-C`, so the
 read-only sandbox is re-applied on continuation as `-c sandbox_mode=read-only`
 and the workspace is only the process cwd.
+
+OpenCode has no sandbox flag and no dedicated read-only switch. Read-only uses the
+built-in `plan` agent, whose permission rules deny the `edit` tool; write uses the
+`build` agent with `--auto` to auto-approve anything not explicitly denied. Plan is
+the weakest read-only guarantee of the five because `bash` remains allowed, so a
+model can still modify files through a shell redirect. Treat it like Claude's plan
+mode (a harness permission mode), and verify attempted writes behaviorally rather
+than assuming the sandbox blocks them.
 
 Gemini requires effort with its model alias and a long `--print-timeout` on both
 start and resume. Claude stream JSON requires `--verbose`. Cursor's high effort
@@ -57,6 +66,14 @@ continue can select another session in the same workspace.
   reasoning effort in the recorded session, so both must be re-passed on resume
   (`-m` and `-c model_reasoning_effort=`) or it silently falls back to the user's
   `config.toml` default.
+- OpenCode: every event carries `sessionID` at the top level (`-s` resumes it).
+  Success is `.type == "step_finish"` with `.part.reason == "stop"`; a fatal failure
+  is `.type == "error"` with `.error.data.message`. Assistant text arrives as
+  `text` parts, and the report is the concatenation of the text parts sharing the
+  last `messageID`. Tool progress is `tool_use` parts (`read`, `bash`, `edit`, …).
+  Model and variant are re-specified on resume. A `step_finish`/`stop` is treated as
+  success even if an earlier `error` event appeared, so mid-run errors do not
+  override a completed turn.
 - Claude and Cursor: `.type == "result"` carries subtype, is_error, and result.
   Partial output comes from assistant text messages; tool progress schemas differ.
 
@@ -69,7 +86,8 @@ the report, exit status, evidence, and diff are separate acceptance checks.
 Only the selected CLI must be installed and authenticated. The launcher also
 requires Bash, jq, and the macOS command-line utilities used for process and state
 handling. `EW_CLAUDE_BUDGET` optionally caps Claude spend in USD. Executable overrides
-`EW_GEMINI_BIN`, `EW_CLAUDE_BIN`, `EW_CURSOR_BIN`, and `EW_CODEX_BIN` support offline testing.
+`EW_GEMINI_BIN`, `EW_CLAUDE_BIN`, `EW_CURSOR_BIN`, `EW_CODEX_BIN`, and
+`EW_OPENCODE_BIN` support offline testing.
 Production model choices are fixed in the command builders. A provider failure
 does not trigger an automatic fallback to a different provider or model.
 

@@ -1,12 +1,12 @@
 ---
 name: external-worker
-description: Delegate implementation, refactors, tests, debugging, or codebase investigations to external Gemini, Claude, Cursor, or Codex workers while keeping verbose execution out of the main context. Gemini is the default. Supports scoped writes, read-only investigations, continuation, and file-backed evidence.
+description: Delegate implementation, refactors, tests, debugging, or codebase investigations to external Gemini, Claude, Cursor, Codex, or OpenCode workers while keeping verbose execution out of the main context. Gemini is the default. Supports scoped writes, read-only investigations, continuation, and file-backed evidence.
 ---
 
 # External worker
 
 Delegate with `scripts/external-worker.sh`. Choose only the executor: `gemini`
-(default), `claude`, `cursor`, or `codex`. The launcher handles model selection, command
+(default), `claude`, `cursor`, `codex`, or `opencode`. The launcher handles model selection, command
 flags, sessions, and reports. Keep task scope, user-facing decisions, and acceptance
 with the orchestrator; the packet defines which implementation choices the worker
 can make.
@@ -20,6 +20,7 @@ EW=~/dotfiles/agent-skills/external-worker/scripts/external-worker.sh
 "$EW" -e claude -r -d "$REPO" "investigate"
 "$EW" -e cursor -d "$REPO" "task"
 "$EW" -e codex -d "$REPO" "task"
+"$EW" -e opencode -d "$REPO" "task"
 "$EW" -e claude -c -d "$REPO" "correction"
 "$EW" -e claude -p -d "$REPO"               # peek
 "$EW" -e claude -k -d "$REPO"               # kill
