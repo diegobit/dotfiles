@@ -1,11 +1,11 @@
 ---
-name: external-worker
+name: delegate
 description: Delegate implementation, refactors, tests, debugging, or codebase investigations to external Gemini, Claude, Cursor, Codex, or OpenCode workers while keeping verbose execution out of the main context. Gemini is the default. Supports scoped writes, read-only investigations, continuation, and file-backed evidence.
 ---
 
-# External worker
+# Delegate
 
-Delegate with `scripts/external-worker.sh`. Choose only the executor: `gemini`
+Delegate with `scripts/delegate.sh`. Choose only the executor: `gemini`
 (default), `claude`, `cursor`, `codex`, or `opencode`. The launcher handles model selection, command
 flags, sessions, and reports. Keep task scope, user-facing decisions, and acceptance
 with the orchestrator; the packet defines which implementation choices the worker
@@ -14,16 +14,16 @@ can make.
 ## Interface
 
 ```bash
-EW=~/dotfiles/agent-skills/external-worker/scripts/external-worker.sh
+DELEGATE=~/dotfiles/agent-skills/delegate/scripts/delegate.sh
 
-"$EW" -d "$REPO" "task"                    # default executor
-"$EW" -e claude -r -d "$REPO" "investigate"
-"$EW" -e cursor -d "$REPO" "task"
-"$EW" -e codex -d "$REPO" "task"
-"$EW" -e opencode -d "$REPO" "task"
-"$EW" -e claude -c -d "$REPO" "correction"
-"$EW" -e claude -p -d "$REPO"               # peek
-"$EW" -e claude -k -d "$REPO"               # kill
+"$DELEGATE" -d "$REPO" "task"                    # default executor
+"$DELEGATE" -e claude -r -d "$REPO" "investigate"
+"$DELEGATE" -e cursor -d "$REPO" "task"
+"$DELEGATE" -e codex -d "$REPO" "task"
+"$DELEGATE" -e opencode -d "$REPO" "task"
+"$DELEGATE" -e claude -c -d "$REPO" "correction"
+"$DELEGATE" -e claude -p -d "$REPO"               # peek
+"$DELEGATE" -e claude -k -d "$REPO"               # kill
 ```
 
 Use the launcher relative to this skill's directory if the checkout is elsewhere.
@@ -45,7 +45,7 @@ Use one packet shape for every executor; set the authority and verification need
 for the task. Add `-r` and set allowed changes to NONE for investigations.
 
 ```bash
-"$EW" -d "$REPO" <<'EOF'
+"$DELEGATE" -d "$REPO" <<'EOF'
 ROLE
 <implement | investigate>
 
@@ -61,8 +61,8 @@ METHOD & CONSTRAINTS
 - <contracts to preserve and decisions the worker may make>
 - Enumerate with commands; support measured claims with their output.
 - For voluminous output, create a unique directory with:
-  mkdir -p /tmp/external-worker
-  mktemp -d /tmp/external-worker/evidence.XXXXXX
+  mkdir -p /tmp/delegate
+  mktemp -d /tmp/delegate/evidence.XXXXXX
   Save each command's stdout and stderr to a distinct log there and record its
   exit code. If log creation is blocked, return essential excerpts and report
   the missing full log in GAPS.
@@ -89,7 +89,7 @@ nonnegative decimal integer supported by the shell; zero/unset means unlimited.
 The same saving and capping apply to partial reports from errors and crashes.
 
 The canonical report is
-`${XDG_CACHE_HOME:-$HOME/.cache}/external-worker/<workspace-hash>/<executor>/report.out`.
+`${XDG_CACHE_HOME:-$HOME/.cache}/delegate/<workspace-hash>/<executor>/report.out`.
 Peek and capped-output notices give its exact path. It is replaced when the next
 invocation finishes; copy it elsewhere to retain it. Read the remainder of a capped
 report before accepting its work.
@@ -97,11 +97,11 @@ report before accepting its work.
 For background execution, create a unique caller-owned capture directory:
 
 ```bash
-mkdir -p /tmp/external-worker
-capture=$(mktemp -d /tmp/external-worker/capture.XXXXXX)
-"$EW" -d "$REPO" "task packet" >"$capture/stdout" 2>"$capture/stderr" &
+mkdir -p /tmp/delegate
+capture=$(mktemp -d /tmp/delegate/capture.XXXXXX)
+"$DELEGATE" -d "$REPO" "task packet" >"$capture/stdout" 2>"$capture/stderr" &
 worker_pid=$!
-"$EW" -p -d "$REPO"
+"$DELEGATE" -p -d "$REPO"
 wait "$worker_pid"  # retain the exit code for acceptance
 ```
 
@@ -129,6 +129,6 @@ For failed launches, permission behavior, session problems, or provider maintena
 read [backend details](references/backends.md) before changing flags. Each provider
 has different read-only semantics.
 
-Run `python3 scripts/test_external_worker.py` from this skill's directory for offline
-regressions. `scripts/external-worker.sh -e <executor> --selftest` exercises the
+Run `python3 scripts/test_delegate.py` from this skill's directory for offline
+regressions. `scripts/delegate.sh -e <executor> --selftest` exercises the
 installed CLI in a throwaway workspace and uses paid model calls.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Offline regression tests for external-worker launcher."""
+"""Offline regression tests for delegate launcher."""
 
 import hashlib
 import json
@@ -12,10 +12,10 @@ import time
 import unittest
 
 
-LAUNCHER = Path(__file__).with_name("external-worker.sh")
+LAUNCHER = Path(__file__).with_name("delegate.sh")
 
 
-class ExternalWorkerTestBase(unittest.TestCase):
+class DelegateTestBase(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix="ew-test-")
         self.addCleanup(self.temp.cleanup)
@@ -107,12 +107,12 @@ sys.exit(exit_code)
     def report_path(self, executor="gemini", workspace=None):
         ws = str(workspace or self.workspace)
         key = hashlib.sha1(ws.encode()).hexdigest()[:12]
-        return self.root / "cache" / "external-worker" / key / executor / "report.out"
+        return self.root / "cache" / "delegate" / key / executor / "report.out"
 
     def state_dir(self, executor="gemini", workspace=None):
         ws = str(workspace or self.workspace)
         key = hashlib.sha1(ws.encode()).hexdigest()[:12]
-        return self.root / "cache" / "external-worker" / key / executor
+        return self.root / "cache" / "delegate" / key / executor
 
     def write_stream(self, executor="gemini", body=None, status="SUCCESS", partial=None, crash=False, session_id="test-session"):
         events = []
@@ -234,11 +234,11 @@ sys.exit(exit_code)
         expected = body.splitlines()[:limit]
         self.assertEqual(lines[:limit], expected)
         self.assertEqual(len(lines), limit + 2)
-        notice = f"[external-worker: report capped at {limit} lines. Full report: {self.report_path(executor)}]"
+        notice = f"[delegate: report capped at {limit} lines. Full report: {self.report_path(executor)}]"
         self.assertIn(notice, text)
 
 
-class OptionParsingTests(ExternalWorkerTestBase):
+class OptionParsingTests(DelegateTestBase):
     def test_default_workspace_uses_current_directory(self):
         self.write_stream(body="done")
         result = subprocess.run([str(LAUNCHER.resolve()), "task"], cwd=self.workspace,
@@ -348,7 +348,7 @@ class OptionParsingTests(ExternalWorkerTestBase):
         self.assertIn("task is empty", res.stderr)
 
 
-class ArgumentIntegrityTests(ExternalWorkerTestBase):
+class ArgumentIntegrityTests(DelegateTestBase):
     def test_arbitrary_task_text_preserved(self):
         weird_task = """Arbitrary: $PATH `uname -a` $(rm -rf /) * ? [a-z] "quotes" 'single' \t and \n newlines"""
         self.write_stream("gemini", body="done")
@@ -395,7 +395,7 @@ class ArgumentIntegrityTests(ExternalWorkerTestBase):
         self.assertEqual(argv[p_idx + 1], "-hyphen-flag-task")
 
 
-class ProviderArgvTests(ExternalWorkerTestBase):
+class ProviderArgvTests(DelegateTestBase):
     def test_gemini_read_only_and_write_argv(self):
         # Read-only Gemini: needs BOTH --mode plan AND --dangerously-skip-permissions
         self.write_stream("gemini", body="ok")
@@ -631,7 +631,7 @@ class ProviderArgvTests(ExternalWorkerTestBase):
         self.assertIn("cannot continue a write session in read-only mode", res.stderr)
 
 
-class ReportHandlingAndExitCodeTests(ExternalWorkerTestBase):
+class ReportHandlingAndExitCodeTests(DelegateTestBase):
     def test_failures_replace_old_reports_and_cap_partial_output(self):
         for executor in ["gemini", "claude", "cursor", "codex", "opencode"]:
             for crash, code in [(False, 1), (True, 3)]:
@@ -709,7 +709,7 @@ class ReportHandlingAndExitCodeTests(ExternalWorkerTestBase):
                 self.assertEqual(self.report_path(executor).read_text().strip(), partial_text.strip())
 
 
-class IsolationAndConcurrencyTests(ExternalWorkerTestBase):
+class IsolationAndConcurrencyTests(DelegateTestBase):
     def test_delayed_lock_publication_cannot_be_stolen(self):
         mkdir = self.bin_dir / "mkdir"
         mkdir.write_text('#!/bin/bash\n/bin/mkdir "$@"\nrc=$?\n'
@@ -821,7 +821,7 @@ class IsolationAndConcurrencyTests(ExternalWorkerTestBase):
         p_active.communicate(timeout=5)
 
 
-class ResumeGuaranteesTests(ExternalWorkerTestBase):
+class ResumeGuaranteesTests(DelegateTestBase):
     def test_all_providers_inherit_read_only_and_reject_missing_mode(self):
         for executor, flag in [("gemini", "--mode"), ("claude", "--permission-mode"),
                                ("cursor", "--mode"), ("codex", "sandbox_mode=read-only"),
@@ -879,7 +879,7 @@ class ResumeGuaranteesTests(ExternalWorkerTestBase):
         self.assertIn("no previous worker", res3.stderr)
 
 
-class LifecyclePeekKillTests(ExternalWorkerTestBase):
+class LifecyclePeekKillTests(DelegateTestBase):
     def test_peek_and_kill_without_provider_binaries(self):
         self.write_stream("gemini", body="report text")
         self.run_cmd("-e", "gemini", "run task")

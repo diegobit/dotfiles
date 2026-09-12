@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# external-worker — unified launcher for external AI coding workers.
+# delegate — unified launcher for external AI coding workers.
 #
 # Usage:
-#   external-worker [--executor gemini|claude|cursor|codex|opencode] [-r] [-d DIR] [--spill N] "task"
-#   external-worker [--executor gemini|claude|cursor|codex|opencode] -c [-d DIR] [--spill N] "correction"
-#   external-worker [--executor gemini|claude|cursor|codex|opencode] -p [-d DIR]
-#   external-worker [--executor gemini|claude|cursor|codex|opencode] -k [-d DIR]
-#   external-worker [--executor gemini|claude|cursor|codex|opencode] --selftest
+#   delegate [--executor gemini|claude|cursor|codex|opencode] [-r] [-d DIR] [--spill N] "task"
+#   delegate [--executor gemini|claude|cursor|codex|opencode] -c [-d DIR] [--spill N] "correction"
+#   delegate [--executor gemini|claude|cursor|codex|opencode] -p [-d DIR]
+#   delegate [--executor gemini|claude|cursor|codex|opencode] -k [-d DIR]
+#   delegate [--executor gemini|claude|cursor|codex|opencode] --selftest
 #
 #   -e, --executor  worker backend (gemini | claude | cursor | codex | opencode; default: gemini)
 #   -r, --read-only read-only mode (provider permission mode)
@@ -27,7 +27,7 @@ set -eu
 SCRIPT_PATH=$(cd "$(dirname "$0")" && pwd)/$(basename "$0")
 
 die() {
-    printf 'external-worker: %s\n' "$1" >&2
+    printf 'delegate: %s\n' "$1" >&2
     exit "${2:-64}"
 }
 
@@ -39,7 +39,7 @@ read_only_flag_passed=0
 dir=$PWD
 spill_lines=${EW_SPILL_LINES-0}
 
-STATE_ROOT="${XDG_CACHE_HOME:-$HOME/.cache}/external-worker"
+STATE_ROOT="${XDG_CACHE_HOME:-$HOME/.cache}/delegate"
 
 # Models and timeouts
 EW_GEMINI_MODEL="gemini-3.8-flash"
@@ -104,7 +104,7 @@ while [ $# -gt 0 ]; do
             shift
             ;;
         -n|--lane)
-            die "lanes are not supported in external-worker" 64
+            die "lanes are not supported in delegate" 64
             ;;
         -h|--help)
             sed -n '4,22p' "$0" | sed 's/^# \{0,1\}//'
@@ -251,7 +251,7 @@ save_report() {
     printf '%s\n' "$body" > "$out"
     if [ "$spill_lines" -gt 0 ] && [ "$(wc -l < "$out")" -gt "$spill_lines" ]; then
         head -n "$spill_lines" "$out"
-        printf '\n[external-worker: report capped at %s lines. Full report: %s]\n' "$spill_lines" "$out"
+        printf '\n[delegate: report capped at %s lines. Full report: %s]\n' "$spill_lines" "$out"
     else
         cat "$out"
     fi
@@ -295,7 +295,7 @@ if [ "$action" = "kill" ]; then
     # is_running validates the wrapper PID and start time from the same snapshot.
     # The wrapper owns its child and saves partial output before releasing its lock.
     kill -TERM "$wpid" 2>/dev/null || die "worker already finished" 1
-    printf 'external-worker: killed %s (wrapper pid %s); partial edits remain in %s\n' "$executor" "$wpid" "$dir" >&2
+    printf 'delegate: killed %s (wrapper pid %s); partial edits remain in %s\n' "$executor" "$wpid" "$dir" >&2
     exit 0
 fi
 
@@ -390,7 +390,7 @@ on_signal() {
     fi
     body=$(provider_partial)
     save_report
-    printf 'external-worker: %s was cancelled (partial output above, if any; peek: external-worker -e %s -p -d %s)\n' "$executor" "$executor" "$dir" >&2
+    printf 'delegate: %s was cancelled (partial output above, if any; peek: delegate -e %s -p -d %s)\n' "$executor" "$executor" "$dir" >&2
     release_my_lock
     exit 1
 }
@@ -562,7 +562,7 @@ if [ -z "$sid" ]; then
     [ -z "$sid" ] || printf '%s\n' "$sid" > "$idf"
 fi
 if [ -n "$sid" ]; then
-    printf 'external-worker[%s]: session %s · peek: external-worker -e %s -p -d %s\n' "$executor" "$sid" "$executor" "$dir" >&2
+    printf 'delegate[%s]: session %s · peek: delegate -e %s -p -d %s\n' "$executor" "$sid" "$executor" "$dir" >&2
 fi
 
 rc=0
@@ -660,7 +660,7 @@ fi
 save_report
 
 if [ "$is_error" -eq 1 ] || [ "$rc" -ne 0 ]; then
-    printf 'external-worker: %s error (status %s, exit %s) — %s (partial output above, if any; peek: external-worker -e %s -p -d %s)\n' \
+    printf 'delegate: %s error (status %s, exit %s) — %s (partial output above, if any; peek: delegate -e %s -p -d %s)\n' \
         "$executor" "${subtype:-unknown}" "$rc" "$error_detail" "$executor" "$dir" >&2
     exit 1
 fi

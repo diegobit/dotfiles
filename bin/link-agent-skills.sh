@@ -93,7 +93,7 @@ for loc in "${locations[@]}"; do
 
     # Retire the worker links after their sources have been consolidated. Match
     # only links this installer owns; leave user files and other targets alone.
-    for retired in flash-worker claude-worker cursor-worker; do
+    for retired in flash-worker claude-worker cursor-worker external-worker; do
         [ ! -d "$AGENT_SKILLS_DIR/$retired" ] || continue
         link_path="$dest_dir/$retired"
         [ -L "$link_path" ] || continue

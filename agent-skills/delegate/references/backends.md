@@ -2,7 +2,7 @@
 
 Read this when a launcher fails, session resume behaves unexpectedly, read-only
 behavior changes, or an installed CLI is updated. The public skill chooses an
-executor; command construction and stream decoding live in `scripts/external-worker.sh`.
+executor; command construction and stream decoding live in `scripts/delegate.sh`.
 
 ## Invariants carried from the original wrappers
 
