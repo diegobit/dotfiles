@@ -193,6 +193,38 @@ $SK/docextract.py report.pdf --screenshot /tmp/shots --pages "22" --dpi 150
 # then Read /tmp/shots/page_22.png and describe the chart yourself
 ```
 
+## Visual descriptions and document summarization
+
+Text extraction ignores vector diagrams, photos, and complex charts. For RAG pipelines
+needing semantic visual descriptions or top-level document summaries:
+
+```bash
+# Describe figures on candidate pages discovered by docextract via local Ollama
+$SK/docdescribe.py report.pdf
+
+# Describe only specific pages
+$SK/docdescribe.py report.pdf --pages "3,22"
+
+# Generate a top-level document summary
+$SK/docdescribe.py report.pdf --summarize
+
+# Generate a summary only without rendering figures
+$SK/docdescribe.py report.pdf --summary-only
+```
+
+`docdescribe` writes `*.describe.json` sidecar files containing structured semantic
+records and retrieval-ready index text, with request-level caching.
+Do not generate bulk captions in-chat; use `docdescribe` for batch ingest and reserve
+in-chat inspection for targeted single-screenshot queries.
+
+Prerequisites & Runtime:
+- **Engines:**
+  - **macOS (Metal):** Local Ollama daemon (`ollama serve`, `ollama pull qwen3.5:9b`) or native `llama-server`.
+  - **Linux (CUDA):** Standalone `llama-server` (`ghcr.io/ggml-org/llama.cpp:server-cuda`) or Ollama.
+  - Automatic backend selection via `--backend {auto,ollama,llama-server}` (env `DOCDESCRIBE_BACKEND`).
+- **Model:** Default is `qwen3.5:9b` (`--model` or env `OLLAMA_MODEL`/`DOCDESCRIBE_MODEL`).
+- **Thinking:** Disabled by default (`--think off` or `--no-think`) for ~4× faster execution (~10–13s per page) and deterministic structured JSON extraction without truncation. Can be enabled via `--think {low,medium,high}` when chain-of-thought is needed.
+
 ## Performance and platform
 
 Measured on an Apple M4 Max (16 cores), warm. Directory mode fans out across processes
