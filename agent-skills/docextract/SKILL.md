@@ -1,6 +1,6 @@
 ---
 name: docextract
-description: Extract text, markdown, or structured JSON from documents (PDF, DOCX, PPTX, XLSX, CSV, images, HTML, EPUB) locally on macOS — no cloud, no API key, no LLM. Routes each PDF page to the most accurate engine automatically: text layers via PyMuPDF, scanned/image pages via Apple's Vision OCR, Office files via MarkItDown. Use when asked to read/parse/extract/convert a document or image, to answer questions about a document's contents, or to turn a file or a whole directory into markdown.
+description: Extract text, markdown, structured JSON, visual figure descriptions, or executive summaries from documents (PDF, DOCX, PPTX, XLSX, CSV, images, HTML, EPUB) locally. Fast hybrid routing: PyMuPDF for text, Apple Vision OCR for scans, and local VLM (docdescribe with Ollama/llama-server) for visual captions and summaries. Use when asked to read, parse, extract, describe, or summarize a document, image, or whole directory.
 license: MIT
 metadata:
   benchmarked: "2026-08-18, macOS 15 arm64; see references/benchmark.md"
@@ -191,6 +191,16 @@ not embedded images**, so `pdfimages` finds nothing — render the page instead:
 ```bash
 $SK/docextract.py report.pdf --screenshot /tmp/shots --pages "22" --dpi 150
 # then Read /tmp/shots/page_22.png and describe the chart yourself
+```
+
+## Recipe — extract and describe a directory
+
+When asked to both extract and describe/summarize a folder of documents:
+
+```bash
+# 1. Extract text and detect figure pages -> 2. Generate visual descriptions and executive summaries
+$SK/docextract.py ./docs --json
+$SK/docdescribe.py ./docs --summarize
 ```
 
 ## Visual descriptions and document summarization
