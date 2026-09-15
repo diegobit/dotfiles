@@ -9,7 +9,7 @@ return {
     local actions = require 'fzf-lua.actions'
 
     fzf.setup {
-      ui_select = true,
+      ui_select = {},
       winopts = {
         height = 0.9,
         width = 0.85,
