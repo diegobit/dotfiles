@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Harness-history: prima e dopo</title>
+<style>
+  :root {
+    --bg: #141414;
+    --ink: #eceae4;
+    --muted: #9a9588;
+    --rule: #2a2a2a;
+    --before: #3d2424;
+    --before-ink: #f0c4c0;
+    --after: #1e3326;
+    --after-ink: #c8e6c9;
+    --term: #0d0d0d;
+    --prompt: #7a7568;
+    --err: #e07070;
+    --ok: #8fca98;
+    --accent: #e6d5a2;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 18px/1.45 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  }
+  header, section, footer { max-width: 1080px; margin: 0 auto; padding: 2.2rem 1.4rem; }
+  header { padding-top: 3rem; }
+  h1, h2, h3 { font-weight: 600; letter-spacing: -0.02em; }
+  h1 { font-size: 2.1rem; line-height: 1.2; margin: 0 0 0.8rem; }
+  h2 { font-size: 1.45rem; margin: 0 0 0.5rem; }
+  h3 { font-size: 0.95rem; margin: 0 0 0.55rem; font-family: ui-sans-serif, system-ui, sans-serif; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 600; }
+  p { margin: 0 0 1rem; }
+  a { color: var(--accent); }
+  nav {
+    display: flex; gap: 1rem; flex-wrap: wrap;
+    font: 14px/1.3 ui-sans-serif, system-ui, sans-serif;
+    margin: 1.4rem 0 0;
+  }
+  nav a { color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--rule); padding-bottom: 2px; }
+  nav a:hover { color: var(--ink); }
+  .lede { font-size: 1.15rem; max-width: 42rem; color: #d8d4c8; }
+  .meta { font: 13px/1.4 ui-sans-serif, system-ui, sans-serif; color: var(--muted); margin-top: 1.2rem; }
+  section { border-top: 1px solid var(--rule); }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; margin: 1.1rem 0 1.6rem; }
+  @media (max-width: 820px) { .pair { grid-template-columns: 1fr; } }
+  .card {
+    border-radius: 10px;
+    padding: 0.9rem 1rem 1rem;
+    min-height: 100%;
+  }
+  .card.before { background: var(--before); color: #f3e4e2; }
+  .card.after { background: var(--after); color: #dff0e2; }
+  .card h3 { color: inherit; opacity: 0.7; }
+  .card.before h3 { color: var(--before-ink); }
+  .card.after h3 { color: var(--after-ink); }
+  pre, .term {
+    font: 12.5px/1.45 ui-monospace, "SF Mono", Menlo, monospace;
+    background: var(--term);
+    color: #dcd8ce;
+    padding: 0.85rem 0.95rem;
+    border-radius: 8px;
+    overflow: auto;
+    margin: 0 0 0.7rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .prompt { color: var(--prompt); }
+  .fail { color: var(--err); }
+  .pass { color: var(--ok); }
+  .dim { color: #7d796e; }
+  .hl { background: #5a2a2a; color: #ffd0cc; padding: 0 0.15em; }
+  .hl-ok { background: #1f4a2c; color: #d4f5d8; padding: 0 0.15em; }
+  .why { font-size: 1rem; margin: 0; }
+  footer { color: var(--muted); font-size: 0.95rem; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Oggi <code>get t3 w0910</code> non apre w0910.</h1>
+  <p class="lede">L’hai chiesto ieri. Lo script ha trovato quattro chat, ha rifiutato il titolo esatto, e poi un dump da 190&nbsp;KB di cui 38&nbsp;KB erano WhatsApp già negli atti. L’assistente chiudeva con «scrivo il log e committo». Il working tree era sporco. Qui è il prima e il dopo, con gli output veri.</p>
+  <nav>
+    <a href="#p00">00 · Il giro completo</a>
+    <a href="#p01">01 · Trovare la chat</a>
+    <a href="#p02">02 · Cosa caricare</a>
+  </nav>
+  <p class="meta">Misurato il 16 settembre 2026 sul db t3 live. 84 messaggi (19 user) nel thread <code>w0910</code> · id <code>f37457a9-c7e8-4a1a-92c8-eebff42211db</code>.</p>
+</header>
+
+<section id="p00">
+  <h2>00 · Cosa succede se chiedi «continua w0910»</h2>
+  <p>Due fallimenti in fila: prima non trova il thread, poi se lo trova legge tutto e crede alla chiusura. Il piano li spezza. 01 sistema la scelta; 02 sistema il carico. Da solo, 01 ti lascia ancora i 190&nbsp;KB in faccia.</p>
+  <div class="pair">
+    <div class="card before">
+      <h3>Prima</h3>
+      <div class="term"><span class="prompt">$ </span>harness-history t3 "w0910" and continue its work
+
+<span class="fail">Found 4 chats for "w0910", please specify an id:</span>
+8541e616-…  2026-09-16T14:27  Continue Work from w0910
+<span class="hl">f37457a9-…  2026-09-11T06:47  w0910</span>
+424536e4-…  2026-09-10T08:59  w0910 astra
+1541910b-…  2026-09-10T09:00  w0910 cursor
+
+<span class="dim"># l’agente pesca l’id a mano, poi get stampa 1.886 righe
+# primo turno utente: 38.693 caratteri di WhatsApp
+# ultimi 8 messaggi: tutti assistant
+# ultimo assistant: «Tutti i gate verdi. Scrivo la voce di log e committo.»</span></div>
+      <p class="why">Il titolo che volevi è lì, riga 2. Lo script non lo preferisce. Se vai avanti lo stesso, leggi anche il dump di ingest che non serve a riprendere.</p>
+    </div>
+    <div class="card after">
+      <h3>Dopo 01 + 02</h3>
+      <div class="term"><span class="prompt">$ </span>chat-read.sh get t3 w0910
+<span class="pass"># apre f37457a9… titolo esatto «w0910»</span>
+
+<span class="prompt">$ </span>chat-read.sh last t3 w0910 8
+<span class="dim">[2026-09-16T…] [user]</span>
+Commit se devi. Aggiusta il difetto delle citazioni. Poi chiedi review a $delegate codex
+
+<span class="dim">[2026-09-16T…] [assistant]</span>
+Tutti i gate verdi. Scrivo la voce di log e committo.
+
+<span class="prompt">$ </span>git status -sb
+<span class="fail">## main… [ahead 8]
+ M wiki/log.md
+ M wiki/evidence/frasi-veronica.md
+ … 99 file</span></div>
+      <p class="why">Stesso comando. Thread giusto, coda con l’ordine tuo, e il git che smentisce la frase di chiusura. L’agente continua il commit invece di rilingere settembre.</p>
+    </div>
+  </div>
+</section>
+
+<section id="p01">
+  <h2>01 · Trovare la chat</h2>
+  <p>Oggi <code>get</code> fa <code>grep -i</code> su tutta la riga (id + data + titolo). Per questo «w0910» colpisce anche «Continue Work from w0910» e i cugini astra/cursor. Un prefisso di UUID funziona da ricerca. La skill, in più, promette una colonna <code>project</code> che t3 non stampa: su w0910 <code>worktree_path</code> è NULL.</p>
+
+  <div class="pair">
+    <div class="card before">
+      <h3>Prima · get col titolo esatto</h3>
+      <div class="term"><span class="prompt">$ </span>chat-read.sh get t3 w0910
+<span class="fail">Found 4 chats for "w0910", please specify an id:</span>
+8541e616-0df1-4657-bcf3-36b9ab535c30	2026-09-16T14:27	Continue Work from w0910
+f37457a9-c7e8-4a1a-92c8-eebff42211db	2026-09-11T06:47	w0910
+424536e4-5821-40f6-81d7-7999c43b8e75	2026-09-10T08:59	w0910 astra
+1541910b-d3ff-4ce9-8ff5-8f6915decd36	2026-09-10T09:00	w0910 cursor
+<span class="dim">exit 1</span></div>
+      <p class="why">Hai scritto il titolo per esteso. Hai ottenuto un menu. L’unica riga giusta è quella il cui titolo è esattamente <code>w0910</code>.</p>
+    </div>
+    <div class="card after">
+      <h3>Dopo · id, poi titolo esatto, poi ricerca</h3>
+      <div class="term"><span class="prompt">$ </span>chat-read.sh get t3 w0910
+<span class="dim">[user] Aggiornamento mercoledì 9 settembre…</span>
+<span class="pass"># 84 messaggi del thread f37457a9, exit 0</span>
+
+<span class="prompt">$ </span>chat-read.sh list t3 w0910
+<span class="dim"># list resta largo, come oggi:</span>
+…	Continue Work from w0910	main
+…	<span class="hl-ok">w0910</span>	main
+…	w0910 astra	main
+…	w0910 cursor	main</div>
+      <p class="why"><code>get</code> diventa selettivo. <code>list</code> continua a servire da ricerca. Non ti costringe a ricordare l’uuid, e non ti nasconde i cugini quando stai esplorando.</p>
+    </div>
+  </div>
+
+  <div class="pair">
+    <div class="card before">
+      <h3>Prima · grep sull’id</h3>
+      <div class="term"><span class="prompt">$ </span>chat-read.sh list t3 f374
+f37457a9-c7e8-4a1a-92c8-eebff42211db	2026-09-11T06:47	w0910
+
+<span class="dim"># «f374» non è nel titolo. È nei primi caratteri dell’uuid.
+# la skill dice: colonne id | date | title/workspace | project
+# t3 stampa tre campi. project non c’è.</span></div>
+      <p class="why">Funziona per caso. Il giorno in cui un titolo contiene la stessa sottostringa di un id, mescoli due cose diverse.</p>
+    </div>
+    <div class="card after">
+      <h3>Dopo · titoli e id sono canali distinti</h3>
+      <div class="term"><span class="prompt">$ </span>chat-read.sh list t3 f374
+<span class="dim">(vuoto, se nessun titolo contiene «f374»)</span>
+
+<span class="prompt">$ </span>chat-read.sh get t3 f37457a9-c7e8-4a1a-92c8-eebff42211db
+<span class="pass"># lookup per id, sempre</span>
+
+<span class="prompt">$ </span>chat-read.sh list t3 w0910
+id	updated	title	branch
+f37457a9-…	2026-09-11T06:47	w0910	main</div>
+      <p class="why">La quarta colonna è <code>branch</code>, che t3 ha davvero. Non <code>project</code>, che la skill inventava.</p>
+    </div>
+  </div>
+
+  <div class="pair">
+    <div class="card before">
+      <h3>Prima · SQL e errori</h3>
+      <div class="term"><span class="dim"># chat-read.sh, get_t3</span>
+SELECT 1 FROM projection_threads
+ WHERE thread_id=<span class="hl">'$id'</span>
+
+<span class="dim"># list_t3</span>
+sqlite3 … 2>/dev/null | grep -i "$q" || true
+
+<span class="prompt">$ </span>T3_DB=/tmp/non-esiste.sqlite chat-read.sh list t3 w0910
+<span class="dim">(nessun output)</span>
+<span class="fail">exit 0</span>  <span class="dim"># «non c’è niente», ma il file non c’è</span>
+
+<span class="prompt">$ </span>chat-read.sh get t3 "note di Diego"
+<span class="fail"># se il titolo finisce nella query, l’apostrofo spezza l’SQL</span></div>
+      <p class="why">Un db assente e una lista vuota sono la stessa cosa. Un titolo con apostrofo è un incidente in attesa.</p>
+    </div>
+    <div class="card after">
+      <h3>Dopo · bind, e un errore è un errore</h3>
+      <div class="term">SELECT 1 FROM projection_threads
+ WHERE thread_id = <span class="hl-ok">:id</span>
+
+<span class="prompt">$ </span>T3_DB=/tmp/non-esiste.sqlite chat-read.sh list t3 w0910
+<span class="fail">Error: unable to open database file</span>
+<span class="fail">exit ≠ 0</span>
+
+<span class="prompt">$ </span>chat-read.sh get t3 "note di Diego"
+<span class="pass"># il valore è un parametro, non pezzo di SQL</span></div>
+      <p class="why">I test di 01 usano un sqlite finto, non il tuo <code>~/.t3</code>. Per questo servono le variabili d’ambiente sui path.</p>
+    </div>
+  </div>
+</section>
+
+<section id="p02">
+  <h2>02 · Cosa caricare, e cosa credere</h2>
+  <p>Anche con il thread giusto, <code>get</code> butta fuori tutto. Su w0910 sono 189.540 byte. I primi 38&nbsp;KB sono l’aggiornamento del 9 settembre più i log incollati. Gli ultimi otto messaggi sono tutti assistant: uno status su Codex, poi «scrivo il log e committo». Senza timestamp. La skill non dice di controllare git.</p>
+
+  <div class="pair">
+    <div class="card before">
+      <h3>Prima · get intero, coda cieca</h3>
+      <div class="term"><span class="prompt">$ </span>chat-read.sh get t3 f37457a9-…
+[user] Aggiornamento mercoledì 9 settembre. 2026-09-09.
+In ufficio eravamo tutti.
+…
+<span class="dim"># 302 righe più tardi, ancora il primo messaggio</span>
+[2026-09-09T16:56, Diego Giorgini]: buuuuuu
+
+[user] Aggiornamento giovedì 10 settembre…
+<span class="dim">… 1.886 righe, 84 messaggi, niente orario sui turni t3</span>
+
+<span class="dim"># se tagli a 8 a mano, vedi solo questo:</span>
+[assistant] Codex sta ancora girando…
+[assistant] Tutti i verbatim chiave reggono…
+…
+[assistant] Tutti i gate verdi. Scrivo la voce di log e committo.</div>
+      <p class="why">L’istruzione tua («Commit se devi. Aggiusta il difetto delle citazioni…») sta prima di quella coda. Un <code>tail -8</code> la perde.</p>
+    </div>
+    <div class="card after">
+      <h3>Dopo · last allarga fino a te</h3>
+      <div class="term"><span class="prompt">$ </span>chat-read.sh last t3 w0910 8
+<span class="dim"># la finestra di 8 è tutta assistant, quindi indietreggia</span>
+
+<span class="dim">2026-09-16</span> [user]
+Commit se devi. Aggiusta il difetto delle citazioni. Poi chiedi review a $delegate codex
+
+<span class="dim">2026-09-16</span> [assistant]
+…
+
+<span class="dim">2026-09-16</span> [assistant]
+Tutti i gate verdi. Scrivo la voce di log e committo.
+
+<span class="dim"># default N=20, ordine cronologico, orari dal campo created_at</span></div>
+      <p class="why">Vedi l’ordine e la pretesa di chiusura nello stesso schermo. Non rivedi il vocale del 9 settembre.</p>
+    </div>
+  </div>
+
+  <div class="pair">
+    <div class="card before">
+      <h3>Prima · la skill come ricetta di resume</h3>
+      <div class="term">Find and read past conversations…
+scripts/chat-read.sh list …
+scripts/chat-read.sh get  &lt;provider&gt; &lt;chat-id-or-title&gt;
+
+get → plain text conversation (user/assistant only, no binaries).
+get also accepts a title: if it finds exactly 1 match it will use it
+
+<span class="dim"># t3 sqlite: /Users/diego/.t3/userdata/state.sqlite
+# tabelle projection_threads, projection_thread_messages
+
+# opencode get, nel frattempo, stampa anche:
+## tool bash
+## file foo.ts
+**[compaction]**</span></div>
+      <p class="why">Due comandi, un contratto falso («user/assistant only», colonna project), e zero istruzioni su continue. L’agente inventa: dump intero, poi fiducia nel «committo».</p>
+    </div>
+    <div class="card after">
+      <h3>Dopo · tre rami, e git come prova</h3>
+      <div class="term">list    ricerca larga
+get     id → titolo esatto → candidati
+last    coda con orari; se manca un user, si allarga
+
+resume:
+  1. risolvi la chat (get/last, non un dump se il thread è lungo)
+  2. leggi l’ultima istruzione utente
+  3. nota la pretesa dell’assistente
+  4. verifica gli artefatti: git status, e diff/log se parla di commit
+
+<span class="pass">w0910 al punto 4: 101 file modificati, nessun commit 3fe6707 ancora.
+La frase «committo» non è un commit.</span>
+
+get su opencode: user/assistant, più tool/file/compaction (già troncati).</div>
+      <p class="why">Niente regola su <code>raw/</code>: quella skill non è il wiki. La chat è contesto. Lo stato del repo è la prova.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>Piani: <a href="20260916-harness-history-00-design.md">00</a> · <a href="20260916-harness-history-01-lookup.md">01</a> · <a href="20260916-harness-history-02-last.md">02</a> · <a href="TODO.md">ledger</a>. I quattro titoli e le taglie (189.540 byte, 38.693 sul primo user, 84 messaggi, ultimi otto assistant) sono output di comandi, non stime.</p>
+</footer>
+</body>
+</html>
