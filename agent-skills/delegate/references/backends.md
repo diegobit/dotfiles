@@ -13,9 +13,9 @@ prove file tools resolve the right workspace.
 | Executor | Command and model | Workspace | Read-only |
 |---|---|---|---|
 | gemini | `agy`, Gemini 3.8 Flash, high effort | `--add-dir` registers the file-tool root; cwd alone is insufficient | `--mode plan` **and** `--dangerously-skip-permissions` |
-| claude | `claude`, Opus 5, high effort | process cwd | `--permission-mode plan` **without** `--dangerously-skip-permissions` |
-| cursor | `agent`, Grok 4.6 High | `--workspace` plus matching cwd | `--mode ask --force` |
-| codex | `codex exec`, GPT-6-Astra, medium effort | `-C` plus `--skip-git-repo-check` (else Codex roots at the enclosing Git repo) | `-s read-only` on start, `-c sandbox_mode=read-only` on resume |
+| claude | `claude`, Opus 5.5, high effort | process cwd | `--permission-mode plan` **without** `--dangerously-skip-permissions` |
+| cursor | `agent`, Grok 4.7 High | `--workspace` plus matching cwd | `--mode ask --force` |
+| codex | `codex exec`, GPT-6-Astra (default) or Sol (`-m`), medium effort | `-C` plus `--skip-git-repo-check` (else Codex roots at the enclosing Git repo) | `-s read-only` on start, `-c sandbox_mode=read-only` on resume |
 | opencode | `opencode run`, DeepSeek V4.1 Flash, variant `max` | `--dir` plus matching cwd | `--agent plan` (edit denied; bash still allowed) |
 
 Claude's skip-permissions flag overrides its plan mode and re-enables writes.
@@ -65,7 +65,8 @@ continue can select another session in the same workspace.
   `command_execution`/`file_change` items. Codex does **not** persist model or
   reasoning effort in the recorded session, so both must be re-passed on resume
   (`-m` and `-c model_reasoning_effort=`) or it silently falls back to the user's
-  `config.toml` default.
+  `config.toml` default. `delegate.sh` persists the chosen model in `$state/model`
+  so continuations keep the model selection across turns unless explicitly changed with `-m`.
 - OpenCode: every event carries `sessionID` at the top level (`-s` resumes it).
   Success is `.type == "step_finish"` with `.part.reason == "stop"`; a fatal failure
   is `.type == "error"` with `.error.data.message`. Assistant text arrives as
@@ -83,15 +84,6 @@ the report, exit status, evidence, and diff are separate acceptance checks.
 
 ## Configuration and diagnosis
 
-Only the selected CLI must be installed and authenticated. The launcher also
-requires Bash, jq, a SHA-1 utility (`shasum` or `sha1sum`), and the standard
-process and state utilities; it runs on macOS and Linux. `EW_CLAUDE_BUDGET` optionally caps Claude spend in USD. Executable overrides
-`EW_GEMINI_BIN`, `EW_CLAUDE_BIN`, `EW_CURSOR_BIN`, `EW_CODEX_BIN`, and
-`EW_OPENCODE_BIN` support offline testing.
-Production model choices are fixed in the command builders. A provider failure
-does not trigger an automatic fallback to a different provider or model.
-
-Peek exposes state paths and recent tool progress without calling the provider.
 Inspect stderr and relevant raw-stream lines when the final report is absent.
 Legacy worker caches remain untouched; this launcher starts its own session state.
 

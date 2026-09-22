@@ -2,13 +2,14 @@
 # delegate — unified launcher for external AI coding workers.
 #
 # Usage:
-#   delegate [--executor gemini|claude|cursor|codex|opencode] [-r] [-d DIR] [--spill N] "task"
-#   delegate [--executor gemini|claude|cursor|codex|opencode] -c [-d DIR] [--spill N] "correction"
+#   delegate [--executor gemini|claude|cursor|codex|opencode] [-m MODEL] [-r] [-d DIR] [--spill N] "task"
+#   delegate [--executor gemini|claude|cursor|codex|opencode] [-m MODEL] -c [-d DIR] [--spill N] "correction"
 #   delegate [--executor gemini|claude|cursor|codex|opencode] -p [-d DIR]
 #   delegate [--executor gemini|claude|cursor|codex|opencode] -k [-d DIR]
 #   delegate [--executor gemini|claude|cursor|codex|opencode] --selftest
 #
 #   -e, --executor  worker backend (gemini | claude | cursor | codex | opencode; default: gemini)
+#   -m, --model     model override (codex default: gpt-6-astra; aliases: sol, astra)
 #   -r, --read-only read-only mode (provider permission mode)
 #   -d, --dir       workspace directory (default: $PWD)
 #   -c, --continue  resume last session for this workspace and executor
@@ -38,27 +39,28 @@ read_only=0
 read_only_flag_passed=0
 dir=$PWD
 spill_lines=${EW_SPILL_LINES-0}
+chosen_model=""
 
 STATE_ROOT="${XDG_CACHE_HOME:-$HOME/.cache}/delegate"
 
 # Models and timeouts
-EW_GEMINI_MODEL="gemini-3.8-flash"
-EW_GEMINI_EFFORT="high"
+EW_GEMINI_MODEL="${EW_GEMINI_MODEL:-gemini-3.8-flash}"
+EW_GEMINI_EFFORT="${EW_GEMINI_EFFORT:-high}"
 EW_GEMINI_TIMEOUT="${EW_GEMINI_TIMEOUT:-10h}"
 
-EW_CLAUDE_MODEL="claude-opus-5"
-EW_CLAUDE_EFFORT="high"
+EW_CLAUDE_MODEL="${EW_CLAUDE_MODEL:-claude-opus-5.5}"
+EW_CLAUDE_EFFORT="${EW_CLAUDE_EFFORT:-high}"
 EW_CLAUDE_BUDGET="${EW_CLAUDE_BUDGET:-}"
 
-EW_CURSOR_MODEL="cursor-grok-4.6-high"
+EW_CURSOR_MODEL="${EW_CURSOR_MODEL:-grok-4.7-high}"
 
-EW_CODEX_MODEL="gpt-6-astra"
-EW_CODEX_EFFORT="medium"
+EW_CODEX_MODEL="${EW_CODEX_MODEL:-gpt-6-astra}"
+EW_CODEX_EFFORT="${EW_CODEX_EFFORT:-medium}"
 
-EW_OPENCODE_MODEL="opencode-go/deepseek-v4.1-flash"
-EW_OPENCODE_VARIANT="max"
-EW_OPENCODE_AGENT_WRITE="build"
-EW_OPENCODE_AGENT_READ="plan"
+EW_OPENCODE_MODEL="${EW_OPENCODE_MODEL:-opencode-go/deepseek-v4.1-flash}"
+EW_OPENCODE_VARIANT="${EW_OPENCODE_VARIANT:-max}"
+EW_OPENCODE_AGENT_WRITE="${EW_OPENCODE_AGENT_WRITE:-build}"
+EW_OPENCODE_AGENT_READ="${EW_OPENCODE_AGENT_READ:-plan}"
 
 # --- Argument parsing ---
 while [ $# -gt 0 ]; do
@@ -66,6 +68,12 @@ while [ $# -gt 0 ]; do
         -e|--executor)
             [ $# -ge 2 ] || die "option $1 requires an argument" 64
             executor="$2"
+            shift 2
+            ;;
+        -m|--model)
+            [ $# -ge 2 ] || die "option $1 requires an argument" 64
+            [ -n "$2" ] || die "model cannot be empty" 64
+            chosen_model="$2"
             shift 2
             ;;
         -r|--read-only)
@@ -107,7 +115,7 @@ while [ $# -gt 0 ]; do
             die "lanes are not supported in delegate" 64
             ;;
         -h|--help)
-            sed -n '4,22p' "$0" | sed 's/^# \{0,1\}//'
+            sed -n '4,21p' "$0" | sed 's/^# \{0,1\}//'
             exit 0
             ;;
         --)
@@ -140,10 +148,14 @@ command -v jq >/dev/null 2>&1 || die "jq not found in PATH" 64
 command -v shasum >/dev/null 2>&1 || command -v sha1sum >/dev/null 2>&1 \
     || die "shasum or sha1sum not found in PATH" 64
 
-# --- State paths and identity ---
 sha1() {
-    if command -v shasum >/dev/null 2>&1; then shasum "$@"; else sha1sum "$@"; fi
+    if [ $# -gt 0 ]; then
+        shasum "$@" 2>/dev/null || sha1sum "$@" 2>/dev/null
+    else
+        shasum 2>/dev/null || sha1sum 2>/dev/null
+    fi
 }
+
 key=$(printf '%s' "$dir" | sha1 | cut -c1-12)
 state="$STATE_ROOT/$key/$executor"
 mkdir -p "$state"
@@ -153,6 +165,7 @@ err="$state/err"
 out="$state/report.out"
 idf="$state/id"
 modef="$state/mode"
+modelf="$state/model"
 lockdir="$state/lock"
 
 # --- Locking and lifecycle helpers ---
@@ -279,6 +292,9 @@ if [ "$action" = "peek" ]; then
             gemini) printf 'conversation: %s\n' "$(cat "$idf")" ;;
             claude|cursor|codex|opencode) printf 'session: %s\n' "$(cat "$idf")" ;;
         esac
+    fi
+    if [ -f "$modelf" ]; then
+        printf 'model: %s\n' "$(cat "$modelf")"
     fi
     printf 'workspace: %s\nsteps:\n' "$dir"
     provider_steps
@@ -428,10 +444,62 @@ else
     fi
 fi
 
-# Prepare state files for this run
-if [ "$action" = "run" ]; then
+# Model resolution and session persistence
+resolve_model() {
+    local exec="$1"
+    local raw_model="$2"
+    case "$exec" in
+        codex)
+            local norm
+            norm=$(printf '%s' "$raw_model" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+            case "$norm" in
+                sol|gpt-6-sol) printf 'gpt-6-sol' ;;
+                astra|gpt-6-astra) printf 'gpt-6-astra' ;;
+                *) printf '%s' "$raw_model" ;;
+            esac
+            ;;
+        claude)
+            local norm
+            norm=$(printf '%s' "$raw_model" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+            case "$norm" in
+                opus|claude-opus|opus-5.5|claude-opus-5.5) printf 'claude-opus-5.5' ;;
+                *) printf '%s' "$raw_model" ;;
+            esac
+            ;;
+        *)
+            printf '%s' "$raw_model"
+            ;;
+    esac
+}
+
+default_executor_model() {
+    case "$1" in
+        gemini) printf '%s' "$EW_GEMINI_MODEL" ;;
+        claude) printf '%s' "$EW_CLAUDE_MODEL" ;;
+        cursor) printf '%s' "$EW_CURSOR_MODEL" ;;
+        codex) printf '%s' "$EW_CODEX_MODEL" ;;
+        opencode) printf '%s' "$EW_OPENCODE_MODEL" ;;
+    esac
+}
+
+if [ "$action" = "continue" ]; then
+    if [ -n "$chosen_model" ]; then
+        target_model=$(resolve_model "$executor" "$chosen_model")
+    elif [ -s "$modelf" ]; then
+        target_model=$(cat "$modelf")
+    else
+        target_model=$(resolve_model "$executor" "$(default_executor_model "$executor")")
+    fi
+    printf '%s\n' "$target_model" > "$modelf"
+else
+    if [ -n "$chosen_model" ]; then
+        target_model=$(resolve_model "$executor" "$chosen_model")
+    else
+        target_model=$(resolve_model "$executor" "$(default_executor_model "$executor")")
+    fi
     rm -f "$idf"
     printf '%s\n' "$target_mode" > "$modef"
+    printf '%s\n' "$target_model" > "$modelf"
 fi
 
 # Build provider argv
@@ -445,7 +513,7 @@ case "$executor" in
             sid=$(cat "$idf")
             cmd+=(--conversation "$sid")
         else
-            cmd+=(--model "$EW_GEMINI_MODEL" --effort "$EW_GEMINI_EFFORT")
+            cmd+=(--model "$target_model" --effort "$EW_GEMINI_EFFORT")
         fi
         if [ "$read_only" -eq 1 ]; then
             cmd+=(--mode plan)
@@ -460,7 +528,7 @@ case "$executor" in
         else
             command -v uuidgen >/dev/null 2>&1 || die "uuidgen not found in PATH" 64
             sid=$(uuidgen | tr '[:upper:]' '[:lower:]')
-            cmd+=(--session-id "$sid" --model "$EW_CLAUDE_MODEL" --effort "$EW_CLAUDE_EFFORT")
+            cmd+=(--session-id "$sid" --model "$target_model" --effort "$EW_CLAUDE_EFFORT")
             printf '%s\n' "$sid" > "$idf"
         fi
         if [ "$read_only" -eq 1 ]; then
@@ -479,7 +547,7 @@ case "$executor" in
             sid=$(cat "$idf")
             cmd+=(--resume "$sid")
         else
-            cmd+=(--model "$EW_CURSOR_MODEL")
+            cmd+=(--model "$target_model")
         fi
         if [ "$read_only" -eq 1 ]; then
             cmd+=(--mode ask)
@@ -494,7 +562,7 @@ case "$executor" in
         if [ "$action" = "continue" ]; then
             sid=$(cat "$idf")
             cmd=(exec resume --json --skip-git-repo-check
-                 -m "$EW_CODEX_MODEL" -c "model_reasoning_effort=$EW_CODEX_EFFORT")
+                 -m "$target_model" -c "model_reasoning_effort=$EW_CODEX_EFFORT")
             if [ "$read_only" -eq 1 ]; then
                 cmd+=(-c "sandbox_mode=read-only")
             else
@@ -503,7 +571,7 @@ case "$executor" in
             cmd+=("$sid" "$task")
         else
             cmd=(exec --json --skip-git-repo-check
-                 -m "$EW_CODEX_MODEL" -c "model_reasoning_effort=$EW_CODEX_EFFORT" -C "$dir")
+                 -m "$target_model" -c "model_reasoning_effort=$EW_CODEX_EFFORT" -C "$dir")
             if [ "$read_only" -eq 1 ]; then
                 cmd+=(-s read-only)
             else
@@ -515,10 +583,11 @@ case "$executor" in
 
     opencode)
         # `opencode run` has no sandbox flag. Read-only uses the built-in `plan`
-        # agent (edit denied); write uses `build` with --auto. Model and variant
-        # are re-specified on continuation. Plan is a harness permission mode:
-        # bash stays allowed, so it blocks the edit tool, not a shell write.
-        cmd=(run --format json --dir "$dir" -m "$EW_OPENCODE_MODEL" --variant "$EW_OPENCODE_VARIANT")
+        # agent (edit denied; bash still allowed); write uses `build` with --auto.
+        # Model and variant are re-specified on continuation. Plan is a harness
+        # permission mode: bash stays allowed, so it blocks the edit tool, not a
+        # shell write.
+        cmd=(run --format json --dir "$dir" -m "$target_model" --variant "$EW_OPENCODE_VARIANT")
         if [ "$action" = "continue" ]; then
             sid=$(cat "$idf")
             cmd+=(-s "$sid")

@@ -341,6 +341,17 @@ class OptionParsingTests(DelegateTestBase):
                     self.assertEqual(res.returncode, 64, res.stderr)
                     self.assertFalse(self.called_file.exists())
 
+    def test_invalid_model_flag_fails_early(self):
+        # Missing argument
+        res = self.run_cmd("-e", "codex", "-m")
+        self.assertEqual(res.returncode, 64)
+        self.assertIn("requires an argument", res.stderr)
+
+        # Empty model
+        res = self.run_cmd("-e", "codex", "-m", "", "task")
+        self.assertEqual(res.returncode, 64)
+        self.assertIn("cannot be empty", res.stderr)
+
     def test_missing_and_empty_task(self):
         # Empty task argument
         res = self.run_cmd("   \n\t  ")
@@ -432,6 +443,8 @@ class ProviderArgvTests(DelegateTestBase):
         self.assertEqual(res.returncode, 0, res.stderr)
         argv = self.get_invocations()[0]["argv"]
         self.assertIn("--dangerously-skip-permissions", argv)
+        self.assertIn("--model", argv)
+        self.assertEqual(argv[argv.index("--model") + 1], "claude-opus-5.5")
         self.assertNotIn("--permission-mode", argv)
 
     def test_claude_budget_option(self):
@@ -450,6 +463,8 @@ class ProviderArgvTests(DelegateTestBase):
         argv = self.get_invocations()[0]["argv"]
         self.assertEqual(argv[argv.index("--mode") + 1], "ask")
         self.assertIn("--force", argv)
+        self.assertIn("--model", argv)
+        self.assertEqual(argv[argv.index("--model") + 1], "grok-4.7-high")
 
         # Write Cursor: force with no read-only mode
         self.invocations_file.unlink()
@@ -459,6 +474,8 @@ class ProviderArgvTests(DelegateTestBase):
         argv = self.get_invocations()[0]["argv"]
         self.assertIn("--force", argv)
         self.assertNotIn("--mode", argv)
+        self.assertIn("--model", argv)
+        self.assertEqual(argv[argv.index("--model") + 1], "grok-4.7-high")
 
     def test_codex_read_only_and_write_argv(self):
         # Read-only Codex: read-only sandbox, no bypass
@@ -508,6 +525,95 @@ class ProviderArgvTests(DelegateTestBase):
         argv = self.get_invocations()[0]["argv"]
         self.assertEqual(argv[argv.index("--agent") + 1], "build")
         self.assertIn("--auto", argv)
+
+    def test_codex_model_options_and_aliases(self):
+        cases = [
+            (None, "gpt-6-astra"),
+            (["-m", "sol"], "gpt-6-sol"),
+            (["--model", "sol"], "gpt-6-sol"),
+            (["-m", "gpt-6-sol"], "gpt-6-sol"),
+            (["-m", "gpt 6 sol"], "gpt-6-sol"),
+            (["-m", "astra"], "gpt-6-astra"),
+            (["--model", "astra"], "gpt-6-astra"),
+            (["-m", "gpt-6-astra"], "gpt-6-astra"),
+            (["-m", "gpt 6 astra"], "gpt-6-astra"),
+            (["-m", "gpt-5.6-sol"], "gpt-5.6-sol"),
+        ]
+        for flags, expected_model in cases:
+            with self.subTest(flags=flags, expected=expected_model):
+                self.invocations_file.unlink(missing_ok=True)
+                self.write_stream("codex", body="ok")
+                cmd_args = ["-e", "codex"]
+                if flags:
+                    cmd_args.extend(flags)
+                cmd_args.append("test task")
+                res = self.run_cmd(*cmd_args)
+                self.assertEqual(res.returncode, 0, res.stderr)
+                argv = self.get_invocations()[0]["argv"]
+                self.assertIn("-m", argv)
+                self.assertEqual(argv[argv.index("-m") + 1], expected_model)
+                self.assertEqual((self.state_dir("codex") / "model").read_text().strip(), expected_model)
+
+    def test_codex_continuation_preserves_and_overrides_model(self):
+        # Start session with sol
+        self.write_stream("codex", body="first", session_id="cdx-thread-sol")
+        res = self.run_cmd("-e", "codex", "-m", "sol", "initial task")
+        self.assertEqual(res.returncode, 0, res.stderr)
+        self.assertEqual((self.state_dir("codex") / "model").read_text().strip(), "gpt-6-sol")
+
+        # Resume without -m preserves gpt-6-sol
+        self.invocations_file.unlink()
+        self.write_stream("codex", body="continued")
+        res = self.run_cmd("-e", "codex", "-c", "continue task")
+        self.assertEqual(res.returncode, 0, res.stderr)
+        resume_argv = self.get_invocations()[0]["argv"]
+        self.assertIn("-m", resume_argv)
+        self.assertEqual(resume_argv[resume_argv.index("-m") + 1], "gpt-6-sol")
+
+        # Resume with -m astra overrides to gpt-6-astra
+        self.invocations_file.unlink()
+        self.write_stream("codex", body="astra turn")
+        res = self.run_cmd("-e", "codex", "-c", "-m", "astra", "switch to astra")
+        self.assertEqual(res.returncode, 0, res.stderr)
+        override_argv = self.get_invocations()[0]["argv"]
+        self.assertIn("-m", override_argv)
+        self.assertEqual(override_argv[override_argv.index("-m") + 1], "gpt-6-astra")
+        self.assertEqual((self.state_dir("codex") / "model").read_text().strip(), "gpt-6-astra")
+
+    def test_model_option_for_other_executors(self):
+        cases = [
+            ("gemini", "--model", "custom-gemini"),
+            ("claude", "--model", "custom-claude"),
+            ("cursor", "--model", "custom-cursor"),
+            ("opencode", "-m", "custom-opencode"),
+        ]
+        for executor, flag_name, custom_model in cases:
+            with self.subTest(executor=executor, model=custom_model):
+                self.invocations_file.unlink(missing_ok=True)
+                self.write_stream(executor, body="ok")
+                res = self.run_cmd("-e", executor, "-m", custom_model, "task")
+                self.assertEqual(res.returncode, 0, res.stderr)
+                argv = self.get_invocations()[0]["argv"]
+                self.assertIn(flag_name, argv)
+                self.assertEqual(argv[argv.index(flag_name) + 1], custom_model)
+                self.assertEqual((self.state_dir(executor) / "model").read_text().strip(), custom_model)
+
+    def test_claude_model_aliases(self):
+        cases = [
+            ("opus", "claude-opus-5.5"),
+            ("claude-opus", "claude-opus-5.5"),
+            ("opus-5.5", "claude-opus-5.5"),
+            ("claude-opus-5.5", "claude-opus-5.5"),
+        ]
+        for raw, expected in cases:
+            with self.subTest(raw=raw):
+                self.invocations_file.unlink(missing_ok=True)
+                self.write_stream("claude", body="ok")
+                res = self.run_cmd("-e", "claude", "-m", raw, "task")
+                self.assertEqual(res.returncode, 0, res.stderr)
+                argv = self.get_invocations()[0]["argv"]
+                self.assertIn("--model", argv)
+                self.assertEqual(argv[argv.index("--model") + 1], expected)
 
     def test_continuation_flags_and_session_inheritance(self):
         # Gemini continuation

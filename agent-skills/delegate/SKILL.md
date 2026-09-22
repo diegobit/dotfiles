@@ -1,25 +1,27 @@
 ---
 name: delegate
-description: Delegate implementation, refactors, tests, debugging, or codebase investigations to external Gemini, Claude, Cursor, Codex, or OpenCode workers while keeping verbose execution out of the main context. Gemini is the default. Supports scoped writes, read-only investigations, continuation, and file-backed evidence.
+description: Delegate implementation, refactors, tests, debugging, or codebase investigations to external Gemini, Claude, Cursor, Codex, or OpenCode workers while keeping verbose execution out of the main context. Gemini is the default. Supports model selection (Codex defaults to Astra, supports Sol), scoped writes, read-only investigations, continuation, and file-backed evidence.
 ---
 
 # Delegate
 
-Delegate with `scripts/delegate.sh`. Choose only the executor: `gemini`
-(default), `claude`, `cursor`, `codex`, or `opencode`. The launcher handles model selection, command
-flags, sessions, and reports. Keep task scope, user-facing decisions, and acceptance
-with the orchestrator; the packet defines which implementation choices the worker
-can make.
+Delegate with `scripts/delegate.sh`. Choose the executor: `gemini`
+(default), `claude`, `cursor`, `codex`, or `opencode`, and optionally a model
+with `-m`/`--model`. By default, the launcher selects the recommended model for
+each executor (for `codex`: `gpt-6-astra`). Keep task scope, user-facing decisions,
+and acceptance with the orchestrator; the packet defines which implementation
+choices the worker can make.
 
 ## Interface
 
 ```bash
 DELEGATE=~/dotfiles/agent-skills/delegate/scripts/delegate.sh
 
-"$DELEGATE" -d "$REPO" "task"                    # default executor
+"$DELEGATE" -d "$REPO" "task"                    # default executor (gemini)
+"$DELEGATE" -e codex -d "$REPO" "task"           # codex default (gpt-6-astra)
+"$DELEGATE" -e codex -m sol -d "$REPO" "task"    # codex with gpt-6-sol
 "$DELEGATE" -e claude -r -d "$REPO" "investigate"
 "$DELEGATE" -e cursor -d "$REPO" "task"
-"$DELEGATE" -e codex -d "$REPO" "task"
 "$DELEGATE" -e opencode -d "$REPO" "task"
 "$DELEGATE" -e claude -c -d "$REPO" "correction"
 "$DELEGATE" -e claude -p -d "$REPO"               # peek
@@ -30,6 +32,15 @@ Use the launcher relative to this skill's directory if the checkout is elsewhere
 `-e`/`--executor` defaults to `gemini` on **every** action. `-d` defaults to `$PWD`;
 use the same workspace and executor for continuation, peek, and kill. Options go
 before task text; a heredoc supplies a packet via stdin.
+
+`-m`/`--model` overrides the default model for the executor. For `codex`, it defaults
+to `gpt-6-astra`; specify `-m sol` (or `gpt-6-sol`) when `sol` is requested. Model
+choice persists across continuation `-c` unless overridden.
+
+When the user specifies an executor or model:
+- `delegate codex ...` -> use `-e codex` (defaults to `gpt-6-astra`).
+- `delegate codex sol ...` or `delegate codex gpt 6 sol ...` -> use `-e codex -m sol` (routes to `gpt-6-sol`).
+- `delegate claude ...` -> use `-e claude` (defaults to `claude-opus-5.5`).
 
 `-r` starts a read-only worker. Continuation inherits the original permission mode,
 including when `-r` is omitted. Start a fresh worker to change mode.
