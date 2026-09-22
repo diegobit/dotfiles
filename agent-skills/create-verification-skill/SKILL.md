@@ -1,6 +1,6 @@
 ---
 name: create-verification-skill
-description: Create a project-local skill that launches and drives the real application, captures user-visible evidence, and cleans up safely. Use when a repo lacks a repeatable way for agents to verify UI, CLI, desktop, or service behavior.
+description: Create a project-local skill for launching and driving the real application, capturing user-visible evidence, and cleaning up safely. Select only when the user names create-verification-skill.
 ---
 
 # Create a verification skill

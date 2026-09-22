@@ -40,18 +40,23 @@ Nothing here needs a global Python environment. `docextract` declares its Python
 | **harness-history** | `python3`, `jq` | `brew install jq` |
 | **code-simplifier** | none | — |
 
-The adapted engineering/productivity set (`grilling`, `grill-me`, `grill-with-docs`,
-`diagnosing-bugs`, `to-spec`, `to-tickets`, `wayfinder`, `deep-review`, `domain-modeling`,
-`writing-for-agents`, `prototype`, plus the local `plan-tracker`) needs nothing installed: pure markdown.
-Two deliberate divergences from upstream: there is no issue tracker, so anything that would have
-been published to one is written as markdown under `docs/plans/` per `plan-tracker`; and upstream's
-`code-review` is installed as `deep-review` to avoid collisions with existing review commands.
+The remaining instruction-only skills are `code-simplifier`, `domain-modeling`,
+`plan-tracker`, `plan-work`, `writing-for-agents`, `writing-for-humans`, and
+`create-verification-skill`. The verification skill uses the established project skill
+root, defaulting to `.agents/skills/` when none exists.
 
-The adapted `create-verification-skill` and `writing-for-humans` skills are also pure
-Markdown. Their shared instructions contain no harness-specific model IDs, paths, rules,
-manifests, or commands.
-`create-verification-skill` uses the repository's existing skill root and defaults to
-`.agents/skills/` when none exists.
+`plan-work` replaces `to-spec` and `to-tickets`, with separate specification and
+implementation-planning modes. It follows `plan-tracker` for publication.
+
+The revised `docextract`, `writing-for-humans`, and `writing-for-agents` are the
+default versions. Earlier versions remain in Git history; the `*2` comparison
+entry points have been retired.
+
+Codex marks `code-simplifier`, `create-verification-skill`, and `plan-work`
+explicit-only through `agents/openai.yaml`.
+
+OpenCode's `scheduled-tasks` and `db-cleanup` remain separate under
+`~/.config/opencode/skills/`; the shared linker does not manage them.
 
 `docextract` is macOS-only *for OCR* — that path uses Apple's Vision framework. PDF text, Office
 formats and markdown conversion are portable Python and work anywhere; on a non-macOS host a
@@ -73,7 +78,8 @@ earlier document skill needed the first three; `docextract` was tested without t
 
 ## Sources
 
-- The engineering/productivity set was adapted from
+- The retained domain modeling and agent-writing skills, and the planning skills
+  consolidated into `plan-work`, were adapted from
   [mattpocock/skills](https://github.com/mattpocock/skills).
 - `create-verification-skill` and `writing-for-humans` were adapted from
   [Pstack](https://github.com/cursor/plugins/tree/main/pstack).

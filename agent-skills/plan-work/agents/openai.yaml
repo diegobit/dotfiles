@@ -1,0 +1,5 @@
+interface:
+  display_name: "Plan Work"
+  short_description: "Synthesize specifications and implementation plans"
+policy:
+  allow_implicit_invocation: false

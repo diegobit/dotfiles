@@ -1,7 +1,6 @@
 ---
 name: code-simplifier
-description: Refactor recently modified code to be clearer, simpler, and more consistent without changing behavior. Use when the user asks to clean up, simplify, refactor, or tidy code they just wrote, or to improve readability/consistency of recent changes. Follows CLAUDE.md/AGENTS.md conventions and avoids "clever" one-liners.
-compatibility: claude, opencode
+description: Explicitly requested refactoring of recently modified code for clarity and consistency while preserving behavior. Select only when the user names code-simplifier.
 metadata:
   audience: engineers
   domain: refactoring

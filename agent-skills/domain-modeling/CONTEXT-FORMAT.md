@@ -1,4 +1,6 @@
-# CONTEXT.md Format
+# Fallback glossary format
+
+Use this only when the project has no established glossary format. Existing glossary locations and conventions take precedence, including files not named CONTEXT.md.
 
 ## Structure
 
@@ -55,6 +57,6 @@ The skill infers which structure applies:
 
 - If `CONTEXT-MAP.md` exists, read it to find contexts
 - If only a root `CONTEXT.md` exists, single context
-- If neither exists, create a root `CONTEXT.md` lazily when the first term is resolved
+- If neither exists, look for the existing glossary elsewhere. Only when none exists and documentation edits are requested, create a root `CONTEXT.md` as the first term is resolved.
 
 When multiple contexts exist, infer which one the current topic relates to. If unclear, ask.

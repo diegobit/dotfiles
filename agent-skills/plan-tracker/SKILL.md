@@ -1,69 +1,29 @@
 ---
 name: plan-tracker
-description: Locate a project's Markdown plan directory, status ledger, and local conventions. Use when publishing or finding a spec or plan, or when checking what work is open, blocked, or done.
+description: Find and maintain a project's Markdown plan directory, status ledger, and naming conventions when locating, publishing, or updating planned work.
 ---
 
-# Plan Tracker
+# Plan tracker
 
-Prefer the repository's Markdown files for planning and status. Use an external tracker only when the user explicitly asks for it.
+Use the repository's existing Markdown planning conventions. Use an external tracker when the user requests one.
 
-## Discover the local convention
+## Find the authoritative files
 
-Separate two things that may live in different files:
+Read repository instructions and existing indexes such as `docs/plans/README.md` and `docs/state/README.md`. Distinguish the plan directory (future work) from the status ledger (what is open or done).
 
-- The **plan directory** holds forward-looking work packages.
-- The **status ledger** says what is open, blocked, in progress, or done.
+Follow an explicitly named ledger first. Otherwise check `docs/plans/TODO.md`, an index that actually records statuses, and root `TODO.md`. Reuse the file carrying live work; avoid creating a competing ledger. If conflicting ledgers leave authority unclear, report the conflict instead of guessing.
 
-Read the repository instructions and the small index files that define those roles: `AGENTS.md`, `CLAUDE.md`, `docs/plans/README.md`, and `docs/state/README.md` when present. Then inspect likely ledger files in this order:
+A read-only lookup creates nothing. For requested publication with no convention, use `docs/plans/` and `docs/plans/TODO.md`.
 
-1. The exact file named by `docs/state/README.md` (often `docs/state/project-state.md`). A directory is never itself a ledger.
-2. `docs/plans/TODO.md`.
-3. `docs/plans/README.md`, only when it actually carries live statuses or checkboxes.
-4. `TODO.md` at the repo root.
+Where the repo distinguishes requirements, current state, and plans, treat requirements as intent and verified state as the current baseline. Plans cannot override either. Preserve client requirements unless their revision was requested.
 
-Use the file that already carries live work. Treat other candidates as indexes or context. Never invent a second ledger beside an existing one.
+## Publish and update
 
-For a read-only lookup, report that no ledger exists without creating one. When the user asked to publish work and no convention exists, create `docs/plans/TODO.md` and report that choice.
+Match existing naming, statuses, and archive rules. Without a convention:
 
-## The three folders
+- Name plans `YYYYMMDD-<slug>.md`; for multiple independently actionable units, use `YYYYMMDD-<slug>-NN-<name>.md`.
+- Use a `00` index only when it makes a multi-file effort easier to navigate. Small plans can stay in one file.
+- Record title, link, status, and genuine blockers in the ledger. Use `ready`, `blocked`, `wip`, and `done` for executable work; identify a specification as a specification, not a ready implementation unit.
+- Update the ledger with the corresponding work change. Archive completed plans under `completed/` and repair links when no other convention exists.
 
-Where a repo uses this split, respect it. It is a precedence order, not just a layout:
-
-| folder | holds | authority |
-|---|---|---|
-| `docs/requirements/` | business intent, client-provided artifacts | highest: never rewrite unasked |
-| `docs/state/` | what is actually true now, including status when its README says so | beats plans |
-| `docs/plans/` | forward-looking execution | lowest: non-authoritative, archive when stale |
-
-A plan that contradicts requirements or state is wrong; fix the plan.
-
-## Plan file naming
-
-Match existing names first. For a repo with no convention, use `docs/plans/YYYYMMDD-<slug>-NN-<name>.md`.
-
-- `NN` numbers the units in dependency order, blockers first, starting `01`.
-- `NN` = `00` names the masterplan: the index for a multi-unit effort.
-- One unit per file. Never a single combined file.
-- Follow the repo's archive convention. When none exists, move completed plans to `docs/plans/completed/` and update their ledger links.
-
-## Status ledger template
-
-```markdown
-# TODO
-
-Status: `ready` (unblocked) · `blocked` · `wip` · `done`
-
-## <Effort name> — [masterplan](<relative-path-from-this-ledger-to-the-masterplan>)
-
-- [ ] `ready` **01 <unit title>** — [plan](<relative-path-from-this-ledger>) — blocked by: none
-- [ ] `blocked` **02 <unit title>** — [plan](<relative-path-from-this-ledger>) — blocked by: 01
-- [x] `done` **00 <unit title>** — [plan](<relative-path-from-this-ledger>)
-```
-
-Compute every link relative to the ledger file's directory and verify that it resolves. Keep one line per unit. The line carries title, status, link, and blocking edges; everything else lives in the plan file it points at.
-
-## Working the frontier
-
-The **frontier** is every unit whose blockers are all `done`. Those are the units that can start now. A linear chain means the frontier is one unit; a wide fan-out means several can run in parallel.
-
-Update the ledger in the same change set as the status change. Commit only when the user has separately authorized a commit. A ledger that lags the repo is worse than no ledger, because it is believed.
+Resolve links relative to their containing file and verify targets. Re-read shared indexes before editing and preserve unrelated entries. Report status based on evidence, not an old plan's claim of completion.

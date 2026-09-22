@@ -91,9 +91,11 @@ for loc in "${locations[@]}"; do
     dest_dir="${loc%%|*}"
     rel_prefix="${loc##*|}"
 
-    # Retire the worker links after their sources have been consolidated. Match
+    # Retire removed or consolidated skill links. Match
     # only links this installer owns; leave user files and other targets alone.
-    for retired in flash-worker claude-worker cursor-worker external-worker; do
+    for retired in flash-worker claude-worker cursor-worker external-worker \
+        diagnosing-bugs deep-review grilling grill-me grill-with-docs wayfinder \
+        prototype to-spec to-tickets docextract2 writing-for-agents2 writing-for-humans2; do
         [ ! -d "$AGENT_SKILLS_DIR/$retired" ] || continue
         link_path="$dest_dir/$retired"
         [ -L "$link_path" ] || continue

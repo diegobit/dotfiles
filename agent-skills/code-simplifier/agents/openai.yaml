@@ -1,0 +1,5 @@
+interface:
+  display_name: "Code Simplifier"
+  short_description: "Explicit behavior-preserving refactoring"
+policy:
+  allow_implicit_invocation: false

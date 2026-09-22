@@ -1,222 +1,84 @@
 ---
 name: db-cleanup
-description: Shrink opencode disk usage by deleting old sessions, removing orphaned file blobs and stale project snapshots, vacuuming the SQLite DB, and clearing old logs. Use when the user says "cleanup", "shrink db", "free space", "opencode db is big", or wants to reduce opencode storage size.
+description: Clean up OpenCode storage with a fail-closed preview and an approved manifest. Use when the user asks to shrink the OpenCode data directory, remove orphaned OpenCode session files, or reclaim OpenCode snapshot or log space.
 ---
 
-# Opencode DB Cleanup
+# OpenCode storage cleanup
 
-Shrink opencode's disk footprint by removing old sessions and reclaiming orphaned storage.
+Remove orphaned OpenCode files only through `~/.config/opencode/skills/db-cleanup/scripts/cleanup.py`. The helper reads `opencode.db` read-only, checks the layout, and writes a manifest. Preview does not remove files. Apply removes a path only when that manifest is approved and a fresh read still describes the same path.
 
-## Overview
+A refused helper run is the result. Report stderr and stop.
 
-opencode stores data in `~/.local/share/opencode/`:
-- `opencode.db` — SQLite database (sessions, messages, parts, events)
-- `storage/message/<session_id>/` — message JSON files per session
-- `storage/part/<session_id>/` — message part JSON files per session
-- `storage/session_diff/<session_id>.json` — session diff snapshots
-- `snapshot/<project_hash>/` — git snapshot repos per project
-- `log/` — rotating log files
+## Layout
 
-`opencode session delete` removes DB rows but does NOT always clean up file blobs in `storage/`. This skill performs a thorough cleanup.
+OpenCode 1.18.32 keeps sessions in SQLite (`session.id` like `ses_…`, `project.id` a 40-hex git root or `global`, timestamps in unix milliseconds). JSON keys that still sit on disk:
 
-## Workflow
+- `storage/session_diff/<sessionId>.json`
+- `storage/message/<sessionId>/<messageId>.json`
+- `storage/part/<messageId>/<partId>.json` — the directory name is the message id (`msg_…`)
+- `storage/session/<projectId>/<sessionId>.json`
+- `snapshot/<projectId>/` — legacy git dir, or `<projectId>/<worktreeHash>/`
 
-### Step 1 — Assess current size
+`storage/migration`, `storage/project`, `storage/todo`, `storage/session_share`, `opencode.db` (and its `-wal` / `-shm`), and credential files stay. A name that does not match a layout above stays. A project id present in `project` or `session` keeps its whole snapshot tree, including a project that currently has no extra sessions.
 
-```bash
-echo "=== TOTAL ==="
-du -sh ~/.local/share/opencode/
-echo "=== BREAKDOWN ==="
-du -sh ~/.local/share/opencode/*/ 2>/dev/null | sort -rh
-du -sh ~/.local/share/opencode/storage/*/ 2>/dev/null | sort -rh
-ls -lh ~/.local/share/opencode/opencode.db
-echo "=== SESSION COUNT ==="
-opencode db "SELECT COUNT(*) FROM session"
-```
+## Steps
 
-Report the findings to the user with a table.
+### 1. Locate the data directory
 
-### Step 2 — Ask the user for a retention policy
+Run `~/.opencode/bin/opencode debug paths` and take the `data` line. Done when that directory exists and contains `opencode.db`.
 
-Present options:
-1. Delete everything older than N days (common: 30, 60, 90)
-2. Delete specific sessions
-3. Keep only recent sessions
+Use that binary. A `PATH` `opencode` can be an older build with no database command.
 
-Wait for the user's choice. **Never delete without explicit confirmation.**
+### 2. Measure
 
-### Step 3 — Delete old sessions
+Record `du -sh` for the data directory, `opencode.db`, `storage/`, and `snapshot/`. Done when the user has that table.
 
-Calculate the cutoff timestamp in milliseconds:
-```bash
-python3 -c "import time; print(int((time.time() - DAYS * 86400) * 1000))"
-```
-Replace `DAYS` with the agreed number.
+### 3. Retention
 
-Get sessions to delete:
-```bash
-opencode db "SELECT id FROM session WHERE time_updated < CUTOFF_MS" 
-```
+Use the retention and cleanup scope already requested. Ask only for missing choices that affect deletion. Logs are excluded by default; the file-age protection window defaults to 86400 seconds. Session-age review is optional because this helper does not delete session rows.
 
-Delete each one:
-```bash
-opencode session delete <session_id>
-```
+Choose a manifest path outside the OpenCode data directory. The helper refuses to write a manifest inside that directory.
 
-For large batches, loop through the list. Show progress every 50 deletions.
-
-### Step 4 — Remove orphaned file blobs
-
-After session deletion, orphaned files remain in `storage/`. Run this Python script to find and remove them:
-
-```python
-import os, shutil, subprocess
-
-# Get valid session IDs from DB
-result = subprocess.run(['opencode', 'db', 'SELECT id FROM session'], capture_output=True, text=True)
-valid_sessions = set(line.strip() for line in result.stdout.strip().split('\n')[1:] if line.strip())
-
-# Get valid project IDs from DB
-result = subprocess.run(['opencode', 'db', 'SELECT DISTINCT project_id FROM session'], capture_output=True, text=True)
-valid_projects = set(line.strip() for line in result.stdout.strip().split('\n')[1:] if line.strip())
-
-data_dir = os.path.expanduser('~/.local/share/opencode')
-
-# --- Report orphaned sizes first ---
-def dir_size(path):
-    total = 0
-    for root, dirs, files in os.walk(path):
-        for fn in files:
-            try: total += os.path.getsize(os.path.join(root, fn))
-            except: pass
-    return total
-
-print("=== Orphaned storage ===")
-for subdir in ['message', 'part']:
-    base = os.path.join(data_dir, 'storage', subdir)
-    if not os.path.isdir(base): continue
-    total, count = 0, 0
-    for d in os.listdir(base):
-        if d not in valid_sessions:
-            path = os.path.join(base, d)
-            if os.path.isdir(path):
-                total += dir_size(path)
-                count += 1
-    print(f'  {subdir}: {count} orphaned dirs, {total/1024/1024:.1f} MB')
-
-# session_diff files (keyed by session_id.json)
-sd = os.path.join(data_dir, 'storage', 'session_diff')
-if os.path.isdir(sd):
-    total, count = 0, 0
-    for f in os.listdir(sd):
-        if f.endswith('.json'):
-            sid = f[:-5]
-            if sid not in valid_sessions:
-                fp = os.path.join(sd, f)
-                try: total += os.path.getsize(fp); count += 1
-                except: pass
-    print(f'  session_diff: {count} orphaned files, {total/1024/1024:.1f} MB')
-
-# Stale snapshots (project hash dirs with no active sessions)
-snap = os.path.join(data_dir, 'snapshot')
-if os.path.isdir(snap):
-    total, count = 0, 0
-    for d in os.listdir(snap):
-        if d not in valid_projects:
-            path = os.path.join(snap, d)
-            if os.path.isdir(path):
-                total += dir_size(path)
-                count += 1
-    print(f'  snapshot: {count} stale dirs, {total/1024/1024:.1f} MB')
-```
-
-**Show the report to the user and get confirmation before removing.**
-
-Then remove (same script but with deletion):
-
-```python
-import os, shutil, subprocess
-
-result = subprocess.run(['opencode', 'db', 'SELECT id FROM session'], capture_output=True, text=True)
-valid_sessions = set(line.strip() for line in result.stdout.strip().split('\n')[1:] if line.strip())
-
-result = subprocess.run(['opencode', 'db', 'SELECT DISTINCT project_id FROM session'], capture_output=True, text=True)
-valid_projects = set(line.strip() for line in result.stdout.strip().split('\n')[1:] if line.strip())
-
-data_dir = os.path.expanduser('~/.local/share/opencode')
-
-# Remove orphaned message and part dirs
-for subdir in ['message', 'part']:
-    base = os.path.join(data_dir, 'storage', subdir)
-    if not os.path.isdir(base): continue
-    count = 0
-    for d in os.listdir(base):
-        if d not in valid_sessions:
-            path = os.path.join(base, d)
-            if os.path.isdir(path):
-                shutil.rmtree(path)
-                count += 1
-    print(f'{subdir}: removed {count} orphaned dirs')
-
-# Remove orphaned session_diff files
-sd = os.path.join(data_dir, 'storage', 'session_diff')
-if os.path.isdir(sd):
-    count = 0
-    for f in os.listdir(sd):
-        if f.endswith('.json'):
-            sid = f[:-5]
-            if sid not in valid_sessions:
-                os.remove(os.path.join(sd, f))
-                count += 1
-    print(f'session_diff: removed {count} orphaned files')
-
-# Remove stale snapshot dirs
-snap = os.path.join(data_dir, 'snapshot')
-if os.path.isdir(snap):
-    count = 0
-    for d in os.listdir(snap):
-        if d not in valid_projects:
-            path = os.path.join(snap, d)
-            if os.path.isdir(path):
-                shutil.rmtree(path)
-                count += 1
-    print(f'snapshot: removed {count} stale dirs')
-```
-
-### Step 5 — Vacuum the SQLite DB
-
-After all deletions, reclaim free pages in the database:
+### 4. Preview
 
 ```bash
-opencode db "VACUUM"
+python3 ~/.config/opencode/skills/db-cleanup/scripts/cleanup.py preview \
+  --data-dir "$DATA" \
+  --manifest "$MANIFEST" \
+  --protect-mtime-seconds SECONDS \
+  --session-retention-days DAYS
 ```
 
-### Step 6 — Clear old logs (optional)
+Add `--log-retention-days DAYS` only when logs are in scope. Add `--now` only in tests.
+
+Done when the process exits 0, stdout `approved` is false, and the user has the fingerprint, candidate count, candidate bytes, retained counts, and `session_age_review`. A failed scan does not replace the manifest; an older manifest may still exist. Show stderr and stop rather than applying an older result.
+
+`session_age_review` lists old session ids. Apply does not delete those rows or their files.
+
+### 5. Approve
+
+Show the candidate paths and the fingerprint. Done when the user approves that fingerprint.
 
 ```bash
-# Remove log files older than 30 days
-find ~/.local/share/opencode/log/ -name "*.log" -mtime +30 -delete
+python3 ~/.config/opencode/skills/db-cleanup/scripts/cleanup.py approve \
+  --manifest "$MANIFEST" --expect FINGERPRINT
 ```
 
-### Step 7 — Report results
+Done when this exits 0. This still removes nothing.
 
-Show a before/after comparison table:
+### 6. Apply
 
-```
-| Area       | Before  | After   | Saved   |
-|------------|---------|---------|---------|
-| Total      | X.X GB  | X.X GB  | X.X GB  |
-| opencode.db| X MB    | X MB    | X MB    |
-| storage/   | X MB    | X MB    | X MB    |
-| snapshot/  | X MB    | X MB    | X MB    |
+Apply is an offline maintenance operation. All OpenCode servers, clients, scheduled tasks, and other writers to this data directory must be stopped and remain stopped for the run. Use the user's existing authorization for stopping services; ask if stopping an active service was not authorized. The helper requires `--offline` as an operator assertion; it does not detect or stop writers. File-age checks and fresh scans are additional checks, not concurrency locks.
+
+```bash
+python3 ~/.config/opencode/skills/db-cleanup/scripts/cleanup.py apply --offline \
+  --manifest "$MANIFEST" --expect FINGERPRINT
 ```
 
-## Notes
+Done when the process exits 0 and stdout lists `deleted`. On a non-zero exit, show stderr and stop. A refusal before deletion leaves the tree unchanged. If deletion fails, the operation may be partial, including within the current tree. The `already removed` list contains completed candidates only. Inspect the current candidate and preview again before any further apply.
 
-- Always get user confirmation before deleting anything.
-- The `opencode session delete` command is safe — it only removes the specified session's DB rows.
-- Orphaned blob cleanup is safe — it only removes files for sessions that no longer exist in the DB.
-- Stale snapshot cleanup is safe — it only removes project snapshot dirs for projects with no active sessions.
-- `VACUUM` requires temporary disk space equal to the DB size; ensure enough free space.
-- The user's current (active) session is never deleted because it won't match the age filter.
+### 7. Report
 
+Show candidate bytes removed and a fresh `du` table. Done when the user has the before and after sizes.
+
+Session-row deletion (`~/.opencode/bin/opencode session delete`) and `VACUUM` rewrite the live database. They are a separate confirmation after apply, not part of this helper.

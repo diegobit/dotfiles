@@ -1,0 +1,3 @@
+interface:
+  display_name: "Document Extraction"
+  short_description: "Extract text, markdown, JSON, OCR, and visual descriptions from documents"

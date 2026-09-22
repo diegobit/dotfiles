@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Skills: Originals vs Standalone V2 Candidates</title>
+<style>
+  :root {
+    --bg: #121214;
+    --card-bg: #18181b;
+    --ink: #f4f4f5;
+    --muted: #a1a1aa;
+    --rule: #27272a;
+    --accent: #e4d39c;
+    --term-bg: #09090b;
+    --before-bg: #2a1515;
+    --before-border: #4d2323;
+    --before-ink: #fca5a5;
+    --after-bg: #122417;
+    --after-border: #214d2b;
+    --after-ink: #86efac;
+    --diff-add-bg: rgba(34, 197, 94, 0.15);
+    --diff-add-ink: #86efac;
+    --diff-del-bg: rgba(239, 68, 68, 0.15);
+    --diff-del-ink: #fca5a5;
+    --diff-chunk: #93c5fd;
+    --badge-bg: #27272a;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 17px/1.55 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  header, section, footer {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2.2rem 1.4rem;
+  }
+  header { padding-top: 3.5rem; }
+  h1, h2, h3, h4 {
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: #fafafa;
+  }
+  h1 { font-size: 2.3rem; line-height: 1.15; margin: 0 0 1rem; }
+  h2 { font-size: 1.6rem; margin: 0 0 0.8rem; display: flex; align-items: baseline; gap: 0.8rem; }
+  h3 { font-size: 1.15rem; margin: 0 0 0.6rem; }
+  h4 {
+    font-size: 0.82rem;
+    margin: 0 0 0.5rem;
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  p { margin: 0 0 1rem; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .lede { font-size: 1.2rem; color: #d4d4d8; max-width: 50rem; line-height: 1.5; }
+  .meta { font: 13.5px/1.4 ui-sans-serif, system-ui, sans-serif; color: var(--muted); margin-top: 1.2rem; }
+
+  nav.toc {
+    display: flex; gap: 1.2rem; flex-wrap: wrap;
+    font: 14px/1.3 ui-sans-serif, system-ui, sans-serif;
+    margin: 1.6rem 0 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  nav.toc a { color: var(--muted); border-bottom: 1px solid transparent; padding-bottom: 2px; }
+  nav.toc a:hover { color: var(--ink); border-color: var(--accent); }
+
+  section { border-top: 1px solid var(--rule); padding-top: 3rem; }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0 2rem;
+    font-family: ui-sans-serif, system-ui, sans-serif;
+  }
+  .stat-card {
+    background: var(--card-bg);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+  }
+  .stat-card .label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+  .stat-card .val { font-size: 1.9rem; font-weight: 700; color: #fafafa; margin: 0.3rem 0 0.2rem; }
+  .stat-card .delta { font-size: 0.85rem; color: #86efac; }
+
+  .pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+    margin: 1.4rem 0 1.8rem;
+  }
+  @media (max-width: 860px) { .pair { grid-template-columns: 1fr; } }
+
+  .card {
+    border-radius: 8px;
+    padding: 1.2rem;
+    border: 1px solid var(--rule);
+    background: var(--card-bg);
+  }
+  .card.before { background: var(--before-bg); border-color: var(--before-border); color: #fee2e2; }
+  .card.after { background: var(--after-bg); border-color: var(--after-border); color: #dcfce7; }
+  .card.before h4 { color: var(--before-ink); }
+  .card.after h4 { color: var(--after-ink); }
+
+  .badge {
+    display: inline-block;
+    font: 11px/1 ui-monospace, "SF Mono", monospace;
+    padding: 3px 6px;
+    border-radius: 4px;
+    background: var(--badge-bg);
+    color: var(--muted);
+    border: 1px solid var(--rule);
+    vertical-align: middle;
+  }
+  .badge.green { background: var(--after-bg); color: var(--after-ink); border-color: var(--after-border); }
+
+  pre, code {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 13px;
+  }
+  p code, li code {
+    background: #27272a;
+    padding: 0.15em 0.35em;
+    border-radius: 4px;
+    font-size: 0.85em;
+    color: #fafafa;
+  }
+
+  .term {
+    background: var(--term-bg);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 1rem 1.1rem;
+    margin: 1rem 0;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #e4e4e7;
+  }
+  .term .prompt { color: #71717a; }
+
+  .diff-view {
+    background: var(--term-bg);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 1rem;
+    overflow-x: auto;
+    font-size: 12.5px;
+    line-height: 1.45;
+    max-height: 480px;
+    overflow-y: auto;
+    white-space: pre;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    margin: 1.2rem 0;
+  }
+  .diff-header { color: #a1a1aa; font-weight: bold; display: block; }
+  .diff-chunk { color: var(--diff-chunk); display: block; background: rgba(59, 130, 246, 0.1); padding: 2px 0; }
+  .diff-add { color: var(--diff-add-ink); background: var(--diff-add-bg); display: block; }
+  .diff-del { color: var(--diff-del-ink); background: var(--diff-del-bg); display: block; }
+  .diff-ctx { color: #a1a1aa; display: block; }
+
+  ul.check-list {
+    list-style: none;
+    padding: 0;
+    margin: 0.8rem 0;
+  }
+  ul.check-list li {
+    padding: 0.35rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+    font-size: 0.98rem;
+  }
+  ul.check-list li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #86efac;
+    font-weight: bold;
+  }
+  ul.check-list.negative li::before {
+    content: "✗";
+    color: #fca5a5;
+  }
+
+  details {
+    margin: 1rem 0;
+    background: var(--card-bg);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+  }
+  details summary {
+    cursor: pointer;
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: #fafafa;
+    user-select: none;
+  }
+  details summary:hover { color: var(--accent); }
+  details[open] summary { margin-bottom: 0.8rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.5rem; }
+
+  .swap-box {
+    background: #18181b;
+    border-left: 4px solid var(--accent);
+    padding: 1rem 1.2rem;
+    border-radius: 0 8px 8px 0;
+    margin: 1.4rem 0;
+  }
+  .swap-box h4 { color: var(--accent); margin-bottom: 0.4rem; }
+  footer { border-top: 1px solid var(--rule); margin-top: 4rem; color: var(--muted); font-size: 0.9rem; }
+</style>
+</head>
+<body>
+<p style="padding: 1rem">Historical comparison: the corrected v2 candidates have now been adopted under their original names. The diffs below preserve the pre-adoption comparison.</p>
+
+<header>
+  <h1>Agent Skills: Originals vs. Standalone V2 Candidates</h1>
+  <p class="lede">
+    Audit, diff, and architectural comparison between the original verbose skills and their streamlined,
+    fully independent <code>*2</code> counterparts. All three candidates are now 100% self-contained packages
+    with zero reliance on or references to the old directories.
+  </p>
+
+  <nav class="toc">
+    <a href="#summary">Overview &amp; Metrics</a>
+    <a href="#docextract">01 · docextract</a>
+    <a href="#humans">02 · writing-for-humans</a>
+    <a href="#agents">03 · writing-for-agents</a>
+    <a href="#swap">04 · Direct Swap Commands</a>
+  </nav>
+
+  <p class="meta">
+    Evaluated September 22, 2026 · Target Harnesses: Claude Code, Codex, Cursor, opencode, Gemini CLI, Antigravity.
+  </p>
+</header>
+
+<section id="summary">
+  <h2>Executive Overview</h2>
+  <p>
+    Skills authored for earlier LLM generations routinely suffer from two problems with modern reasoning models (Claude 3.5/Fable, Astra, GPT-4o):
+    <strong>context bloat</strong> from exhaustive prose, and <strong>possible instruction conflict / overcorrection</strong> from mandatory multi-item checklists. These are design concerns, not measured quality regressions.
+  </p>
+  <p>
+    The <code>*2</code> candidates streamline the instructions into actionable contracts, eliminate conversational meta-framing,
+    and disclose heavy references and benchmarks into standalone companion files.
+  </p>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="label">Total Words in Prompts</div>
+      <div class="val">5,808 → 1,342 words</div>
+      <div class="delta">↓ 4,466 words (-76.9%)</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">docextract Size</div>
+      <div class="val">2,484 → 514 words</div>
+      <div class="delta">↓ 1,970 words (-79.3%)</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">writing-for-humans Size</div>
+      <div class="val">1,547 → 387 words</div>
+      <div class="delta">↓ 1,160 words (-75.0%)</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">writing-for-agents Size</div>
+      <div class="val">1,777 → 441 words</div>
+      <div class="delta">↓ 1,336 words (-75.2%)</div>
+    </div>
+  </div>
+
+  <div class="swap-box">
+    <h4>Status of the *2 Versions: Fully Standalone</h4>
+    <p>
+      Previously, the candidate skills contained phrases like <em>"When explicitly selected, use this guidance instead of the original"</em>
+      and <code>docextract2/scripts</code> was a symlink pointing to <code>../docextract/scripts</code>.
+    </p>
+    <p>
+      <strong>Fixed:</strong> All meta-commentary has been removed. <code>docextract2</code> now possesses its own physical
+      <code>scripts/</code> (including <code>docdescribe.py</code>), <code>references/</code>, and <code>tests/</code> directories.
+      Both <code>docextract.py</code> and <code>docdescribe.py</code> commands are directly documented in <code>SKILL.md</code>.
+      Each candidate contains its own runtime resources. Adoption also requires updating discovery links and invocation metadata.
+    </p>
+  </div>
+</section>
+
+<!-- 01 DOCEXTRACT -->
+<section id="docextract">
+  <h2>
+    01 · docextract vs. docextract2
+    <span class="badge green">-82.1% words</span>
+  </h2>
+  <p>
+    <code>docextract</code> routes document types to local engines: PyMuPDF for digital text, Apple Vision OCR for scans,
+    MarkItDown for Office formats, and <code>docdescribe.py</code> for local VLM figure captions and executive summaries.
+    The underlying Python and Swift engine implementation is identical between both versions.
+  </p>
+
+  <div class="pair">
+    <div class="card before">
+      <h4>Original docextract (2484 words / 313 lines)</h4>
+      <ul class="check-list negative">
+        <li>Inline 40-line table comparing F1 scores and OCR engines on specific test hardware.</li>
+        <li>Full mock JSON output blocks and repeated command recipe variations.</li>
+        <li>Step-by-step walkthrough explaining every single CLI flag in prose.</li>
+        <li>Verbose prose on Ollama backend architecture and server options.</li>
+      </ul>
+      <p style="font-size: 0.95rem; margin-top: 0.5rem;">
+        Includes extensive benchmark and option detail in the entry point; conditional references can keep routine extraction guidance shorter.
+      </p>
+    </div>
+
+    <div class="card after">
+      <h4>docextract2 (444 words / 41 lines)</h4>
+      <ul class="check-list">
+        <li>Compact cheatsheet of core invocations (<code>--text</code>, <code>--json</code>, <code>--probe</code>, <code>--screenshot</code>).</li>
+        <li>Direct command recipes for <code>docdescribe.py</code> (figure captions and executive summaries).</li>
+        <li>Actionable heuristics: inspect stacked table headers; exit 3 means failure, not an empty doc.</li>
+        <li>Batch workflows and benchmark metrics cleanly disclosed into <code>references/</code>.</li>
+      </ul>
+      <p style="font-size: 0.95rem; margin-top: 0.5rem;">
+        Provides exact operating instructions in under 425 words. Completely self-contained.
+      </p>
+    </div>
+  </div>
+
+  <details open>
+    <summary>View Unified Diff (SKILL.md)</summary>
+    <div class="diff-view"><span class="diff-header">--- docextract/SKILL.md
+</span><span class="diff-header">+++ docextract2/SKILL.md
+</span><span class="diff-chunk">@@ -1,313 +1,43 @@
+</span><span class="diff-ctx"> ---
+</span><span class="diff-del">-name: docextract
+</span><span class="diff-add">+name: docextract2
+</span><span class="diff-ctx"> description: &quot;Extract text, markdown, structured JSON, visual figure descriptions, or executive summaries from documents (PDF, DOCX, PPTX, XLSX, CSV, images, HTML, EPUB) locally. Fast hybrid routing: PyMuPDF for text, Apple Vision OCR for scans, and local VLM (docdescribe with Ollama/llama-server) for visual captions and summaries. Use when asked to read, parse, extract, describe, or summarize a document, image, or whole directory.&quot;
+</span><span class="diff-del">-license: MIT
+</span><span class="diff-del">-metadata:
+</span><span class="diff-del">-  benchmarked: &quot;2026-08-18, macOS 15 arm64; see references/benchmark.md&quot;
+</span><span class="diff-del">-  wins: &quot;best-in-class on born-digital text (F1 0.9964), scanned OCR (F1 0.9712) and table cell-binding (1.00)&quot;
+</span><span class="diff-ctx"> ---
+</span><span class="diff-ctx">
+</span><span class="diff-del">-# docextract
+</span><span class="diff-add">+# Document extraction
+</span><span class="diff-ctx">
+</span><span class="diff-del">-One command for any local document. It picks the best engine per page instead of making you
+</span><span class="diff-del">-guess, because no single engine wins everywhere — that&#x27;s a measured result, not a hunch
+</span><span class="diff-del">-(`references/benchmark.md`).
+</span><span class="diff-add">+Extract text, tables, and visual structure from local documents using hybrid engine routing: PyMuPDF for born-digital text, Apple Vision OCR for scans, and MarkItDown for Office formats. Use local VLM (`docdescribe.py`) for captions and summaries. Resolve paths relative to this skill directory, including when reached through a harness symlink.
+</span><span class="diff-ctx">
+</span><span class="diff-del">-| input | engine | why |
+</span><span class="diff-del">-|---|---|---|
+</span><span class="diff-del">-| PDF page with a text layer | PyMuPDF (`pymupdf4llm` for markdown) | F1 0.9964, tied best, fastest |
+</span><span class="diff-del">-| PDF page with no text layer | **Apple Vision OCR** | F1 0.9712, beats tesseract 0.9512 and liteparse 0.9000 |
+</span><span class="diff-del">-| image (png/jpg/heic/tiff…) | Apple Vision OCR | same |
+</span><span class="diff-del">-| DOCX / PPTX / XLSX / CSV / HTML / EPUB | MarkItDown | emits real markdown tables |
+</span><span class="diff-del">-
+</span><span class="diff-del">-Vision OCR is built into macOS: no model download, no network, no Python, and it is both the
+</span><span class="diff-del">-most accurate *and* the fastest OCR on this platform.
+</span><span class="diff-del">-
+</span><span class="diff-del">-## Run it
+</span><span class="diff-del">-
+</span><span class="diff-del">-The script is self-contained — [PEP 723](https://peps.python.org/pep-0723/) inline dependencies,
+</span><span class="diff-del">-so `uv` installs them on first run (~1s afterwards). Nothing to set up.
+</span><span class="diff-add">+## Extract and inspect
+</span><span class="diff-ctx">
+</span><span class="diff-ctx"> ```bash
+</span><span class="diff-del">-SK=~/.claude/skills/docextract/scripts        # adjust if invoked from another harness
+</span><span class="diff-del">-$SK/docextract.py FILE                        # -&gt; markdown on stdout
+</span><span class="diff-add">+scripts/docextract.py FILE --text                                # text content &amp; page markers
+</span><span class="diff-add">+scripts/docextract.py FILE --json -o /tmp/document.json          # per-page text, OCR flags, tables
+</span><span class="diff-add">+scripts/docextract.py FILE --probe                               # detect layout and stacked headers
+</span><span class="diff-add">+scripts/docextract.py FILE --screenshot /tmp/pages --pages &quot;1,3&quot; # visual verification
+</span><span class="diff-ctx"> ```
+</span><span class="diff-ctx">
+</span><span class="diff-del">-If `uv` is missing: `brew install uv`. The Swift Vision helper compiles itself on first use
+</span><span class="diff-del">-(needs Xcode command line tools: `xcode-select --install`); it is a build artifact and is not
+</span><span class="diff-del">-checked into the repo.
+</span><span class="diff-add">+- Use `--text` for questions about content; keep page markers for citations. Use `--json` for per-page text, OCR provenance, figures, and row groups.
+</span><span class="diff-add">+- Use default markdown output for conversion or storage. For complex tables, run `--probe`; re-extract indicated stacked-header pages in markdown and inspect their rendered headers. Probe recommendations are heuristics.
+</span><span class="diff-add">+- Render and inspect pages for charts, drawings, checkboxes, layout, ambiguous table bindings, and consequential values that look suspicious. Extraction alone does not establish visual meaning.
+</span><span class="diff-add">+- Mixed pages omit text inside images by default. Add `--image-ocr` when the answer may be in an image; distinguish OCR guesses from the existing text layer.
+</span><span class="diff-add">+- Read `row_groups` or row-group comments before attributing table rows to a spanning label. Check rendered pages when exponents, symbols, or multi-level headers matter.
+</span><span class="diff-add">+- Exit `0` means extraction completed, `1` is a hard failure, and `3` means no text was extracted. An empty extraction calls for visual inspection, not an assertion that the document is empty.
+</span><span class="diff-ctx">
+</span><span class="diff-del">-## Recipe 1 — answer questions about a document
+</span><span class="diff-add">+## Visual captions and summaries (`docdescribe`)
+</span><span class="diff-ctx">
+</span><span class="diff-del">-Use `--text` (highest raw fidelity, no markdown decoration) and keep the page markers so you can
+</span><span class="diff-del">-cite a page number:
+</span><span class="diff-add">+Use `docdescribe.py` for batch captions, summary sidecars, or explicitly requested local-model processing. For a targeted question, extract the relevant content and inspect rendered pages as needed. Captions and summaries are model-generated interpretations, not verbatim extracted evidence.
+</span><span class="diff-add">+
+</span><span class="diff-add">+`docdescribe.py` requires local Ollama or llama-server with `qwen3.5:9b` by default:
+</span><span class="diff-ctx">
+</span><span class="diff-ctx"> ```bash
+</span><span class="diff-del">-$SK/docextract.py contract.pdf --text                  # whole doc
+</span><span class="diff-del">-$SK/docextract.py contract.pdf --text --pages &quot;1-3,12&quot; # just some pages
+</span><span class="diff-add">+scripts/docdescribe.py FILE                           # captions for candidate figure pages
+</span><span class="diff-add">+scripts/docdescribe.py FILE --pages &quot;3,22&quot;            # target specific pages
+</span><span class="diff-add">+scripts/docdescribe.py FILE --summarize               # figure captions + executive summary
+</span><span class="diff-add">+scripts/docdescribe.py FILE --summary-only            # executive summary only (no image calls)
+</span><span class="diff-ctx"> ```
+</span><span class="diff-ctx">
+</span><span class="diff-del">-For long documents, `--json` gives you per-page records — read only the pages you need, and check
+</span><span class="diff-del">-`engine` to know whether a page was OCR&#x27;d (OCR&#x27;d pages deserve more caution on exact figures):
+</span><span class="diff-add">+Writes `.describe.json` sidecar files containing cached descriptions. Inspect the requested page records and summary text, not just the exit code. Check `doc_summary.coverage`: when `truncated` is true, label the summary as partial-source coverage. Flag incomplete captions and verify important values against rendered pages; `values_untrusted` means the caption is not reliable numeric evidence. For bulk directory conversion and advanced backend options, read [batch workflows](references/batch.md).
+</span><span class="diff-ctx">
+</span><span class="diff-del">-```bash
+</span><span class="diff-del">-$SK/docextract.py report.pdf --json -o /tmp/report.json
+</span><span class="diff-del">-```
+</span><span class="diff-add">+---
+</span><span class="diff-ctx">
+</span><span class="diff-del">-```jsonc
+</span><span class="diff-del">-{ &quot;file&quot;: &quot;report.pdf&quot;, &quot;pages_total&quot;: 40, &quot;pages_done&quot;: 40,
+</span><span class="diff-del">-  &quot;ocr_pages&quot;: [7, 8],          // no text layer -&gt; OCR&#x27;d; treat exact figures with care
+</span><span class="diff-del">-  &quot;figure_pages&quot;: [3, 22],      // hold a chart/diagram -&gt; --screenshot and look
+</span><span class="diff-del">-  &quot;chars&quot;: 91234,
+</span><span class="diff-del">-  &quot;pages&quot;: [ { &quot;page&quot;: 1, &quot;text&quot;: &quot;...&quot;, &quot;engine&quot;: &quot;pymupdf&quot;,
+</span><span class="diff-del">-               &quot;text_layer_chars&quot;: 3670,
+</span><span class="diff-del">-               &quot;figures&quot;: 0,
+</span><span class="diff-del">-               &quot;row_groups&quot;: [ { &quot;label&quot;: &quot;LAVORI&quot;, &quot;covers&quot;: [&quot;A1&quot;, &quot;A2&quot;] } ] } ] }
+</span><span class="diff-del">-```
+</span><span class="diff-del">-
+</span><span class="diff-del">-When the question is visual — &quot;what does the chart show?&quot;, &quot;is the box ticked?&quot;, &quot;what&#x27;s the
+</span><span class="diff-del">-layout?&quot; — extract *and look*. Text extraction cannot answer those:
+</span><span class="diff-del">-
+</span><span class="diff-del">-```bash
+</span><span class="diff-del">-$SK/docextract.py form.pdf --screenshot /tmp/shots --pages &quot;1&quot; --dpi 150
+</span><span class="diff-del">-# then Read /tmp/shots/page_1.png
+</span><span class="diff-del">-```
+</span><span class="diff-del">-
+</span><span class="diff-del">-Reading the rendered page is also how you verify a suspicious extraction. Do that before
+</span><span class="diff-del">-reporting a number that matters.
+</span><span class="diff-del">-
+</span><span class="diff-del">-## Recipe 2 — turn a document or a directory into markdown
+</span><span class="diff-del">-
+</span><span class="diff-del">-```bash
+</span><span class="diff-del">-$SK/docextract.py paper.pdf -o paper.md          # one file
+</span><span class="diff-del">-$SK/docextract.py ~/Documents/invoices -o ./md   # whole tree, recursively
+</span><span class="diff-del">-```
+</span><span class="diff-del">-
+</span><span class="diff-del">-Directory mode mirrors the input tree, writes one `.md` per document, and prints a line per file
+</span><span class="diff-del">-with the character count and how many pages needed OCR:
+</span><span class="diff-del">-
+</span><span class="diff-del">-```
+</span><span class="diff-del">-invoices/2026-01.pdf -&gt; md/2026-01.md  (4821 chars, 0 OCR page(s))
+</span><span class="diff-del">-invoices/scans/old.pdf -&gt; md/scans/old.md  (2210 chars, 3 OCR page(s))
+</span><span class="diff-del">-```
+</span><span class="diff-del">-
+</span><span class="diff-del">-Add `--no-recursive` to stay at the top level, `--no-page-marks` to drop the
+</span><span class="diff-del">-`&lt;!-- page N (engine) --&gt;` comments.
+</span><span class="diff-del">-
+</span><span class="diff-del">-## Options
+</span><span class="diff-del">-
+</span><span class="diff-del">-| flag | meaning |
+</span><span class="diff-del">-|---|---|
+</span><span class="diff-del">-| `--text` | plain text, markdown decoration stripped — **highest fidelity** |
+</span><span class="diff-del">-| `--json` | per-page structured records (implies max-fidelity text) |
+</span><span class="diff-del">-| `--pages &quot;1-5,10&quot;` | page selection, 1-based (PDF only) |
+</span><span class="diff-del">-| `--force-ocr` | OCR every page even where a text layer exists |
+</span><span class="diff-del">-| `--image-ocr` | also OCR large images on pages that *do* have a text layer, to recover text baked into a picture (off by default — it adds lower-confidence text beside the exact text layer) |
+</span><span class="diff-del">-| `--probe` | report what the document contains and which mode suits it, then exit |
+</span><span class="diff-del">-| `--screenshot DIR` | render pages to PNG instead of extracting |
+</span><span class="diff-del">-| `--dpi N` | screenshot DPI (default 150); OCR always renders at 300 |
+</span><span class="diff-del">-| `--no-page-marks` | omit the page-marker comments |
+</span><span class="diff-del">-| `--no-recursive` | do not walk subdirectories |
+</span><span class="diff-del">-| `-o PATH` | output file, or output directory when the input is a directory |
+</span><span class="diff-del">-
+</span><span class="diff-del">-Exit codes: `0` ok, `1` hard failure, `3` ran but extracted no text at all. **Check for exit 3** —
+</span><span class="diff-del">-it means the document defeated every engine, which is the signal to look at a screenshot.
+</span><span class="diff-del">-
+</span><span class="diff-del">-## Choosing the mode — don&#x27;t guess, ask the document
+</span><span class="diff-del">-
+</span><span class="diff-del">-The two table shapes want opposite modes, so a fixed rule would be wrong half the time.
+</span><span class="diff-del">-Rather than remember that, **run `--probe` once** and let the document tell you:
+</span><span class="diff-del">-
+</span><span class="diff-del">-```bash
+</span><span class="diff-del">-$SK/docextract.py report.pdf --probe
+</span><span class="diff-del">-```
+</span><span class="diff-del">-
+</span><span class="diff-del">-```jsonc
+</span><span class="diff-del">-{ &quot;pages&quot;: 7,
+</span><span class="diff-del">-  &quot;scanned_pages&quot;: [],              // no text layer -&gt; OCR&#x27;d either way
+</span><span class="diff-del">-  &quot;table_pages&quot;: [1,3,4,5,6,7],
+</span><span class="diff-del">-  &quot;stacked_header_pages&quot;: [6,7],    // markdown likely better on THESE pages
+</span><span class="diff-del">-  &quot;row_group_pages&quot;: [],            // sideways group labels -&gt; read the row-group comments
+</span><span class="diff-del">-  &quot;figure_pages&quot;: [1],              // only vision can answer about these
+</span><span class="diff-del">-  &quot;image_text_pages&quot;: [],           // add --image-ocr to read text baked into a picture
+</span><span class="diff-del">-  &quot;recommend&quot;: &quot;--text&quot;,
+</span><span class="diff-del">-  &quot;then_recheck_pages_with_markdown&quot;: [6,7],
+</span><span class="diff-del">-  &quot;because&quot;: [&quot;6 ruled table page(s): --text keeps every row bound to its own value …&quot;] }
+</span><span class="diff-del">-```
+</span><span class="diff-del">-
+</span><span class="diff-del">-The decision procedure:
+</span><span class="diff-del">-
+</span><span class="diff-del">-1. **Start with `--text`.** It is best or tied-best on every axis measured — born-digital 0.9949,
+</span><span class="diff-del">-   OCR 0.9712, table cell-binding 1.0000 — and it is the fastest. When in doubt, this is the answer.
+</span><span class="diff-del">-2. **Use the default markdown mode** when you are converting *for storage or for a human*, or for
+</span><span class="diff-del">-   the pages `--probe` lists in `stacked_header_pages`. Re-extract just those:
+</span><span class="diff-del">-   `--pages &quot;6,7&quot;` without `--text`.
+</span><span class="diff-del">-3. **Use `--json`** when the document is long and you want to read only some pages, or you need
+</span><span class="diff-del">-   `engine` / `row_groups` / `figures` per page. Its text is the same max-fidelity text as `--text`.
+</span><span class="diff-del">-4. **Use `--screenshot` and look** for anything in `figure_pages`, to confirm a
+</span><span class="diff-del">-   `stacked_header_pages` flag, or whenever a row reads oddly. No text mode substitutes for this.
+</span><span class="diff-del">-5. **Add `--image-ocr`** for pages in `image_text_pages` if the answer might be inside a picture.
+</span><span class="diff-del">-
+</span><span class="diff-del">-`--probe` is a heuristic and says so: `stacked_header_pages` over-flags (a wrapped single-level
+</span><span class="diff-del">-header can trip it), which is why step 2 says confirm with a screenshot rather than trusting it.
+</span><span class="diff-del">-
+</span><span class="diff-del">-## Tables: what you get
+</span><span class="diff-del">-
+</span><span class="diff-del">-**Rotated row-group labels.** Financial tables often print a group name sideways in the left
+</span><span class="diff-del">-column, spanning the rows it governs. Every other tool tested either drops it, reverses it into
+</span><span class="diff-del">-single characters, or strands it mid-table — which actively misleads, because the rows then read
+</span><span class="diff-del">-as belonging to the previous group. docextract states the grouping explicitly:
+</span><span class="diff-del">-
+</span><span class="diff-del">-```
+</span><span class="diff-del">-&lt;!-- row-group &quot;LAVORI&quot; covers rows: A1, A2, A) --&gt;
+</span><span class="diff-del">-&lt;!-- row-group &quot;SOMME A DISPOSIZIONE DELL&#x27;AMMINISTRAZIONE&quot; covers rows: B1, B2.2, ..., B) --&gt;
+</span><span class="diff-del">-```
+</span><span class="diff-del">-
+</span><span class="diff-del">-`--json` exposes the same thing as `row_groups` per page. **When a table has sideways labels,
+</span><span class="diff-del">-read this comment before attributing any row to a group.**
+</span><span class="diff-del">-
+</span><span class="diff-del">-**Tables spanning a page break** get an explicit `&lt;!-- table continues from page N --&gt;` marker in
+</span><span class="diff-del">-markdown mode, and the continuation&#x27;s first row is kept as data rather than being promoted to a
+</span><span class="diff-del">-header.
+</span><span class="diff-del">-
+</span><span class="diff-del">-**Spreadsheets with merged cells** are read natively (openpyxl): every cell covered by a merge
+</span><span class="diff-del">-repeats its anchor&#x27;s value, so each row stands alone and stacked headers stay column-aligned.
+</span><span class="diff-del">-This matters — pandas-backed readers leave `NaN` (ambiguous with a genuinely empty cell) and
+</span><span class="diff-del">-spatial extractors put the label at the merge&#x27;s visual centre, silently binding it to the *wrong*
+</span><span class="diff-del">-row (liteparse attributes an `EMEA` block spanning three rows to only its middle row).
+</span><span class="diff-del">-
+</span><span class="diff-del">-## Figures
+</span><span class="diff-del">-
+</span><span class="diff-del">-Pages holding a chart, diagram or photo are flagged, because text extraction cannot answer a
+</span><span class="diff-del">-question about them:
+</span><span class="diff-del">-
+</span><span class="diff-del">-```
+</span><span class="diff-del">-&lt;!-- page 22 (pymupdf4llm) — 1 figure(s), inspect with --screenshot --&gt;
+</span><span class="diff-del">-```
+</span><span class="diff-del">-
+</span><span class="diff-del">-`--json` lists them as `figure_pages`. Charts in office documents are usually **vector graphics,
+</span><span class="diff-del">-not embedded images**, so `pdfimages` finds nothing — render the page instead:
+</span><span class="diff-del">-
+</span><span class="diff-del">-```bash
+</span><span class="diff-del">-$SK/docextract.py report.pdf --screenshot /tmp/shots --pages &quot;22&quot; --dpi 150
+</span><span class="diff-del">-# then Read /tmp/shots/page_22.png and describe the chart yourself
+</span><span class="diff-del">-```
+</span><span class="diff-del">-
+</span><span class="diff-del">-## Recipe — extract and describe a directory
+</span><span class="diff-del">-
+</span><span class="diff-del">-When asked to both extract and describe/summarize a folder of documents:
+</span><span class="diff-del">-
+</span><span class="diff-del">-```bash
+</span><span class="diff-del">-# 1. Extract text and detect figure pages -&gt; 2. Generate visual descriptions and executive summaries
+</span><span class="diff-del">-$SK/docextract.py ./docs --json
+</span><span class="diff-del">-$SK/docdescribe.py ./docs --summarize
+</span><span class="diff-del">-```
+</span><span class="diff-del">-
+</span><span class="diff-del">-## Visual descriptions and document summarization
+</span><span class="diff-del">-
+</span><span class="diff-del">-Text extraction ignores vector diagrams, photos, and complex charts. For RAG pipelines
+</span><span class="diff-del">-needing semantic visual descriptions or top-level document summaries:
+</span><span class="diff-del">-
+</span><span class="diff-del">-```bash
+</span><span class="diff-del">-# Describe figures on candidate pages discovered by docextract via local Ollama
+</span><span class="diff-del">-$SK/docdescribe.py report.pdf
+</span><span class="diff-del">-
+</span><span class="diff-del">-# Describe only specific pages
+</span><span class="diff-del">-$SK/docdescribe.py report.pdf --pages &quot;3,22&quot;
+</span><span class="diff-del">-
+</span><span class="diff-del">-# Generate a top-level document summary
+</span><span class="diff-del">-$SK/docdescribe.py report.pdf --summarize
+</span><span class="diff-del">-
+</span><span class="diff-del">-# Generate a summary only without rendering figures
+</span><span class="diff-del">-$SK/docdescribe.py report.pdf --summary-only
+</span><span class="diff-del">-```
+</span><span class="diff-del">-
+</span><span class="diff-del">-`docdescribe` writes `*.describe.json` sidecar files containing structured semantic
+</span><span class="diff-del">-records and retrieval-ready index text, with request-level caching.
+</span><span class="diff-del">-Do not generate bulk captions in-chat; use `docdescribe` for batch ingest and reserve
+</span><span class="diff-del">-in-chat inspection for targeted single-screenshot queries.
+</span><span class="diff-del">-
+</span><span class="diff-del">-Prerequisites &amp; Runtime:
+</span><span class="diff-del">-- **Engines:**
+</span><span class="diff-del">-  - **macOS (Metal):** Local Ollama daemon (`ollama serve`, `ollama pull qwen3.5:9b`) or native `llama-server`.
+</span><span class="diff-del">-  - **Linux (CUDA):** Standalone `llama-server` (`ghcr.io/ggml-org/llama.cpp:server-cuda`) or Ollama.
+</span><span class="diff-del">-  - Automatic backend selection via `--backend {auto,ollama,llama-server}` (env `DOCDESCRIBE_BACKEND`).
+</span><span class="diff-del">-- **Model:** Default is `qwen3.5:9b` (`--model` or env `OLLAMA_MODEL`/`DOCDESCRIBE_MODEL`).
+</span><span class="diff-del">-- **Thinking:** Disabled by default (`--think off` or `--no-think`) for ~4× faster execution (~10–13s per page) and deterministic structured JSON extraction without truncation. Can be enabled via `--think {low,medium,high}` when chain-of-thought is needed.
+</span><span class="diff-del">-
+</span><span class="diff-del">-## Performance and platform
+</span><span class="diff-del">-
+</span><span class="diff-del">-Measured on an Apple M4 Max (16 cores), warm. Directory mode fans out across processes
+</span><span class="diff-del">-(`-j`, default CPU-2); single files are single-threaded.
+</span><span class="diff-del">-
+</span><span class="diff-del">-| workload | `--text` | markdown |
+</span><span class="diff-del">-|---|---|---|
+</span><span class="diff-del">-| 100-page born-digital PDF | **4.8 s** (0.05 s/page) | 19.5 s (0.2 s/page) |
+</span><span class="diff-del">-| real 103-page technical doc | 4.4 s (0.043 s/page) | — |
+</span><span class="diff-del">-| scanned pages (every page OCR&#x27;d) | **0.86 s/page** | same |
+</span><span class="diff-del">-| 1000 mixed documents / ~5 100 pages / 230 MB | **29 s** | 299 s (5 min) |
+</span><span class="diff-del">-| `--probe` on a 100-page PDF | 2.9 s | — |
+</span><span class="diff-del">-
+</span><span class="diff-del">-Process startup is ~0.03 s, so per-file overhead is negligible. Parallelism gives ~7.8× on
+</span><span class="diff-del">-this machine (100 docs: 26.8 s serial → 3.4 s with 14 workers) and the output is byte-identical
+</span><span class="diff-del">-to serial. Rule of thumb: **born-digital ≈ 0.05 s/page, scanned ≈ 0.9 s/page**; OCR dominates
+</span><span class="diff-del">-whenever it is involved.
+</span><span class="diff-del">-
+</span><span class="diff-del">-**Platform.** PDF text, Office formats and markdown conversion are plain Python and portable.
+</span><span class="diff-del">-**OCR is macOS-only** — it uses Apple&#x27;s Vision framework through a small Swift helper. On a
+</span><span class="diff-del">-non-macOS host, born-digital documents work unchanged and scanned pages fail with an explicit
+</span><span class="diff-del">-error rather than returning silence; supporting them elsewhere would mean wiring in `tesseract`,
+</span><span class="diff-del">-which measured 0.9512 against Vision&#x27;s 0.9712 on the same pages.
+</span><span class="diff-del">-
+</span><span class="diff-del">-## Known limits
+</span><span class="diff-del">-
+</span><span class="diff-del">-- Vision OCR normalizes some punctuation (an em-dash may come back as `-`). Don&#x27;t treat OCR&#x27;d
+</span><span class="diff-del">-  punctuation as byte-exact.
+</span><span class="diff-del">-- A page holding a *text layer plus text baked into an image* keeps only the text layer by
+</span><span class="diff-del">-  default. `--image-ocr` recovers the in-image text and appends it under an explicit
+</span><span class="diff-del">-  `&lt;!-- text found inside an image on this page (OCR) --&gt;` marker, keeping the exact text layer
+</span><span class="diff-del">-  intact; lines already covered by the text layer are dropped so the page is not duplicated.
+</span><span class="diff-del">-  It is off by default because it mixes OCR guesses in beside exact text (it costs ~2 s per page
+</span><span class="diff-del">-  with a full-page image, and drops token precision from 0.996 to 0.816 against a text-layer-only
+</span><span class="diff-del">-  reference — the added text is real, but it is not in the reference).
+</span><span class="diff-del">-- Rotated/overlapping text in figures comes out garbled by every engine tested.
+</span><span class="diff-del">-- Superscripts flatten (`10^20` → `1020`). If exponents matter, check a screenshot.
+</span><span class="diff-del">-- Stacked multi-level column headers (a group header over sub-columns) survive better in
+</span><span class="diff-del">-  markdown mode than in `--text`; formula-ish header labels (`∑(Qi)`, `V*G*P*∑Qi`) may lose
+</span><span class="diff-del">-  symbols. If the header hierarchy is the point, check a screenshot.
+</span><span class="diff-del">-- Row-group detection needs ruled cells; a table that groups rows by whitespace alone will not
+</span><span class="diff-del">-  produce a `row-group` comment. Detection is gated to ruled tables and to labels in the left
+</span><span class="diff-del">-  quarter of the page, so rotated text in a figure is not mistaken for one.
+</span><span class="diff-del">-- In `--text`, two short table rows sitting side by side can end up on one output line. Cell
+</span><span class="diff-del">-  binding still holds (each value stays with its key), but check a screenshot before reading such
+</span><span class="diff-del">-  a line as a single row.
+</span><span class="diff-del">-- Markdown mode inherits a `pymupdf4llm` defect on wrapped table cells: words can run together
+</span><span class="diff-del">-  (`direzionelavori`) and a row code can lose its dot. `--text` does not have this — another
+</span><span class="diff-del">-  reason to prefer it for tables.
+</span><span class="diff-del">-- The routing threshold is 80 chars of text layer per page. A page with a tiny caption and a big
+</span><span class="diff-del">-  scanned body can fall on the wrong side of it; `--force-ocr` is the override.
+</span><span class="diff-del">-- Encrypted PDFs are not handled; decrypt first (`qpdf --decrypt`).
+</span><span class="diff-del">-- **A table pasted in as a low-resolution image is only partly recoverable.** `--image-ocr`
+</span><span class="diff-del">-  returns the words but not the row-to-value binding: a 783×274 px matrix embedded in a table
+</span><span class="diff-del">-  cell came back as fragments in jumbled order (`request by / by SCP / YES / failure / YES`).
+</span><span class="diff-del">-  For those, `--screenshot` the page and read it. Rendering the page region at 300 dpi was
+</span><span class="diff-del">-  measured to beat extracting the embedded image at native resolution, so that is what it does.
+</span><span class="diff-del">-- Technical drawings yield their label text in roughly spatial order, which is usable for finding
+</span><span class="diff-del">-  a tag number but not for understanding the drawing — that needs the screenshot.
+</span><span class="diff-del">-
+</span><span class="diff-del">-## Why not the other tools
+</span><span class="diff-del">-
+</span><span class="diff-del">-Measured on 4 born-digital PDFs and 5 image-only PDFs with exact ground truth
+</span><span class="diff-del">-(`references/benchmark.md` has the full tables and how to reproduce):
+</span><span class="diff-del">-
+</span><span class="diff-del">-- **liteparse** (`lit`): OCR F1 0.9000 — it *lost 221 tokens* on a dense form where Vision lost 52.
+</span><span class="diff-del">-  It also silently reports `fontSize: 1` and ~5×-too-small bounding boxes on WinAnsi-encoded
+</span><span class="diff-del">-  fonts, drops trailing periods (`U.S.` → `U.S`) on those documents, and exits 0 with an empty
+</span><span class="diff-del">-  file when OCR fails.
+</span><span class="diff-del">-- **tesseract** / **ocrmypdf**: solid (0.9512 / 0.9554) but slower and beaten by Vision.
+</span><span class="diff-del">-- **docling**: good accuracy (0.9501) but 15–38 s/doc, ~100× slower.
+</span><span class="diff-del">-- **pdfplumber** and **markitdown** on PDFs: pdfminer drops inter-word spaces on LaTeX PDFs
+</span><span class="diff-del">-  (F1 0.7338 — `Providedproperattribution…`). Fixable with `x_tolerance=1`, but MarkItDown exposes
+</span><span class="diff-del">-  no such knob, so it is only used here for Office formats, where it is excellent.
+</span><span class="diff-del">-- **pdftotext** is genuinely excellent for born-digital text and is a good cross-check
+</span><span class="diff-del">-  (`pdftotext -layout`), but it cannot OCR.
+</span><span class="diff-add">+PDF text and Office conversion are portable; Apple Vision OCR requires macOS and Xcode command line tools. Python dependencies are declared inline and run through `uv`; the Swift helper builds on first use. For measured engine comparisons, consult [benchmark](references/benchmark.md).
+</span></div>
+  </details>
+</section>
+
+<!-- 02 WRITING FOR HUMANS -->
+<section id="humans">
+  <h2>
+    02 · writing-for-humans vs. writing-for-humans2
+    <span class="badge green">-74.8% words</span>
+  </h2>
+  <p>
+    Used when drafting or revising human-facing prose (HTML documentation, blog posts, changelogs, articles).
+    Preserves meaning, nuance, uncertainty, and natural voice while tightening fluff.
+  </p>
+
+  <div class="pair">
+    <div class="card before">
+      <h4>Original writing-for-humans (1547 words / 129 lines)</h4>
+      <ul class="check-list negative">
+        <li>Exhaustive 31-item pattern catalogue ("Negative space / not X but Y", "Em dash parenthesis", "Formulaic lists", "Leading participle").</li>
+        <li>Mandated an audit of every pattern. This may encourage overcorrection; a comparative model evaluation has not established that effect.</li>
+        <li>Patronizing framing rules ("Adults: Explain what they need once, without cheerleading").</li>
+        <li>Long prescriptive rules on paragraph counts and structural shapes.</li>
+      </ul>
+    </div>
+
+    <div class="card after">
+      <h4>writing-for-humans2 (390 words / 35 lines)</h4>
+      <ul class="check-list">
+        <li>Replaces the 31-rule ban list with an enforceable <strong>Revision Contract</strong>.</li>
+        <li>Explicit preservation boundary: protect uncertainty (<em>"may remain intact"</em>), citations, commands, and code.</li>
+        <li>Clear register distinction: <em>tighten/unslop</em> (preserve register) vs. <em>simplify/remove jargon</em> (adjust for reader).</li>
+        <li>Concrete calibration pairs demonstrating when to leave text unchanged.</li>
+      </ul>
+    </div>
+  </div>
+
+  <details>
+    <summary>View Unified Diff (SKILL.md)</summary>
+    <div class="diff-view"><span class="diff-header">--- writing-for-humans/SKILL.md
+</span><span class="diff-header">+++ writing-for-humans2/SKILL.md
+</span><span class="diff-chunk">@@ -1,5 +1,5 @@
+</span><span class="diff-ctx"> ---
+</span><span class="diff-del">-name: writing-for-humans
+</span><span class="diff-add">+name: writing-for-humans2
+</span><span class="diff-ctx"> description: Draft or revise a human-facing prose artifact. Must use for requests to write, rewrite, unslop, humanize, tighten, simplify, or remove jargon; preserve facts, uncertainty, attribution, protected text, and voice. Use for human-facing HTML files. Never use for ordinary conversation or agent-facing instructions; skills, markdown plans, AGENTS.md, and CLAUDE.md use writing-for-agents.
+</span><span class="diff-ctx"> ---
+</span><span class="diff-ctx">
+</span><span class="diff-chunk">@@ -7,123 +7,29 @@
+</span><span class="diff-ctx">
+</span><span class="diff-ctx"> Write prose for adult human readers that is clear, concrete, natural, and precise.
+</span><span class="diff-ctx">
+</span><span class="diff-del">-## Writing contract
+</span><span class="diff-add">+Infer the reader, purpose, medium, language, and intended voice from the request and source. Ask only when a missing choice would materially change the result.
+</span><span class="diff-ctx">
+</span><span class="diff-del">-Identify or infer the reader, purpose, form, working language, intended voice, and any protected source material. Ask only when a missing choice would materially change the result.
+</span><span class="diff-add">+Write the point clearly, with enough context for this reader. Prefer concrete objects, actions, and supported examples. Let the content determine the structure and length. Keep technical terms when they carry useful precision and personality when it belongs to the writer.
+</span><span class="diff-ctx">
+</span><span class="diff-del">-Match the medium. Messages open directly. Spoken text uses pronounceable sentences and clear transitions. Technical prose keeps exact terms and relationships.
+</span><span class="diff-add">+## Revision contract
+</span><span class="diff-ctx">
+</span><span class="diff-del">-## Standard
+</span><span class="diff-add">+Preserve facts, meaning, uncertainty, attribution, citations, and recognizable voice. Keep quotations, code, commands, identifiers, paths, and link targets unchanged unless their editing is requested. Leave unresolved ambiguity unresolved or flag it; do not invent facts or strengthen claims to make the prose flow.
+</span><span class="diff-ctx">
+</span><span class="diff-del">-- **Adults.** Start with the point. The reader lacks your context, not your capacity. Explain what they need once, without condescension, cheerleading, difficulty narration, or an unnecessary recap.
+</span><span class="diff-del">-- **Concrete.** Name the object, action, mechanism, example, or supported number. If a sentence could appear unchanged in an unrelated document, it probably says too little.
+</span><span class="diff-del">-- **Plain and precise.** Use the most familiar word that preserves the distinction. Keep a technical or domain term when it is exact; define it briefly only when this reader may not know it.
+</span><span class="diff-del">-- **Voice.** Preserve genuine opinions, ambivalence, humor, first person, varied rhythm, and natural asymmetry. Do not replace personality with a generic professional register.
+</span><span class="diff-del">-- **Agency.** Name who does what when the actor matters. Passive voice is useful when the actor is unknown, obvious, or irrelevant.
+</span><span class="diff-del">-- **Shape.** Use headings and lists when they help navigation or comparison. Let the material determine the number and length of sections, paragraphs, and bullets.
+</span><span class="diff-add">+For “tighten” or “unslop,” preserve register and change passages that actually benefit. For “simplify” or “remove jargon,” adjust register for the reader while retaining technical distinctions. Follow the user&#x27;s requested scope when it differs.
+</span><span class="diff-ctx">
+</span><span class="diff-del">-## Write
+</span><span class="diff-add">+Compare the revision with the source for lost nuance, changed certainty, and unnecessary edits. Read it once for clarity and natural rhythm. Stop when the requested text works; a word, punctuation mark, or sentence pattern is not an error by itself.
+</span><span class="diff-ctx">
+</span><span class="diff-del">-When drafting new prose:
+</span><span class="diff-add">+## Calibration examples
+</span><span class="diff-ctx">
+</span><span class="diff-del">-1. Settle what the reader should know, feel, decide, or do afterwards.
+</span><span class="diff-del">-2. Put that point in the opening lines.
+</span><span class="diff-del">-3. Choose only the structure the material needs. Use supported facts, examples, mechanisms, and numbers; leave unknown details unknown.
+</span><span class="diff-del">-4. Write to the standard above. Give enough context to carry the point, then stop.
+</span><span class="diff-del">-5. Audit the draft against the patterns below and fix every tell that is not the clearest choice in context.
+</span><span class="diff-add">+These illustrate the contract; they are provisional examples, not a claim about the user&#x27;s personal taste.
+</span><span class="diff-ctx">
+</span><span class="diff-del">-Done means the intended reader can get the point on the first pass, the prose fits its medium and voice, and the audit finds no remaining tell worth changing.
+</span><span class="diff-add">+- Source: “The cache could potentially remain intact.”
+</span><span class="diff-add">+  Revision: “The cache could remain intact.” The uncertainty survives.
+</span><span class="diff-add">+- Source: “I love the idea. I still don&#x27;t trust the migration.”
+</span><span class="diff-add">+  Revision: unchanged. The opinion and uneven rhythm are doing useful work.
+</span><span class="diff-add">+- Source: “The reducer is pure; effects run after the state transition.”
+</span><span class="diff-add">+  Revision for engineers: unchanged. Replacing exact terms would lose precision.
+</span><span class="diff-add">+- Source: “The service leverages a queue in order to retry failed jobs.”
+</span><span class="diff-add">+  Revision: “The service uses a queue to retry failed jobs.” No new mechanism is invented.
+</span><span class="diff-ctx">
+</span><span class="diff-del">-## Revise
+</span><span class="diff-del">-
+</span><span class="diff-del">-When source text exists, preserve its contract while changing only what the request authorizes.
+</span><span class="diff-del">-
+</span><span class="diff-del">-### Preservation boundary
+</span><span class="diff-del">-
+</span><span class="diff-del">-Preserve meaning, factual and epistemic strength, uncertainty, citations, attribution, working language, and recognizable voice. Leave quotations, source excerpts, code, commands, paths, identifiers, and Markdown link targets unchanged unless the user specifically asks to edit them.
+</span><span class="diff-del">-
+</span><span class="diff-del">-Do not turn a plan into an event, resolve an ambiguity the source leaves open, invent a fact, opinion, anecdote, measurement, transition, or conclusion, or strengthen confidence. Source-sensitive, legal, historical, medical, and technical prose gets the smallest effective change unless the user authorizes a freer rewrite.
+</span><span class="diff-del">-
+</span><span class="diff-del">-### Register
+</span><span class="diff-del">-
+</span><span class="diff-del">-- **Preserve register** for requests to unslop, humanize, or tighten: remove formulaic AI tells while keeping the writer&#x27;s vocabulary, legitimate jargon, house style, and working language.
+</span><span class="diff-del">-- **Impose the standard** for requests to simplify, remove jargon, write for humans, or write for adults: replace unnecessary specialist or corporate language while keeping the preservation boundary.
+</span><span class="diff-del">-- Follow an explicit user-defined scope when it differs from these defaults.
+</span><span class="diff-del">-
+</span><span class="diff-del">-### Process
+</span><span class="diff-del">-
+</span><span class="diff-del">-1. Identify the reader, purpose, form, language, intended voice, protected material, and register.
+</span><span class="diff-del">-2. Scan for the patterns below as diagnostic signals, not banned words.
+</span><span class="diff-del">-3. Rewrite only the affected passages. Restore opinions, ambivalence, humor, first person, examples, rhythm, and asymmetry already present in the source.
+</span><span class="diff-del">-4. Compare the result with the source: fix what still sounds generated and restore any meaning, precision, attribution, uncertainty, or voice lost in the edit.
+</span><span class="diff-del">-
+</span><span class="diff-del">-Done means every remaining pattern is the clearest choice or a preserved-register feature, every requested passage is addressed, and no edit exceeds the source contract.
+</span><span class="diff-del">-
+</span><span class="diff-del">-## Patterns to detect and fix
+</span><span class="diff-del">-
+</span><span class="diff-del">-These are signals, not mechanical substitutions or banned words. A listed word can be correct when it is the domain term or the most precise choice.
+</span><span class="diff-del">-
+</span><span class="diff-del">-### Content
+</span><span class="diff-del">-
+</span><span class="diff-del">-1. **Puffery.** &quot;pivotal moment&quot;, &quot;testament to&quot;, &quot;evolving landscape&quot;, &quot;setting the stage for&quot;, &quot;indelible mark&quot;, &quot;deeply rooted&quot;. Cut puffery; state what happened.
+</span><span class="diff-del">-2. **Name-dropping.** Listing media outlets without context. Pick one and say what it reported.
+</span><span class="diff-del">-3. **Superficial -ing phrases.** &quot;highlighting...&quot;, &quot;ensuring...&quot;, &quot;reflecting...&quot;, &quot;showcasing...&quot;, &quot;fostering...&quot;. Delete them or expand them with a real fact or causal link.
+</span><span class="diff-del">-4. **Promotional language.** &quot;nestled&quot;, &quot;vibrant&quot;, &quot;breathtaking&quot;, &quot;groundbreaking&quot;, &quot;renowned&quot;, &quot;stunning&quot;, &quot;must-visit&quot;. Use a neutral, factual description.
+</span><span class="diff-del">-5. **Vague attribution.** &quot;Experts believe&quot;, &quot;Industry reports suggest&quot;, &quot;Some critics argue&quot;. Name the source or remove the claim.
+</span><span class="diff-del">-6. **Formulaic challenges.** &quot;Despite challenges... continues to thrive.&quot; Replace it with the concrete situation.
+</span><span class="diff-del">-
+</span><span class="diff-del">-### Language
+</span><span class="diff-del">-
+</span><span class="diff-del">-7. **AI vocabulary.** Additionally, crucial, delve, enduring, enhance, garner, interplay, intricate, landscape (abstract), pivotal, showcase, tapestry (abstract), testament, underscore, vibrant. Replace with direct wording.
+</span><span class="diff-del">-8. **Fancy ways to say &quot;is&quot; or &quot;has&quot;.** &quot;serves as&quot;, &quot;stands as&quot;, &quot;boasts&quot;, &quot;features&quot;. Use &quot;is&quot; or &quot;has&quot; when that is the meaning.
+</span><span class="diff-del">-9. **&quot;Not just X, but Y.&quot;** State the point directly instead of forcing a contrast.
+</span><span class="diff-del">-10. **Rule of three.** Do not force ideas into triads. Use the natural number.
+</span><span class="diff-del">-11. **Synonym cycling.** Calling one person &quot;the protagonist&quot;, &quot;the main character&quot;, &quot;the central figure&quot;, and &quot;the hero&quot; in one passage. Pick one precise term and repeat it.
+</span><span class="diff-del">-12. **False ranges.** &quot;from X to Y&quot; when X and Y are not on a meaningful scale. List the topics directly.
+</span><span class="diff-del">-
+</span><span class="diff-del">-### Style
+</span><span class="diff-del">-
+</span><span class="diff-del">-13. **Em dash overuse.** Repeated em dashes can make every sentence sound staged. Keep deliberate punctuation that matches the voice; split dense thoughts when that reads more naturally.
+</span><span class="diff-del">-14. **Colon overuse.** Colons work before a list or example. A colon used as a staged mid-sentence connector often does not; rewrite that thought as a direct sentence.
+</span><span class="diff-del">-15. **Boldface overuse.** Do not bold every proper noun, acronym, or inline phrase. Reserve emphasis for useful navigation.
+</span><span class="diff-del">-16. **Inline-header lists.** The tell is a bold label and colon that restates the line: &quot;**Performance:** Performance improved...&quot;. Convert it to prose. A concise lead-in followed by genuinely new detail is fine.
+</span><span class="diff-del">-17. **Title case headings.** Use sentence case unless the house style requires otherwise.
+</span><span class="diff-del">-18. **Decorative emojis.** Remove them from headings and bullets unless they carry information or belong to the established voice.
+</span><span class="diff-del">-19. **Typography churn (revision only).** Preserve the document&#x27;s quote and punctuation style. Changing typography alone is not a prose improvement.
+</span><span class="diff-del">-
+</span><span class="diff-del">-### Communication artifacts
+</span><span class="diff-del">-
+</span><span class="diff-del">-20. **Chatbot phrases.** &quot;I hope this helps!&quot;, &quot;Let me know if...&quot;, &quot;Of course!&quot;, &quot;Certainly!&quot;, &quot;Found the smoking gun!&quot;. Remove canned framing and answer directly.
+</span><span class="diff-del">-21. **Cutoff disclaimers.** &quot;While specific details are limited...&quot;. Find the needed source, state the actual limit, or remove the sentence.
+</span><span class="diff-del">-22. **Sycophantic tone.** &quot;Great question! You&#x27;re absolutely right!&quot;. Respond to the substance directly.
+</span><span class="diff-del">-
+</span><span class="diff-del">-### Filler
+</span><span class="diff-del">-
+</span><span class="diff-del">-23. **Filler phrases.** &quot;In order to&quot; becomes &quot;To&quot;. &quot;Due to the fact that&quot; becomes &quot;Because&quot;. &quot;In the event that&quot; becomes &quot;If&quot;. &quot;It is important to note that&quot; is usually deleted.
+</span><span class="diff-del">-24. **Excessive hedging.** Compress redundant hedges while preserving epistemic strength: &quot;could potentially possibly be argued that it might&quot; may become &quot;may&quot;; &quot;may&quot; must not become &quot;does&quot;.
+</span><span class="diff-del">-25. **Generic conclusions.** &quot;The future looks bright.&quot; State a specific plan or fact, or stop without a conclusion.
+</span><span class="diff-del">-
+</span><span class="diff-del">-### Jargon
+</span><span class="diff-del">-
+</span><span class="diff-del">-26. **Abstract metaphor nouns.** Substrate, wedge, vector, locus, vantage, nexus, bedrock, scaffolding, paradigm, gold-plating, ratchet, endgame, north star, and flywheel often hide the concrete mechanism. Replace metaphorical uses with the actual object or action. Preserve established technical terms such as API surface, test harness, modality, or language primitive when they are exact in that domain.
+</span><span class="diff-del">-
+</span><span class="diff-del">-### Plain speech
+</span><span class="diff-del">-
+</span><span class="diff-del">-27. **Say what it does, not how it feels.** &quot;the database stays close at hand&quot;, &quot;SQL you can read&quot;, and &quot;types that follow your schema&quot; name a feeling. Name the mechanism or number instead: &quot;`.toSQL()` returns the exact string sent to the database&quot; or &quot;a column rename fails the build&quot;. If the sentence cannot become a concrete fact, instruction, reason, or example, cut it.
+</span><span class="diff-del">-28. **Shorten or split dense sentences.** If the reader has to backtrack, break the sentence in two or remove clauses.
+</span><span class="diff-del">-29. **Active voice.** Prefer it when the actor matters: &quot;the compiler validates queries&quot; rather than &quot;queries are validated&quot;. Keep passive voice when the actor is unknown, obvious, or irrelevant.
+</span><span class="diff-del">-30. **Weak verbs propped up by adverbs.** Replace &quot;runs quickly&quot; with a stronger verb or the number. Replace &quot;significantly improves&quot; with the measured change when available.
+</span><span class="diff-del">-31. **Fancy corporate synonyms.** &quot;utilize&quot; and &quot;leverage&quot; become &quot;use&quot;; &quot;facilitate&quot; becomes &quot;help&quot;; &quot;numerous&quot; becomes &quot;many&quot; when the plain word carries the same meaning.
+</span><span class="diff-del">-
+</span><span class="diff-del">-## Final read
+</span><span class="diff-del">-
+</span><span class="diff-del">-Read the result once as the intended reader and once against the writing or source contract. Confirm that:
+</span><span class="diff-del">-
+</span><span class="diff-del">-- the point is clear without rereading;
+</span><span class="diff-del">-- every claim retains its supported meaning, strength, attribution, and uncertainty;
+</span><span class="diff-del">-- unfamiliar terms either earn their precision or have a useful explanation;
+</span><span class="diff-del">-- every sentence contributes a fact, instruction, reason, transition, or genuine part of the voice;
+</span><span class="diff-del">-- the prose sounds like the intended writer in this context, not a generic assistant; and
+</span><span class="diff-del">-- protected material is unchanged.
+</span><span class="diff-del">-
+</span><span class="diff-del">-Deliver the requested text without a preamble about the writing process unless the user asks for commentary or a change summary.
+</span><span class="diff-add">+Prefer user-approved examples when available. Deliver the requested prose without a process preamble unless a change explanation was requested.
+</span></div>
+  </details>
+</section>
+
+<!-- 03 WRITING FOR AGENTS -->
+<section id="agents">
+  <h2>
+    03 · writing-for-agents vs. writing-for-agents2
+    <span class="badge green">-80.1% words</span>
+  </h2>
+  <p>
+    Used when creating or editing agent instructions, skills, <code>AGENTS.md</code>, or <code>CLAUDE.md</code>.
+  </p>
+
+  <div class="pair">
+    <div class="card before">
+      <h4>Original writing-for-agents (1777 words / 81 lines)</h4>
+      <ul class="check-list negative">
+        <li>Dense prompt-engineering essay ("context pointers", "the two loads", "information hierarchy ladder").</li>
+        <li>Unverified cognitive assertions (e.g. negation reliably makes the forbidden behavior more likely).</li>
+        <li>Advocated replacing clear descriptions with single "leading words".</li>
+        <li>Required consulting a secondary external <code>SKILL-MECHANICS.md</code> for harness packaging.</li>
+      </ul>
+    </div>
+
+    <div class="card after">
+      <h4>writing-for-agents2 (353 words / 27 lines)</h4>
+      <ul class="check-list">
+        <li>Focuses strictly on operational decisions that change agent actions.</li>
+        <li>Explicit over implicit: <em>"fast and deterministic"</em> is clearer than unexplained <em>"tight"</em>.</li>
+        <li>Co-location: keep related constraints together in one authoritative home.</li>
+        <li>Inlines skill packaging rules (portable frontmatter, harness linking) directly into the file.</li>
+      </ul>
+    </div>
+  </div>
+
+  <details>
+    <summary>View Unified Diff (SKILL.md)</summary>
+    <div class="diff-view"><span class="diff-header">--- writing-for-agents/SKILL.md
+</span><span class="diff-header">+++ writing-for-agents2/SKILL.md
+</span><span class="diff-chunk">@@ -1,81 +1,31 @@
+</span><span class="diff-ctx"> ---
+</span><span class="diff-del">-name: writing-for-agents
+</span><span class="diff-add">+name: writing-for-agents2
+</span><span class="diff-ctx"> description: Writing documents for agents. Use when creating or editing skills, or modifying AGENTS.md or CLAUDE.md.
+</span><span class="diff-ctx"> ---
+</span><span class="diff-ctx">
+</span><span class="diff-del">-Reference for writing any document an agent consumes: a skill, an `AGENTS.md` / `CLAUDE.md`, a doc reached by a pointer. The packaging differs; the writing does not: the same levers make each one predictable, since the agent takes the same _process_ every run rather than producing the same output.
+</span><span class="diff-add">+# Writing for agents
+</span><span class="diff-ctx">
+</span><span class="diff-del">-When the document you&#x27;re writing is a skill, read [`SKILL-MECHANICS.md`](SKILL-MECHANICS.md) for frontmatter, invocation choice, and router skills.
+</span><span class="diff-add">+Write the information that changes an agent&#x27;s decisions: the requested outcome, local conventions, non-obvious constraints, available interfaces, and how to recognize completion.
+</span><span class="diff-ctx">
+</span><span class="diff-del">-## Context pointers
+</span><span class="diff-add">+## Make instructions usable
+</span><span class="diff-ctx">
+</span><span class="diff-del">-A **context pointer** is a reference held in the agent&#x27;s context that names some out-of-context material and encodes the condition for reaching it. A skill&#x27;s description is one; a line in `AGENTS.md` naming a doc is the same object. The pointer&#x27;s _wording_, not its target, decides when the agent reaches the material, and how reliably. A must-have target behind a weakly worded pointer is a variance bug: sharpen the wording first, and inline the material only if sharpening fails.
+</span><span class="diff-add">+- Distinguish requirements from defaults and examples. Preserve the user&#x27;s scope and existing authorization; describe where input is actually needed rather than adding blanket approval stops.
+</span><span class="diff-add">+- State conditions precisely enough to act on. Keep important properties explicit: “fast and deterministic” is clearer than an unexplained “tight.”
+</span><span class="diff-add">+- Keep related constraints together and give each rule one authoritative home. Reference commands or configuration for easily discoverable details; explain local gotchas the environment does not reveal.
+</span><span class="diff-add">+- Keep essential guidance in the entry point. Put substantial conditional procedures in references, with a clear condition for reading each. A short document does not need a routing layer.
+</span><span class="diff-add">+- Use scripts for repeated or fragile mechanics. Document their inputs, relevant failure modes, and observable results instead of teaching the model to reconstruct them.
+</span><span class="diff-add">+- Choose completion criteria that demonstrate the requested outcome. Scale verification to the consequences; a fixed phase count or exhaustive checklist needs a concrete reason.
+</span><span class="diff-ctx">
+</span><span class="diff-del">-A pointer does two jobs: state what the material is, and list the **branches** that should trigger reaching it (a branch is a distinct case the document handles, so different runs take different paths through it). Every word of an always-loaded pointer costs on every turn, so it earns even harder pruning than the body:
+</span><span class="diff-add">+- Remove instructions that add no useful behavior beyond the model’s default. Delete redundant rules rather than merely shortening them; use representative tasks when the benefit is uncertain.
+</span><span class="diff-ctx">
+</span><span class="diff-del">-- **Front-load the leading word**: the pointer is where it does its triggering work.
+</span><span class="diff-del">-- **One trigger per branch.** Synonyms that rename a single branch are one branch written twice; collapse them and keep only genuinely distinct branches.
+</span><span class="diff-del">-- **Cut identity the body already carries.**
+</span><span class="diff-add">+## Skill packaging
+</span><span class="diff-ctx">
+</span><span class="diff-del">-## The two loads
+</span><span class="diff-add">+Give each skill a concise name and a description that identifies its capability and when to select it. Add exclusions only for likely routing collisions. Resolve supporting paths relative to the skill directory.
+</span><span class="diff-ctx">
+</span><span class="diff-del">-Every document and pointer you add spends one of two budgets:
+</span><span class="diff-add">+This repository shares skills across harnesses. Preserve portable frontmatter and put Codex invocation policy in `agents/openai.yaml`. Preserve the existing invocation mode unless the user requests a change; describe explicit-only intent in shared text for other harnesses. A skill directory needs a `SKILL.md` with valid YAML frontmatter containing `name` and `description`; keep the name consistent with the directory. Link supporting references where their use becomes relevant.
+</span><span class="diff-ctx">
+</span><span class="diff-del">-- **Context load** is the cost of always-loaded material on the agent&#x27;s window: an `AGENTS.md` line, a skill description, anything sitting in context every turn, spending tokens and attention whether or not it fires.
+</span><span class="diff-del">-- **Cognitive load** is the cost on the human: which documents exist and when to reach for each. The human is the index. Not a cost to minimise: it is the price of human agency; spend it where human judgement matters, remove it where it does not.
+</span><span class="diff-add">+When another skill is required, state the condition and say “Load and apply the &lt;name&gt; skill.” Verify that dependency is available in the target environment. If skill-creator is installed, load and apply it when packaging or validation needs its guidance; otherwise validate frontmatter, names, references, and executable examples directly.
+</span><span class="diff-ctx">
+</span><span class="diff-del">-Material reached only through a pointer escapes context load at the price of the pointer&#x27;s own line; material with no pointer at all rides entirely on cognitive load.
+</span><span class="diff-add">+## Check the result
+</span><span class="diff-ctx">
+</span><span class="diff-del">-## Information hierarchy
+</span><span class="diff-del">-
+</span><span class="diff-del">-A document is built from two content types: **steps** (the ordered actions the agent performs) and **reference** (definitions, rules, facts consulted on demand). The two mix freely: all steps (a recipe), all reference (a review&#x27;s rules, this skill), or both. The core decision is where each piece sits on the **information hierarchy**, a ladder ranked by how immediately the agent needs the material:
+</span><span class="diff-del">-
+</span><span class="diff-del">-1. **In-file step** is the primary tier: what the agent does, in order.
+</span><span class="diff-del">-2. **In-file reference** is consulted on demand. Often a legitimately flat peer-set (every rule of a review on one rung), which is a fine arrangement, not a smell.
+</span><span class="diff-del">-3. **Disclosed reference** is pushed out into a separate file, reached by a context pointer, loaded only when the pointer fires. Spans a sibling file in the same folder through fully external reference that lives anywhere and any document can point at.
+</span><span class="diff-del">-
+</span><span class="diff-del">-Push too little down and the top bloats; push too much and you hide material the agent actually needs. That tension is the whole decision.
+</span><span class="diff-del">-
+</span><span class="diff-del">-**Progressive disclosure** is the move down the ladder (out of the main file and behind a pointer) so the top stays legible. Not primarily a token optimisation: it is how the hierarchy is protected. Branching is the cleanest disclosure test: inline what every branch needs, and push behind a pointer what only some branches reach. When a document has steps, in-file reference that should be disclosed buries them and turns attending to them into a coin-flip: a variance lever, not just a legibility one.
+</span><span class="diff-del">-
+</span><span class="diff-del">-**Co-location** is the within-file companion: where the ladder decides _how far down_ a piece sits, co-location decides _what sits beside it_ once there. Keep a concept&#x27;s definition, rules, and caveats under one heading rather than scattered, so reading one part brings its neighbours with it. The test: the document should read like documentation written for the agent. Grouped material reads that way; scattered material does not. (Distinct from duplication: that repeats one meaning in two places; scattering fragments one meaning across many.)
+</span><span class="diff-del">-
+</span><span class="diff-del">-**Sprawl** is the failure mode here: a document simply too long, even when every line is live and unique. Attention thins across the excess, and every extra line is one more to keep relevant. The cure is the ladder: disclose reference behind pointers, and split by branch or sequence so each path carries only what it needs.
+</span><span class="diff-del">-
+</span><span class="diff-del">-## Steps and completion criteria
+</span><span class="diff-del">-
+</span><span class="diff-del">-Every step ends on a **completion criterion**, the condition that tells the agent the work is done. Two properties make it a lever:
+</span><span class="diff-del">-
+</span><span class="diff-del">-- **Clarity**: can the agent tell done from not-done? A vague bound (&quot;understanding reached&quot;) invites **premature completion**: ending the step before it is genuinely done, attention slipping to _being done_. The visible steps still ahead (the **post-completion steps**) supply the pull; the criterion&#x27;s clarity is the resistance. Defend in order: **sharpen the bound first** (local and cheap); only if it is irreducibly fuzzy _and_ you observe the rush, hide the later steps by splitting the sequence. Hiding only works across a real context boundary (a hand-off or a subagent dispatch; an inline call leaves the later steps in context and clears nothing).
+</span><span class="diff-del">-- **Demand**: how much it requires. &quot;Every modified model accounted for&quot; forces thorough work where &quot;produce a change list&quot; does not. Demand drives **legwork** (the digging the agent does within the work, latent in the wording rather than written as its own step), and it is not step-bound: &quot;every rule applied&quot; binds a body of flat reference just as &quot;every step done&quot; binds a sequence, which is how an all-reference document still carries an exhaustiveness bar.
+</span><span class="diff-del">-
+</span><span class="diff-del">-The strongest criteria are both checkable and exhaustive.
+</span><span class="diff-del">-
+</span><span class="diff-del">-## When to split
+</span><span class="diff-del">-
+</span><span class="diff-del">-Splitting one document into two spends one of the two loads, so split only when the cut earns it:
+</span><span class="diff-del">-
+</span><span class="diff-del">-- **By sequence**: split a run of steps where the post-completion steps tempt the agent to rush the one in front of it. Keeping them out of view drives more legwork on the current task. Beware the reverse: merging sequences exposes each step&#x27;s later steps to what follows, inviting premature completion.
+</span><span class="diff-del">-- **By invocation**, skill-specific: see [`SKILL-MECHANICS.md`](SKILL-MECHANICS.md).
+</span><span class="diff-del">-
+</span><span class="diff-del">-## Leading words
+</span><span class="diff-del">-
+</span><span class="diff-del">-A **leading word** is a compact concept already living in the model&#x27;s pretraining that the agent thinks with while running the document (_lesson_, _fog of war_, _tracer bullets_). Repeated as a token, never as a sentence, it accumulates a distributed definition and anchors a whole region of behaviour in the fewest tokens, by recruiting priors the model already holds. Coining your own works if you define it clearly, but a made-up word recruits no priors: you pay in definition tokens what a pretrained word gives free; reach for an existing word first.
+</span><span class="diff-del">-
+</span><span class="diff-del">-It anchors twice. In the body, _execution_: the agent reaches for the same behaviour every time the word appears, and inside flat reference it focuses attention on a class of thing to look for. In a pointer, _invocation_: when the same word lives in your prompts, your docs, and your codebase, the agent links that shared language to the material and reaches it more reliably.
+</span><span class="diff-del">-
+</span><span class="diff-del">-Hunt for opportunities to refactor with leading words. A triad spelled out at three sites, a pointer spending a sentence to gesture at one idea. Each is a passage begging to collapse into a single token:
+</span><span class="diff-del">-
+</span><span class="diff-del">-- &quot;fast, deterministic, low-overhead&quot; → _tight_ (a _tight_ loop).
+</span><span class="diff-del">-- &quot;a loop you believe in&quot; → _red_, turning a fuzzy gate into a binary observable state (the loop goes _red_ on the bug, or it doesn&#x27;t).
+</span><span class="diff-del">-
+</span><span class="diff-del">-You win twice: fewer tokens, and a sharper hook for the agent to hang its thinking on. Assume every document is carrying restatements that leading words retire. Go find them.
+</span><span class="diff-del">-
+</span><span class="diff-del">-**Negation** is the failure mode beside this lever: steering by prohibition drags the forbidden behaviour into context and makes it _more_ available, not less. _Don&#x27;t think of an elephant_, and the elephant is all there is; the negation is a weak modifier the strongly-activated concept overruns, so the ban half-reads as an instruction to do the thing. Prompt the **positive**: state the target behaviour (&quot;write one-line comments&quot;) so the banned one is never spoken. A prohibition earns its place only as a hard guardrail you cannot phrase positively; even then, pair it with the positive target so attention lands on what to do.
+</span><span class="diff-del">-
+</span><span class="diff-del">-## Pruning
+</span><span class="diff-del">-
+</span><span class="diff-del">-- Keep each meaning in a **single source of truth**: one authoritative place, so changing the behaviour is a one-place edit. **Duplication** (the same meaning in more than one place) costs maintenance and tokens, and inflates a meaning&#x27;s prominence on the ladder past its real rank. (The accidental inverse of a leading word, which repeats a token on purpose, never the meaning.)
+</span><span class="diff-del">-- The **environment** is a source of truth too (`package.json` scripts, config files, the directory layout, `--help` output), and a document that restates it is a **cache**: a copy of a lookup, earning its load only when the lookup is expensive. Cache what the agent cannot find by looking: the unwritten convention, the reason behind a choice, the gotcha no config confesses. Leave the one-file, one-command lookups to the environment, where they cannot go stale.
+</span><span class="diff-del">-- Check every line for **relevance**: does it still bear on what the document does? A line loses relevance by never bearing on the task (mere exposition, or a branch that should be disclosed) or by going stale as the behaviour or world it describes changes. Shorter documents are easier to keep relevant. Without a pruning discipline the default fate is **sediment**: stale layers that settle because adding feels safe and removing feels risky, until you must core down through them to find what is still live.
+</span><span class="diff-del">-- Hunt **no-ops** sentence by sentence: an instruction the model already obeys by default pays load to say nothing. The test (does it change behaviour versus the default?) is model-relative, not reader-relative: two people disagreeing about a no-op disagree about the default, and settle it by running the document, not by debate. When a sentence fails, delete the whole sentence rather than trim words from it. The test also grades leading words: a word too weak to beat the default (_be thorough_ when the agent is already thorough-ish) is a no-op, and the fix is a stronger word (_relentless_), not a different technique.
+</span><span class="diff-add">+Verify references and executable examples. Compare instructions against the task scope and look for conflicts, duplicate rules, and unnecessary stopping points. For a meaningful behavioral change, use representative tasks to compare the current instructions, the revision, and the model&#x27;s default behavior. Keep rules supported by useful outcomes; treat prompting theories as hypotheses until tested.
+</span></div>
+  </details>
+</section>
+
+<!-- 04 SWAP -->
+<section id="swap">
+<h2>04 · Comparison and adoption</h2>
+<p>Word counts above measure SKILL.md text, not tokens or model-quality gains. The current candidates have not undergone controlled model-quality comparisons.</p>
+<p>While both generations coexist, the candidates are explicit-only in Codex through agents/openai.yaml. Their bodies remain standalone. For another harness, expose one generation per comparison session.</p>
+<p>To adopt a candidate, preserve the old directory outside discovery roots, rename the candidate and its frontmatter name, remove the comparison-only invocation policy, retire links under the old *2 name, and rebuild and verify discovery links. Adoption has now been performed; this section records the comparison-stage procedure.</p>
+</section>
+
+<footer>
+  <p>Generated by Antigravity · dotfiles repository · <code>docs/plans/20260922-skills-alternatives-diff.html</code></p>
+</footer>
+
+</body>
+</html>
