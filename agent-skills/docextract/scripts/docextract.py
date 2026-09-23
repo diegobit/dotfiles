@@ -30,6 +30,10 @@ import contextlib
 import json
 import os
 import re
+
+# Suppress ONNX Runtime background telemetry worker thread to avoid a macOS C runtime
+# teardown race (recursive_mutex lock failed -> SIGABRT / exit 134) via pymupdf4llm.
+os.environ.setdefault('ORT_DISABLE_TELEMETRY', '1')
 import shutil
 import subprocess
 import sys
