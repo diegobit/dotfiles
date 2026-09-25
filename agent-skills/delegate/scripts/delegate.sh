@@ -2,14 +2,15 @@
 # delegate — unified launcher for external AI coding workers.
 #
 # Usage:
-#   delegate [--executor gemini|claude|cursor|codex|opencode] [-m MODEL] [-r] [-d DIR] [--spill N] "task"
-#   delegate [--executor gemini|claude|cursor|codex|opencode] [-m MODEL] -c [-d DIR] [--spill N] "correction"
+#   delegate [--executor gemini|claude|cursor|codex|opencode] [-m MODEL] [--effort LEVEL] [-r] [-d DIR] [--spill N] "task"
+#   delegate [--executor gemini|claude|cursor|codex|opencode] [-m MODEL] [--effort LEVEL] -c [-d DIR] [--spill N] "correction"
 #   delegate [--executor gemini|claude|cursor|codex|opencode] -p [-d DIR]
 #   delegate [--executor gemini|claude|cursor|codex|opencode] -k [-d DIR]
 #   delegate [--executor gemini|claude|cursor|codex|opencode] --selftest
 #
 #   -e, --executor  worker backend (gemini | claude | cursor | codex | opencode; default: gemini)
 #   -m, --model     model override (codex default: gpt-6-astra; aliases: sol, astra)
+#   --effort LEVEL  reasoning effort (low|medium|high|xhigh|max; mapped per executor)
 #   -r, --read-only read-only mode (provider permission mode)
 #   -d, --dir       workspace directory (default: $PWD)
 #   -c, --continue  resume last session for this workspace and executor
@@ -40,6 +41,7 @@ read_only_flag_passed=0
 dir=$PWD
 spill_lines=${EW_SPILL_LINES-0}
 chosen_model=""
+chosen_effort=""
 
 STATE_ROOT="${XDG_CACHE_HOME:-$HOME/.cache}/delegate"
 
@@ -48,7 +50,7 @@ EW_GEMINI_MODEL="${EW_GEMINI_MODEL:-gemini-3.8-flash}"
 EW_GEMINI_EFFORT="${EW_GEMINI_EFFORT:-high}"
 EW_GEMINI_TIMEOUT="${EW_GEMINI_TIMEOUT:-10h}"
 
-EW_CLAUDE_MODEL="${EW_CLAUDE_MODEL:-claude-opus-5.5}"
+EW_CLAUDE_MODEL="${EW_CLAUDE_MODEL:-claude-opus-5-5}"
 EW_CLAUDE_EFFORT="${EW_CLAUDE_EFFORT:-high}"
 EW_CLAUDE_BUDGET="${EW_CLAUDE_BUDGET:-}"
 
@@ -74,6 +76,15 @@ while [ $# -gt 0 ]; do
             [ $# -ge 2 ] || die "option $1 requires an argument" 64
             [ -n "$2" ] || die "model cannot be empty" 64
             chosen_model="$2"
+            shift 2
+            ;;
+        --effort)
+            [ $# -ge 2 ] || die "option $1 requires an argument" 64
+            [ -n "$2" ] || die "effort cannot be empty" 64
+            chosen_effort=$(printf '%s' "$2" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+            case "$chosen_effort" in
+                extra-high|extrahigh|x-high) chosen_effort=xhigh ;;
+            esac
             shift 2
             ;;
         -r|--read-only)
@@ -115,7 +126,7 @@ while [ $# -gt 0 ]; do
             die "lanes are not supported in delegate" 64
             ;;
         -h|--help)
-            sed -n '4,21p' "$0" | sed 's/^# \{0,1\}//'
+            sed -n '4,22p' "$0" | sed 's/^# \{0,1\}//'
             exit 0
             ;;
         --)
@@ -135,6 +146,30 @@ case "$executor" in
     gemini|claude|cursor|codex|opencode) ;;
     *) die "unknown executor '$executor' (expected gemini, claude, cursor, codex, or opencode)" 64 ;;
 esac
+
+validate_effort() {
+    local allowed=""
+    case "$executor" in
+        gemini) allowed="low medium high max" ;;
+        claude) allowed="low medium high xhigh max" ;;
+        codex) allowed="low medium high xhigh" ;;
+        cursor) allowed="low medium high xhigh max" ;;
+        opencode)
+            case "$chosen_effort" in
+                *[!a-z0-9-]*) die "invalid effort '$chosen_effort' for opencode (expected a provider-specific variant such as high, max, or minimal)" 64 ;;
+            esac
+            return 0
+            ;;
+    esac
+    case " $allowed " in
+        *" $chosen_effort "*) return 0 ;;
+    esac
+    die "invalid effort '$chosen_effort' for $executor (expected: $allowed)" 64
+}
+
+if [ -n "$chosen_effort" ]; then
+    validate_effort
+fi
 
 case "$spill_lines" in
     ''|*[!0-9]*) die "--spill / EW_SPILL_LINES must be a nonnegative integer (0 means unlimited)" 64 ;;
@@ -166,6 +201,7 @@ out="$state/report.out"
 idf="$state/id"
 modef="$state/mode"
 modelf="$state/model"
+effortf="$state/effort"
 lockdir="$state/lock"
 
 # --- Locking and lifecycle helpers ---
@@ -295,6 +331,9 @@ if [ "$action" = "peek" ]; then
     fi
     if [ -f "$modelf" ]; then
         printf 'model: %s\n' "$(cat "$modelf")"
+    fi
+    if [ -s "$effortf" ]; then
+        printf 'effort: %s\n' "$(cat "$effortf")"
     fi
     printf 'workspace: %s\nsteps:\n' "$dir"
     provider_steps
@@ -462,7 +501,7 @@ resolve_model() {
             local norm
             norm=$(printf '%s' "$raw_model" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
             case "$norm" in
-                opus|claude-opus|opus-5.5|claude-opus-5.5) printf 'claude-opus-5.5' ;;
+                opus|claude-opus|opus-5.5|claude-opus-5.5) printf 'claude-opus-5-5' ;;
                 *) printf '%s' "$raw_model" ;;
             esac
             ;;
@@ -482,24 +521,109 @@ default_executor_model() {
     esac
 }
 
+default_executor_effort() {
+    case "$1" in
+        gemini) printf '%s' "$EW_GEMINI_EFFORT" ;;
+        claude) printf '%s' "$EW_CLAUDE_EFFORT" ;;
+        codex) printf '%s' "$EW_CODEX_EFFORT" ;;
+        opencode) printf '%s' "$EW_OPENCODE_VARIANT" ;;
+        cursor) printf '' ;;
+    esac
+}
+
+# Cursor embeds effort in the model ID (`grok-4.7-high`, `...-high-fast`).
+compose_cursor_model() {
+    local model="$1"
+    local effort="$2"
+    local base fast=""
+    case "$model" in
+        *-low-fast) base=${model%-low-fast}; fast="-fast" ;;
+        *-medium-fast) base=${model%-medium-fast}; fast="-fast" ;;
+        *-high-fast) base=${model%-high-fast}; fast="-fast" ;;
+        *-xhigh-fast) base=${model%-xhigh-fast}; fast="-fast" ;;
+        *-low) base=${model%-low} ;;
+        *-medium) base=${model%-medium} ;;
+        *-high) base=${model%-high} ;;
+        *-xhigh) base=${model%-xhigh} ;;
+        *) return 1 ;;
+    esac
+    printf '%s-%s%s' "$base" "$effort" "$fast"
+}
+
+cursor_model_effort() {
+    case "$1" in
+        *-low|*-low-fast) printf 'low' ;;
+        *-medium|*-medium-fast) printf 'medium' ;;
+        *-high|*-high-fast) printf 'high' ;;
+        *-xhigh|*-xhigh-fast) printf 'xhigh' ;;
+        *) return 1 ;;
+    esac
+}
+
 if [ "$action" = "continue" ]; then
+    stored_model=$(cat "$modelf" 2>/dev/null || true)
     if [ -n "$chosen_model" ]; then
         target_model=$(resolve_model "$executor" "$chosen_model")
-    elif [ -s "$modelf" ]; then
-        target_model=$(cat "$modelf")
+        case "$executor" in
+            codex|opencode) ;;
+            *)
+                [ "$target_model" = "$stored_model" ] \
+                    || die "cannot change model when continuing a $executor session (omit -m to reuse the saved model, or start a fresh run)" 64
+                ;;
+        esac
+    elif [ -n "$stored_model" ]; then
+        target_model="$stored_model"
     else
         target_model=$(resolve_model "$executor" "$(default_executor_model "$executor")")
     fi
-    printf '%s\n' "$target_model" > "$modelf"
+
+    stored_effort=""
+    if [ -s "$effortf" ]; then
+        stored_effort=$(cat "$effortf")
+    fi
+    if [ -n "$chosen_effort" ]; then
+        target_effort="$chosen_effort"
+        case "$executor" in
+            codex|opencode) ;;
+            *)
+                [ -n "$stored_effort" ] \
+                    || die "no effort recorded for this $executor session (start a fresh run to set one)" 64
+                [ "$target_effort" = "$stored_effort" ] \
+                    || die "cannot change effort when continuing a $executor session (start a fresh run)" 64
+                ;;
+        esac
+    elif [ -n "$stored_effort" ]; then
+        target_effort="$stored_effort"
+    else
+        target_effort=$(default_executor_effort "$executor")
+    fi
 else
     if [ -n "$chosen_model" ]; then
         target_model=$(resolve_model "$executor" "$chosen_model")
     else
         target_model=$(resolve_model "$executor" "$(default_executor_model "$executor")")
     fi
+    if [ "$executor" = "cursor" ] && [ -n "$chosen_effort" ]; then
+        composed=$(compose_cursor_model "$target_model" "$chosen_effort") \
+            || die "cursor model '$target_model' has no effort suffix; pass a full model ID with -m (e.g. grok-4.7-high)" 64
+        target_model="$composed"
+    fi
+    if [ -n "$chosen_effort" ]; then
+        target_effort="$chosen_effort"
+    elif [ "$executor" = "cursor" ]; then
+        target_effort=$(cursor_model_effort "$target_model" || true)
+    else
+        target_effort=$(default_executor_effort "$executor")
+    fi
     rm -f "$idf"
     printf '%s\n' "$target_mode" > "$modef"
-    printf '%s\n' "$target_model" > "$modelf"
+fi
+
+printf '%s\n' "$target_model" > "$modelf"
+if [ -n "$target_effort" ]; then
+    printf '%s\n' "$target_effort" > "$effortf"
+else
+    rm -f "$effortf"
 fi
 
 # Build provider argv
@@ -513,7 +637,7 @@ case "$executor" in
             sid=$(cat "$idf")
             cmd+=(--conversation "$sid")
         else
-            cmd+=(--model "$target_model" --effort "$EW_GEMINI_EFFORT")
+            cmd+=(--model "$target_model" --effort "$target_effort")
         fi
         if [ "$read_only" -eq 1 ]; then
             cmd+=(--mode plan)
@@ -528,7 +652,7 @@ case "$executor" in
         else
             command -v uuidgen >/dev/null 2>&1 || die "uuidgen not found in PATH" 64
             sid=$(uuidgen | tr '[:upper:]' '[:lower:]')
-            cmd+=(--session-id "$sid" --model "$target_model" --effort "$EW_CLAUDE_EFFORT")
+            cmd+=(--session-id "$sid" --model "$target_model" --effort "$target_effort")
             printf '%s\n' "$sid" > "$idf"
         fi
         if [ "$read_only" -eq 1 ]; then
@@ -562,7 +686,7 @@ case "$executor" in
         if [ "$action" = "continue" ]; then
             sid=$(cat "$idf")
             cmd=(exec resume --json --skip-git-repo-check
-                 -m "$target_model" -c "model_reasoning_effort=$EW_CODEX_EFFORT")
+                 -m "$target_model" -c "model_reasoning_effort=$target_effort")
             if [ "$read_only" -eq 1 ]; then
                 cmd+=(-c "sandbox_mode=read-only")
             else
@@ -571,7 +695,7 @@ case "$executor" in
             cmd+=("$sid" "$task")
         else
             cmd=(exec --json --skip-git-repo-check
-                 -m "$target_model" -c "model_reasoning_effort=$EW_CODEX_EFFORT" -C "$dir")
+                 -m "$target_model" -c "model_reasoning_effort=$target_effort" -C "$dir")
             if [ "$read_only" -eq 1 ]; then
                 cmd+=(-s read-only)
             else
@@ -587,7 +711,7 @@ case "$executor" in
         # Model and variant are re-specified on continuation. Plan is a harness
         # permission mode: bash stays allowed, so it blocks the edit tool, not a
         # shell write.
-        cmd=(run --format json --dir "$dir" -m "$target_model" --variant "$EW_OPENCODE_VARIANT")
+        cmd=(run --format json --dir "$dir" -m "$target_model" --variant "$target_effort")
         if [ "$action" = "continue" ]; then
             sid=$(cat "$idf")
             cmd+=(-s "$sid")

@@ -1,6 +1,6 @@
 ---
 name: delegate
-description: Delegate implementation, refactors, tests, debugging, or codebase investigations to external Gemini, Claude, Cursor, Codex, or OpenCode workers while keeping verbose execution out of the main context. Gemini is the default. Supports model selection (Codex defaults to Astra, supports Sol), scoped writes, read-only investigations, continuation, and file-backed evidence.
+description: Delegate implementation, refactors, tests, debugging, or codebase investigations to external Gemini, Claude, Cursor, Codex, or OpenCode workers while keeping verbose execution out of the main context. Gemini is the default. Supports model and reasoning-effort selection (Codex defaults to Astra, supports Sol), scoped writes, read-only investigations, continuation, and file-backed evidence.
 ---
 
 # Delegate
@@ -20,6 +20,7 @@ DELEGATE=~/dotfiles/agent-skills/delegate/scripts/delegate.sh
 "$DELEGATE" -d "$REPO" "task"                    # default executor (gemini)
 "$DELEGATE" -e codex -d "$REPO" "task"           # codex default (gpt-6-astra)
 "$DELEGATE" -e codex -m sol -d "$REPO" "task"    # codex with gpt-6-sol
+"$DELEGATE" -e codex -m astra --effort high -d "$REPO" "task"  # explicit effort
 "$DELEGATE" -e claude -r -d "$REPO" "investigate"
 "$DELEGATE" -e cursor -d "$REPO" "task"
 "$DELEGATE" -e opencode -d "$REPO" "task"
@@ -37,10 +38,25 @@ before task text; a heredoc supplies a packet via stdin.
 to `gpt-6-astra`; specify `-m sol` (or `gpt-6-sol`) when `sol` is requested. Model
 choice persists across continuation `-c` unless overridden.
 
-When the user specifies an executor or model:
+`--effort LEVEL` sets the reasoning effort: a level (`low`, `medium`, `high`,
+`xhigh`/`extra-high`, `max`) or, for `opencode`, any provider variant (`minimal`,
+…). Always pass model and effort as separate flags and let the launcher map them;
+never build model IDs or set `EW_*` variables yourself. The launcher validates the
+level (exit 64 when invalid) and uses the executor default when you pass nothing.
+Effort and model persist across `-c` for codex and opencode. Gemini, claude, and
+cursor fix both at session start: repeat the same values on `-c`, or start a fresh
+run to change them.
+
+When the user specifies an executor, model, or effort:
 - `delegate codex ...` -> use `-e codex` (defaults to `gpt-6-astra`).
 - `delegate codex sol ...` or `delegate codex gpt 6 sol ...` -> use `-e codex -m sol` (routes to `gpt-6-sol`).
-- `delegate claude ...` -> use `-e claude` (defaults to `claude-opus-5.5`).
+- `delegate claude ...` -> use `-e claude` (defaults to `claude-opus-5-5`).
+- `delegate codex astra high ...` -> use `-e codex -m astra --effort high`.
+- `delegate claude high ...` -> use `-e claude --effort high`.
+- `delegate cursor xhigh ...` -> use `-e cursor --effort xhigh`.
+
+A level word counts as effort only directly after the executor and optional model;
+elsewhere it is task text ("delegate codex high CPU usage ..." passes no `--effort`).
 
 `-r` starts a read-only worker. Continuation inherits the original permission mode,
 including when `-r` is omitted. Start a fresh worker to change mode.

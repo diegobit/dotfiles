@@ -444,7 +444,7 @@ class ProviderArgvTests(DelegateTestBase):
         argv = self.get_invocations()[0]["argv"]
         self.assertIn("--dangerously-skip-permissions", argv)
         self.assertIn("--model", argv)
-        self.assertEqual(argv[argv.index("--model") + 1], "claude-opus-5.5")
+        self.assertEqual(argv[argv.index("--model") + 1], "claude-opus-5-5")
         self.assertNotIn("--permission-mode", argv)
 
     def test_claude_budget_option(self):
@@ -600,10 +600,10 @@ class ProviderArgvTests(DelegateTestBase):
 
     def test_claude_model_aliases(self):
         cases = [
-            ("opus", "claude-opus-5.5"),
-            ("claude-opus", "claude-opus-5.5"),
-            ("opus-5.5", "claude-opus-5.5"),
-            ("claude-opus-5.5", "claude-opus-5.5"),
+            ("opus", "claude-opus-5-5"),
+            ("claude-opus", "claude-opus-5-5"),
+            ("opus-5.5", "claude-opus-5-5"),
+            ("claude-opus-5.5", "claude-opus-5-5"),
         ]
         for raw, expected in cases:
             with self.subTest(raw=raw):
@@ -735,6 +735,175 @@ class ProviderArgvTests(DelegateTestBase):
         res = self.run_cmd("-e", "claude", "-c", "-r", "task continue with -r", workspace=other_ws)
         self.assertEqual(res.returncode, 64)
         self.assertIn("cannot continue a write session in read-only mode", res.stderr)
+
+
+class EffortOptionTests(DelegateTestBase):
+    def test_effort_flag_maps_per_executor(self):
+        # codex: config override on the exec command
+        self.write_stream("codex", body="ok")
+        res = self.run_cmd("-e", "codex", "--effort", "high", "task")
+        self.assertEqual(res.returncode, 0, res.stderr)
+        argv = self.get_invocations()[0]["argv"]
+        self.assertIn("model_reasoning_effort=high", argv)
+        self.assertEqual((self.state_dir("codex") / "effort").read_text().strip(), "high")
+
+        # gemini: --effort flag
+        self.invocations_file.unlink()
+        self.write_stream("gemini", body="ok")
+        res = self.run_cmd("-e", "gemini", "--effort", "max", "task")
+        self.assertEqual(res.returncode, 0, res.stderr)
+        argv = self.get_invocations()[0]["argv"]
+        self.assertEqual(argv[argv.index("--effort") + 1], "max")
+
+        # claude: --effort flag; extra-high normalizes to xhigh
+        self.invocations_file.unlink()
+        self.write_stream("claude", body="ok")
+        res = self.run_cmd("-e", "claude", "--effort", "extra-high", "task")
+        self.assertEqual(res.returncode, 0, res.stderr)
+        argv = self.get_invocations()[0]["argv"]
+        self.assertEqual(argv[argv.index("--effort") + 1], "xhigh")
+
+        # cursor: effort rewrites the model-ID suffix
+        self.invocations_file.unlink()
+        self.write_stream("cursor", body="ok")
+        res = self.run_cmd("-e", "cursor", "--effort", "low", "task")
+        self.assertEqual(res.returncode, 0, res.stderr)
+        argv = self.get_invocations()[0]["argv"]
+        self.assertEqual(argv[argv.index("--model") + 1], "grok-4.7-low")
+
+        # cursor: -fast suffix preserved
+        self.invocations_file.unlink()
+        self.write_stream("cursor", body="ok")
+        res = self.run_cmd("-e", "cursor", "-m", "grok-4.7-high-fast", "--effort", "xhigh", "task")
+        self.assertEqual(res.returncode, 0, res.stderr)
+        argv = self.get_invocations()[0]["argv"]
+        self.assertEqual(argv[argv.index("--model") + 1], "grok-4.7-xhigh-fast")
+
+        # opencode: variant passthrough
+        self.invocations_file.unlink()
+        self.write_stream("opencode", body="ok")
+        res = self.run_cmd("-e", "opencode", "--effort", "minimal", "task")
+        self.assertEqual(res.returncode, 0, res.stderr)
+        argv = self.get_invocations()[0]["argv"]
+        self.assertEqual(argv[argv.index("--variant") + 1], "minimal")
+
+    def test_default_effort_persisted(self):
+        cases = [
+            ("gemini", "high"),
+            ("claude", "high"),
+            ("codex", "medium"),
+            ("cursor", "high"),
+            ("opencode", "max"),
+        ]
+        for executor, expected in cases:
+            with self.subTest(executor=executor):
+                self.invocations_file.unlink(missing_ok=True)
+                self.write_stream(executor, body="ok")
+                res = self.run_cmd("-e", executor, "task")
+                self.assertEqual(res.returncode, 0, res.stderr)
+                self.assertEqual((self.state_dir(executor) / "effort").read_text().strip(), expected)
+
+    def test_invalid_effort_fails_early(self):
+        cases = [
+            ("gemini", "ultra"),
+            ("claude", "none"),
+            ("codex", "max"),
+            ("cursor", "none"),
+            ("opencode", "high!"),
+        ]
+        for executor, value in cases:
+            with self.subTest(executor=executor, value=value):
+                self.called_file.unlink(missing_ok=True)
+                res = self.run_cmd("-e", executor, "--effort", value, "task")
+                self.assertEqual(res.returncode, 64, res.stderr)
+                self.assertIn("invalid effort", res.stderr)
+                self.assertFalse(self.called_file.exists())
+
+        res = self.run_cmd("-e", "codex", "--effort")
+        self.assertEqual(res.returncode, 64)
+        self.assertIn("requires an argument", res.stderr)
+        res = self.run_cmd("-e", "codex", "--effort", "", "task")
+        self.assertEqual(res.returncode, 64)
+        self.assertIn("cannot be empty", res.stderr)
+
+    def test_cursor_effort_requires_suffix_bearing_model(self):
+        res = self.run_cmd("-e", "cursor", "-m", "auto", "--effort", "high", "task")
+        self.assertEqual(res.returncode, 64, res.stderr)
+        self.assertIn("no effort suffix", res.stderr)
+        self.assertFalse(self.called_file.exists())
+
+    def test_effort_continuation_semantics(self):
+        # codex inherits the stored effort and accepts an override
+        self.write_stream("codex", body="first")
+        self.assertEqual(self.run_cmd("-e", "codex", "--effort", "high", "task").returncode, 0)
+        self.invocations_file.unlink()
+        self.write_stream("codex", body="continued")
+        self.assertEqual(self.run_cmd("-e", "codex", "-c", "task").returncode, 0)
+        argv = self.get_invocations()[0]["argv"]
+        self.assertIn("model_reasoning_effort=high", argv)
+        self.invocations_file.unlink()
+        self.write_stream("codex", body="override")
+        self.assertEqual(self.run_cmd("-e", "codex", "-c", "--effort", "low", "task").returncode, 0)
+        argv = self.get_invocations()[0]["argv"]
+        self.assertIn("model_reasoning_effort=low", argv)
+        self.assertEqual((self.state_dir("codex") / "effort").read_text().strip(), "low")
+
+        # opencode inherits the stored variant and accepts an override
+        self.write_stream("opencode", body="first")
+        self.assertEqual(self.run_cmd("-e", "opencode", "--effort", "minimal", "task").returncode, 0)
+        self.invocations_file.unlink()
+        self.write_stream("opencode", body="continued")
+        self.assertEqual(self.run_cmd("-e", "opencode", "-c", "task").returncode, 0)
+        argv = self.get_invocations()[0]["argv"]
+        self.assertEqual(argv[argv.index("--variant") + 1], "minimal")
+        self.invocations_file.unlink()
+        self.write_stream("opencode", body="override")
+        self.assertEqual(self.run_cmd("-e", "opencode", "-c", "--effort", "high", "task").returncode, 0)
+        argv = self.get_invocations()[0]["argv"]
+        self.assertEqual(argv[argv.index("--variant") + 1], "high")
+
+        # gemini, claude, and cursor accept a repeated value and reject a change
+        for executor in ["gemini", "claude", "cursor"]:
+            with self.subTest(executor=executor):
+                self.invocations_file.unlink(missing_ok=True)
+                self.write_stream(executor, body="first")
+                self.assertEqual(self.run_cmd("-e", executor, "--effort", "low", "task").returncode, 0)
+                self.assertEqual(self.run_cmd("-e", executor, "-c", "--effort", "low", "task").returncode, 0)
+                self.assertNotIn("--effort", self.get_invocations()[-1]["argv"])
+                res = self.run_cmd("-e", executor, "-c", "--effort", "high", "task")
+                self.assertEqual(res.returncode, 64, res.stderr)
+                self.assertIn("cannot change effort", res.stderr)
+
+    def test_model_change_on_continuation(self):
+        # Fixed-model executors accept a repeated model and reject a change
+        for executor, stored in [("gemini", "gemini-3.8-flash"),
+                                 ("claude", "claude-opus-5-5"),
+                                 ("cursor", "grok-4.7-high")]:
+            with self.subTest(executor=executor):
+                self.invocations_file.unlink(missing_ok=True)
+                self.write_stream(executor, body="first")
+                self.assertEqual(self.run_cmd("-e", executor, "task").returncode, 0)
+                self.assertEqual((self.state_dir(executor) / "model").read_text().strip(), stored)
+                res = self.run_cmd("-e", executor, "-c", "-m", "some-other-model", "task")
+                self.assertEqual(res.returncode, 64, res.stderr)
+                self.assertIn("cannot change model", res.stderr)
+                self.assertEqual(self.run_cmd("-e", executor, "-c", "-m", stored, "task").returncode, 0)
+
+        # codex and opencode accept a model override on continuation
+        self.write_stream("opencode", body="first")
+        self.assertEqual(self.run_cmd("-e", "opencode", "task").returncode, 0)
+        self.invocations_file.unlink()
+        self.write_stream("opencode", body="changed")
+        self.assertEqual(self.run_cmd("-e", "opencode", "-c", "-m", "custom-opencode", "task").returncode, 0)
+        argv = self.get_invocations()[0]["argv"]
+        self.assertEqual(argv[argv.index("-m") + 1], "custom-opencode")
+
+    def test_peek_shows_effort(self):
+        self.write_stream("gemini", body="ok")
+        self.assertEqual(self.run_cmd("-e", "gemini", "--effort", "low", "task").returncode, 0)
+        res = self.run_cmd("-e", "gemini", "-p")
+        self.assertEqual(res.returncode, 0, res.stderr)
+        self.assertIn("effort: low", res.stdout)
 
 
 class ReportHandlingAndExitCodeTests(DelegateTestBase):

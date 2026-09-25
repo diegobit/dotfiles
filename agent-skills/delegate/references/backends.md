@@ -10,13 +10,13 @@ These details were recorded by the original worker wrappers at `9c5d2b2`. Rechec
 them behaviorally when upgrading a CLI; initialization metadata alone does not
 prove file tools resolve the right workspace.
 
-| Executor | Command and model | Workspace | Read-only |
-|---|---|---|---|
-| gemini | `agy`, Gemini 3.8 Flash, high effort | `--add-dir` registers the file-tool root; cwd alone is insufficient | `--mode plan` **and** `--dangerously-skip-permissions` |
-| claude | `claude`, Opus 5.5, high effort | process cwd | `--permission-mode plan` **without** `--dangerously-skip-permissions` |
-| cursor | `agent`, Grok 4.7 High | `--workspace` plus matching cwd | `--mode ask --force` |
-| codex | `codex exec`, GPT-6-Astra (default) or Sol (`-m`), medium effort | `-C` plus `--skip-git-repo-check` (else Codex roots at the enclosing Git repo) | `-s read-only` on start, `-c sandbox_mode=read-only` on resume |
-| opencode | `opencode run`, DeepSeek V4.1 Flash, variant `max` | `--dir` plus matching cwd | `--agent plan` (edit denied; bash still allowed) |
+| Executor | Command and model | Default effort | Workspace | Read-only |
+|---|---|---|---|---|
+| gemini | `agy`, Gemini 3.8 Flash | `high` (`--effort`) | `--add-dir` registers the file-tool root; cwd alone is insufficient | `--mode plan` **and** `--dangerously-skip-permissions` |
+| claude | `claude`, Opus 5.5 | `high` (`--effort`) | process cwd | `--permission-mode plan` **without** `--dangerously-skip-permissions` |
+| cursor | `agent`, Grok 4.7 High | in the model ID (`-high`, `-high-fast`) | `--workspace` plus matching cwd | `--mode ask --force` |
+| codex | `codex exec`, GPT-6-Astra (default) or Sol (`-m`) | `medium` (`-c model_reasoning_effort=`) | `-C` plus `--skip-git-repo-check` (else Codex roots at the enclosing Git repo) | `-s read-only` on start, `-c sandbox_mode=read-only` on resume |
+| opencode | `opencode run`, DeepSeek V4.1 Flash | `max` (variant) | `--dir` plus matching cwd | `--agent plan` (edit denied; bash still allowed) |
 
 Claude's skip-permissions flag overrides its plan mode and re-enables writes.
 Gemini needs the skip flag even in plan mode to avoid auto-denying reads. Cursor
@@ -41,10 +41,26 @@ model can still modify files through a shell redirect. Treat it like Claude's pl
 mode (a harness permission mode), and verify attempted writes behaviorally rather
 than assuming the sandbox blocks them.
 
-Gemini requires effort with its model alias and a long `--print-timeout` on both
-start and resume. Claude stream JSON requires `--verbose`. Cursor's high effort
-is part of its model ID rather than an effort flag; its unattended command also
-uses trust, disabled sandbox, and MCP consent flags from the original wrapper.
+Gemini requires a long `--print-timeout` on both start and resume; `--effort` is
+passed on start only. Claude stream JSON requires `--verbose`. Cursor's effort is
+part of its model ID rather than an effort flag; `--effort` rewrites the
+`-<level>[-fast]` suffix, and a model without a recognised suffix is rejected with
+exit 64. Its unattended command also uses trust, disabled sandbox, and MCP consent
+flags from the original wrapper.
+
+## Effort
+
+`--effort LEVEL` is validated per executor before the CLI runs: gemini
+`low|medium|high|max`, claude `low|medium|high|xhigh|max`, codex
+`low|medium|high|xhigh`, cursor `low|medium|high|xhigh|max`, opencode any
+provider variant (for example `high`, `max`, `minimal`). `extra-high`/`x-high`
+normalize to `xhigh`; an invalid value exits 64. Defaults come from
+`EW_GEMINI_EFFORT`, `EW_CLAUDE_EFFORT`, `EW_CODEX_EFFORT`, and
+`EW_OPENCODE_VARIANT`. The chosen level is stored in `$state/effort` beside
+`$state/model` and shown by peek. Codex and opencode re-pass it on resume and
+accept an override; gemini, claude, and cursor cannot change model or effort on
+resume, so a repeated identical value is accepted and a different one (or
+`-c -m` for a different model) exits 64 and requires a fresh run.
 
 ## Sessions and streams
 
@@ -66,13 +82,15 @@ continue can select another session in the same workspace.
   reasoning effort in the recorded session, so both must be re-passed on resume
   (`-m` and `-c model_reasoning_effort=`) or it silently falls back to the user's
   `config.toml` default. `delegate.sh` persists the chosen model in `$state/model`
-  so continuations keep the model selection across turns unless explicitly changed with `-m`.
+  and effort in `$state/effort` so continuations keep the selection unless
+  explicitly changed with `-m` or `--effort`.
 - OpenCode: every event carries `sessionID` at the top level (`-s` resumes it).
   Success is `.type == "step_finish"` with `.part.reason == "stop"`; a fatal failure
   is `.type == "error"` with `.error.data.message`. Assistant text arrives as
   `text` parts, and the report is the concatenation of the text parts sharing the
   last `messageID`. Tool progress is `tool_use` parts (`read`, `bash`, `edit`, …).
-  Model and variant are re-specified on resume. A `step_finish`/`stop` is treated as
+  Model and variant are re-specified on resume from `$state/model`/`$state/effort`
+  and may be overridden. A `step_finish`/`stop` is treated as
   success even if an earlier `error` event appeared, so mid-run errors do not
   override a completed turn.
 - Claude and Cursor: `.type == "result"` carries subtype, is_error, and result.
