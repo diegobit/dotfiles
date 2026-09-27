@@ -51,6 +51,7 @@
   "enabledPlugins": {},
   "extraKnownMarketplaces": {},
   "effortLevel": "high",
+  "autoMemoryEnabled": false,
   "awaySummaryEnabled": false,
   "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
