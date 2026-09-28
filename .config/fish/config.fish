@@ -93,20 +93,17 @@ if status is-interactive
     alias grep='grep --color=auto'
 
     # TRY
+    function __try_cd
+        set -l cmd (/usr/bin/env ruby ~/.local/try.rb cd --path "$argv[1]" $argv[2..-1] 2>/dev/tty | string collect)
+        test $status -eq 0; and eval "$cmd"; or echo "$cmd"
+    end
+
     function trywork
-        if test (count $argv) -eq 0
-            eval (env TRY_PATH=/Users/diego/notes-work try exec | string collect)
-        else
-            eval (env TRY_PATH=/Users/diego/notes-work try exec $argv | string collect)
-        end
+        __try_cd /Users/diego/notes-work $argv
     end
 
     function trydg
-        if test (count $argv) -eq 0
-            eval (env TRY_PATH=/Users/diego/notes-dg try exec | string collect)
-        else
-            eval (env TRY_PATH=/Users/diego/notes-dg try exec $argv | string collect)
-        end
+        __try_cd /Users/diego/notes-dg $argv
     end
 
     abbr -a tw 'trywork'
