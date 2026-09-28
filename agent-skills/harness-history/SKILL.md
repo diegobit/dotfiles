@@ -1,6 +1,6 @@
 ---
 name: harness-history
-description: Read past conversations from local AI chat stores (Claude Code, Codex, t3.code, Antigravity app, Antigravity CLI, opencode). Use when the user asks to list or search chats, to get or read a named conversation, or to resume or continue a past chat.
+description: Read past conversations from local AI chat stores (T3 Code, Claude Code, Codex, Antigravity app/CLI, opencode). Use when the user asks to list or search chats, including T3 chats, to get or read a named conversation, or to resume or continue a past chat.
 ---
 
 # Harness History

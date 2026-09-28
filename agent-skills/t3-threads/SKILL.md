@@ -1,6 +1,6 @@
 ---
 name: t3-threads
-description: Send messages to, read, and wait on other T3 Code conversation threads through the local T3 server. Use when asked to message another T3 thread, ask another T3 thread/agent something, check what another T3 thread is doing, wait for its reply, or mint/revoke the local T3 access token.
+description: Send messages to, wait on, and inspect live T3 Code conversation threads. Use when asked to message another T3 thread, ask another thread/agent something, check what a running thread is doing, wait for its reply, or mint/revoke the local T3 access token.
 ---
 
 # T3 threads
