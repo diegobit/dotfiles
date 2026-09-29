@@ -1,5 +1,5 @@
 #!/bin/sh
-# Send a Telegram notification. Usage: tg [-p <profilo>] '<text_message>'
+# Send a Telegram notification. Usage: tg [-s] [-p <profilo>] '<text_message>'
 # Help: tg --help
 #
 # I segreti stanno in ~/.telegram-bot-token-<profilo> e ~/.telegram-chat-id-<profilo>.
@@ -16,10 +16,14 @@ usage() {
 tg - send a Telegram notification to Diego
 
 Usage:
-  tg [-p <profilo>] '<text_message>'   send message (cwd is appended)
-  tg [-p <profilo>]                    ping: "Plin plon! (cwd)"
-  tg --                                message starting with '-'
-  tg -h | --help                       this help
+  tg [-s] [-p <profilo>] '<text_message>'   send message (cwd is appended)
+  tg [-s] [-p <profilo>]                    ping: "Plin plon! (cwd)"
+  tg --                                     message starting with '-'
+  tg -h | --help                            this help
+
+Options:
+  -s, --silent       send silently (no notification sound or vibration)
+  -p, --profile <p>  profile name (dg, ait)
 
 Profiles:
   dg     Diego's private chat (default)
@@ -31,17 +35,23 @@ EOF
 }
 
 profile=""
-case "$1" in
-    -h|--help) usage; exit 0 ;;
-    -p|--profile)
-        if [ -z "${2:-}" ]; then
-            echo "tg: -p richiede un profilo (dg, ait)" >&2
-            exit 1
-        fi
-        profile=$2; shift 2 ;;
-    --) shift ;;
-    -*) echo "tg: opzione sconosciuta: $1 (--help per l'uso)" >&2; exit 1 ;;
-esac
+silent=0
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -h|--help) usage; exit 0 ;;
+        -s|--silent) silent=1; shift ;;
+        -p|--profile)
+            if [ -z "${2:-}" ]; then
+                echo "tg: -p richiede un profilo (dg, ait)" >&2
+                exit 1
+            fi
+            profile=$2; shift 2 ;;
+        --) shift; break ;;
+        -*) echo "tg: opzione sconosciuta: $1 (--help per l'uso)" >&2; exit 1 ;;
+        *) break ;;
+    esac
+done
 
 if [ -z "$profile" ]; then
     if [ -r "$HOME/.telegram-default-profile" ]; then
@@ -75,7 +85,15 @@ else
     msg="Plin plon! ($where)"
 fi
 
-curl -sS --fail --max-time 10 \
-    --form-string "chat_id=$chat" \
-    --form-string "text=$msg" \
-    "https://api.telegram.org/bot$token/sendMessage" >/dev/null
+if [ "$silent" -eq 1 ]; then
+    curl -sS --fail --max-time 10 \
+        --form-string "chat_id=$chat" \
+        --form-string "text=$msg" \
+        --form-string "disable_notification=true" \
+        "https://api.telegram.org/bot$token/sendMessage" >/dev/null
+else
+    curl -sS --fail --max-time 10 \
+        --form-string "chat_id=$chat" \
+        --form-string "text=$msg" \
+        "https://api.telegram.org/bot$token/sendMessage" >/dev/null
+fi
