@@ -119,4 +119,4 @@ The offline suite checks argv, session/mode inheritance, reports, caps, errors,
 isolation, and lifecycle behavior using fake CLIs. Live selftests exercise file
 reachability, attempted writes in read-only mode, a real write, and context-preserving
 resume. Installed-version and migration validation results are recorded in the
-[consolidation validation record](../../../docs/plans/20260905-external-worker-00-design.md#validation-record).
+[consolidation validation record](../../../docs/plans/completed/20260905-external-worker-00-design.md#validation-record).

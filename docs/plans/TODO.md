@@ -4,10 +4,10 @@
 
 ## External worker consolidation
 
-[Design and shared contract](20260905-external-worker-00-design.md)
+[Design and shared contract](completed/20260905-external-worker-00-design.md)
 
-- [x] `done` **01 Shared launcher and contract tests** — [plan](20260905-external-worker-01-launcher.md); depends on: none.
-- [x] `done` **02 Unified skill and discovery migration** — [plan](20260905-external-worker-02-migration.md); depends on: 01.
+- [x] `done` **01 Shared launcher and contract tests** — [plan](completed/20260905-external-worker-01-launcher.md); depends on: none.
+- [x] `done` **02 Unified skill and discovery migration** — [plan](completed/20260905-external-worker-02-migration.md); depends on: 01.
 
 ## Global visual description and summarization (`docdescribe`)
 
