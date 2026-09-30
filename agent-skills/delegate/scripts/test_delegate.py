@@ -490,7 +490,7 @@ class ProviderArgvTests(DelegateTestBase):
         self.assertEqual(argv[argv.index("-s") + 1], "read-only")
         self.assertNotIn("--dangerously-bypass-approvals-and-sandbox", argv)
         self.assertIn("-m", argv)
-        self.assertEqual(argv[argv.index("-m") + 1], "gpt-6-astra")
+        self.assertEqual(argv[argv.index("-m") + 1], "gpt-6.1-sol")
         self.assertIn("model_reasoning_effort=medium", argv)
 
         # Write Codex: full bypass, no sandbox flag
@@ -528,15 +528,23 @@ class ProviderArgvTests(DelegateTestBase):
 
     def test_codex_model_options_and_aliases(self):
         cases = [
-            (None, "gpt-6-astra"),
-            (["-m", "sol"], "gpt-6-sol"),
-            (["--model", "sol"], "gpt-6-sol"),
+            (None, "gpt-6.1-sol"),
+            (["-m", "sol"], "gpt-6.1-sol"),
+            (["--model", "sol"], "gpt-6.1-sol"),
+            (["-m", "gpt-6.1-sol"], "gpt-6.1-sol"),
+            (["-m", "gpt 6.1 sol"], "gpt-6.1-sol"),
+            (["-m", "sol-6.1"], "gpt-6.1-sol"),
+            (["-m", "sol 6.1"], "gpt-6.1-sol"),
             (["-m", "gpt-6-sol"], "gpt-6-sol"),
             (["-m", "gpt 6 sol"], "gpt-6-sol"),
             (["-m", "astra"], "gpt-6-astra"),
             (["--model", "astra"], "gpt-6-astra"),
             (["-m", "gpt-6-astra"], "gpt-6-astra"),
             (["-m", "gpt 6 astra"], "gpt-6-astra"),
+            (["-m", "luna"], "gpt-6-luna"),
+            (["--model", "luna"], "gpt-6-luna"),
+            (["-m", "gpt-6-luna"], "gpt-6-luna"),
+            (["-m", "gpt 6 luna"], "gpt-6-luna"),
             (["-m", "gpt-5.6-sol"], "gpt-5.6-sol"),
         ]
         for flags, expected_model in cases:
@@ -559,16 +567,16 @@ class ProviderArgvTests(DelegateTestBase):
         self.write_stream("codex", body="first", session_id="cdx-thread-sol")
         res = self.run_cmd("-e", "codex", "-m", "sol", "initial task")
         self.assertEqual(res.returncode, 0, res.stderr)
-        self.assertEqual((self.state_dir("codex") / "model").read_text().strip(), "gpt-6-sol")
+        self.assertEqual((self.state_dir("codex") / "model").read_text().strip(), "gpt-6.1-sol")
 
-        # Resume without -m preserves gpt-6-sol
+        # Resume without -m preserves gpt-6.1-sol
         self.invocations_file.unlink()
         self.write_stream("codex", body="continued")
         res = self.run_cmd("-e", "codex", "-c", "continue task")
         self.assertEqual(res.returncode, 0, res.stderr)
         resume_argv = self.get_invocations()[0]["argv"]
         self.assertIn("-m", resume_argv)
-        self.assertEqual(resume_argv[resume_argv.index("-m") + 1], "gpt-6-sol")
+        self.assertEqual(resume_argv[resume_argv.index("-m") + 1], "gpt-6.1-sol")
 
         # Resume with -m astra overrides to gpt-6-astra
         self.invocations_file.unlink()
@@ -686,7 +694,7 @@ class ProviderArgvTests(DelegateTestBase):
         self.assertIn("cdx-thread-7", resume_argv)
         self.assertEqual(resume_argv[-1], "task continue")
         self.assertIn("-m", resume_argv)
-        self.assertEqual(resume_argv[resume_argv.index("-m") + 1], "gpt-6-astra")
+        self.assertEqual(resume_argv[resume_argv.index("-m") + 1], "gpt-6.1-sol")
         self.assertIn("model_reasoning_effort=medium", resume_argv)
 
         # OpenCode continuation: session discovered from the stream, model and

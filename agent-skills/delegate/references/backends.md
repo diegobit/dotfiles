@@ -15,7 +15,7 @@ prove file tools resolve the right workspace.
 | gemini | `agy`, Gemini 3.8 Flash | `high` (`--effort`) | `--add-dir` registers the file-tool root; cwd alone is insufficient | `--mode plan` **and** `--dangerously-skip-permissions` |
 | claude | `claude`, Opus 5.5 | `high` (`--effort`) | process cwd | `--permission-mode plan` **without** `--dangerously-skip-permissions` |
 | cursor | `agent`, Grok 4.7 High | in the model ID (`-high`, `-high-fast`) | `--workspace` plus matching cwd | `--mode ask --force` |
-| codex | `codex exec`, GPT-6-Astra (default) or Sol (`-m`) | `medium` (`-c model_reasoning_effort=`) | `-C` plus `--skip-git-repo-check` (else Codex roots at the enclosing Git repo) | `-s read-only` on start, `-c sandbox_mode=read-only` on resume |
+| codex | `codex exec`, GPT-6.1-Sol (default) or Astra (`-m`) | `medium` (`-c model_reasoning_effort=`) | `-C` plus `--skip-git-repo-check` (else Codex roots at the enclosing Git repo) | `-s read-only` on start, `-c sandbox_mode=read-only` on resume |
 | opencode | `opencode run`, DeepSeek V4.1 Flash | `max` (variant) | `--dir` plus matching cwd | `--agent plan` (edit denied; bash still allowed) |
 
 Claude's skip-permissions flag overrides its plan mode and re-enables writes.

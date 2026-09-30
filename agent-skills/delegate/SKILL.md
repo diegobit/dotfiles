@@ -1,6 +1,6 @@
 ---
 name: delegate
-description: Delegate implementation, refactors, tests, debugging, or codebase investigations to external Gemini, Claude, Cursor, Codex, or OpenCode workers while keeping verbose execution out of the main context. Gemini is the default. Supports model and reasoning-effort selection (Codex defaults to Astra, supports Sol), scoped writes, read-only investigations, continuation, and file-backed evidence.
+description: Delegate implementation, refactors, tests, debugging, or codebase investigations to external Gemini, Claude, Cursor, Codex, or OpenCode workers while keeping verbose execution out of the main context. Gemini is the default. Supports model and reasoning-effort selection (Codex defaults to Sol 6.1, supports Astra and Luna), scoped writes, read-only investigations, continuation, and file-backed evidence.
 ---
 
 # Delegate
@@ -8,7 +8,7 @@ description: Delegate implementation, refactors, tests, debugging, or codebase i
 Delegate with `scripts/delegate.sh`. Choose the executor: `gemini`
 (default), `claude`, `cursor`, `codex`, or `opencode`, and optionally a model
 with `-m`/`--model`. By default, the launcher selects the recommended model for
-each executor (for `codex`: `gpt-6-astra`). Keep task scope, user-facing decisions,
+each executor (for `codex`: `gpt-6.1-sol`). Keep task scope, user-facing decisions,
 and acceptance with the orchestrator; the packet defines which implementation
 choices the worker can make.
 
@@ -18,9 +18,9 @@ choices the worker can make.
 DELEGATE=~/dotfiles/agent-skills/delegate/scripts/delegate.sh
 
 "$DELEGATE" -d "$REPO" "task"                    # default executor (gemini)
-"$DELEGATE" -e codex -d "$REPO" "task"           # codex default (gpt-6-astra)
-"$DELEGATE" -e codex -m sol -d "$REPO" "task"    # codex with gpt-6-sol
-"$DELEGATE" -e codex -m astra --effort high -d "$REPO" "task"  # explicit effort
+"$DELEGATE" -e codex -d "$REPO" "task"           # codex default (gpt-6.1-sol)
+"$DELEGATE" -e codex -m astra -d "$REPO" "task"  # codex with gpt-6-astra
+"$DELEGATE" -e codex -m sol --effort high -d "$REPO" "task"    # explicit effort
 "$DELEGATE" -e claude -r -d "$REPO" "investigate"
 "$DELEGATE" -e cursor -d "$REPO" "task"
 "$DELEGATE" -e opencode -d "$REPO" "task"
@@ -35,7 +35,7 @@ use the same workspace and executor for continuation, peek, and kill. Options go
 before task text; a heredoc supplies a packet via stdin.
 
 `-m`/`--model` overrides the default model for the executor. For `codex`, it defaults
-to `gpt-6-astra`; specify `-m sol` (or `gpt-6-sol`) when `sol` is requested. Model
+to `gpt-6.1-sol`; specify `-m astra` (or `gpt-6-astra`) when `astra` is requested. Model
 choice persists across continuation `-c` unless overridden.
 
 `--effort LEVEL` sets the reasoning effort: a level (`low`, `medium`, `high`,
@@ -48,8 +48,10 @@ cursor fix both at session start: repeat the same values on `-c`, or start a fre
 run to change them.
 
 When the user specifies an executor, model, or effort:
-- `delegate codex ...` -> use `-e codex` (defaults to `gpt-6-astra`).
-- `delegate codex sol ...` or `delegate codex gpt 6 sol ...` -> use `-e codex -m sol` (routes to `gpt-6-sol`).
+- `delegate codex ...` -> use `-e codex` (defaults to `gpt-6.1-sol`).
+- `delegate codex sol ...` -> use `-e codex -m sol` (routes to `gpt-6.1-sol`).
+- `delegate codex astra ...` -> use `-e codex -m astra` (routes to `gpt-6-astra`).
+- `delegate codex luna ...` -> use `-e codex -m luna` (routes to `gpt-6-luna`).
 - `delegate claude ...` -> use `-e claude` (defaults to `claude-opus-5-5`).
 - `delegate codex astra high ...` -> use `-e codex -m astra --effort high`.
 - `delegate claude high ...` -> use `-e claude --effort high`.

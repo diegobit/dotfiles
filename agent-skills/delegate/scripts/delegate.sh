@@ -9,7 +9,7 @@
 #   delegate [--executor gemini|claude|cursor|codex|opencode] --selftest
 #
 #   -e, --executor  worker backend (gemini | claude | cursor | codex | opencode; default: gemini)
-#   -m, --model     model override (codex default: gpt-6-astra; aliases: sol, astra)
+#   -m, --model     model override (codex default: gpt-6.1-sol; aliases: sol, astra, luna)
 #   --effort LEVEL  reasoning effort (low|medium|high|xhigh|max; mapped per executor)
 #   -r, --read-only read-only mode (provider permission mode)
 #   -d, --dir       workspace directory (default: $PWD)
@@ -56,7 +56,7 @@ EW_CLAUDE_BUDGET="${EW_CLAUDE_BUDGET:-}"
 
 EW_CURSOR_MODEL="${EW_CURSOR_MODEL:-grok-4.7-high}"
 
-EW_CODEX_MODEL="${EW_CODEX_MODEL:-gpt-6-astra}"
+EW_CODEX_MODEL="${EW_CODEX_MODEL:-gpt-6.1-sol}"
 EW_CODEX_EFFORT="${EW_CODEX_EFFORT:-medium}"
 
 EW_OPENCODE_MODEL="${EW_OPENCODE_MODEL:-opencode-go/deepseek-v4.1-flash}"
@@ -492,8 +492,10 @@ resolve_model() {
             local norm
             norm=$(printf '%s' "$raw_model" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
             case "$norm" in
-                sol|gpt-6-sol) printf 'gpt-6-sol' ;;
+                sol|sol-6.1|sol6.1|gpt-6.1-sol) printf 'gpt-6.1-sol' ;;
+                gpt-6-sol) printf 'gpt-6-sol' ;;
                 astra|gpt-6-astra) printf 'gpt-6-astra' ;;
+                luna|gpt-6-luna) printf 'gpt-6-luna' ;;
                 *) printf '%s' "$raw_model" ;;
             esac
             ;;
