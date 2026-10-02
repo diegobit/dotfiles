@@ -26,16 +26,18 @@ function usage() {
   console.log(`usage: t3-threads <command> [options]
 
   list   [--project <id|name>] [--match <text>] [--all] [--json]
-  read   <threadId|name> [--turns N] [--json]
+  read   <threadId|name> [--turns N] [--full] [--json]
   send   <threadId|name> <message> [--wait] [--queue] [--timeout seconds] [--interval ms]
-         [--command-id <id>] [--message-id <id>] [--mode <runtimeMode>] [--interaction default|plan] [--json]
-  wait   <threadId|name> [--timeout seconds] [--interval ms] [--json]
+         [--command-id <id>] [--message-id <id>] [--mode <runtimeMode>] [--interaction default|plan] [--full] [--json]
+  wait   <threadId|name> [--timeout seconds] [--interval ms] [--full] [--json]
   token  mint [--ttl 30d] [--label <name>] | show | revoke [--label <name>]
   doctor
 
 A name is a case-insensitive substring of an active thread's title; ambiguous names
 list the candidates. A busy thread is refused unless --queue is passed; with --queue
 the provider decides whether to steer the message into the running turn or queue it.
+read clips each message to 1500 chars and wait/send --wait clips the reply to 6000;
+pass --full for the whole text.
 Environment: T3_ORIGIN (default ${DEFAULT_ORIGIN}), T3_TOKEN, T3_TOKEN_FILE
 Exit codes: 0 ok, 1 error, 2 usage, 3 wait timeout`);
 }
@@ -256,10 +258,14 @@ function pendingRequests(activities = []) {
   return [...open.values()];
 }
 
-function truncate(text, limit = 1500) {
-  if (!text) return "";
-  return text.length <= limit ? text : `${text.slice(0, limit)}… [${text.length - limit} chars truncated]`;
+function clip(text, limit = 1500) {
+  const chars = Array.from(text ?? "");
+  if (chars.length <= limit) return { text: text ?? "", omitted: 0 };
+  return { text: chars.slice(0, limit).join(""), omitted: chars.length - limit };
 }
+
+const clippedMarker = (omitted) =>
+  omitted > 0 ? `… [${omitted} chars truncated; rerun with --full]` : "";
 
 function decodeToken(token) {
   try {
@@ -331,12 +337,13 @@ async function cmdList(args) {
 }
 
 async function cmdRead(args) {
-  const [opts, pos] = parseArgs(args, new Set(["turns"]));
-  if (!pos[0]) throw new UsageError("usage: t3-threads read <threadId|name> [--turns N] [--json]");
+  const [opts, pos] = parseArgs(args, new Set(["turns"]), new Set(["json", "full"]));
+  if (!pos[0]) throw new UsageError("usage: t3-threads read <threadId|name> [--turns N] [--full] [--json]");
   const turns = numberOption(opts, "turns", 6, 1, { integer: true });
   const target = await resolveThread(pos[0]);
   const { thread } = await threadDetail(target.id, turns);
   const pending = pendingRequests(thread.activities);
+  const clipLimit = opts.full ? Infinity : 1500;
   const reply = {
     id: thread.id,
     title: thread.title,
@@ -347,14 +354,18 @@ async function cmdRead(args) {
       : null,
     sessionStatus: thread.session?.status ?? null,
     pendingRequests: pending,
-    messages: (thread.messages ?? []).map((message) => ({
-      id: message.id,
-      role: message.role,
-      turnId: message.turnId ?? null,
-      createdAt: message.createdAt,
-      streaming: message.streaming ?? false,
-      text: truncate(message.text),
-    })),
+    messages: (thread.messages ?? []).map((message) => {
+      const { text, omitted } = clip(message.text, clipLimit);
+      return {
+        id: message.id,
+        role: message.role,
+        turnId: message.turnId ?? null,
+        createdAt: message.createdAt,
+        streaming: message.streaming ?? false,
+        text,
+        truncatedChars: omitted,
+      };
+    }),
   };
   if (opts.json) {
     console.log(JSON.stringify(reply, null, 2));
@@ -363,7 +374,7 @@ async function cmdRead(args) {
   console.log(`thread ${thread.id} — ${thread.title ?? "(untitled)"}`);
   console.log(`state: ${reply.attention}${reply.latestTurn ? ` (turn ${reply.latestTurn.state})` : ""}, session ${reply.sessionStatus ?? "none"}`);
   for (const request of pending) console.log(`pending ${request.kind}: ${request.requestId} ${request.summary ?? ""}`);
-  for (const message of reply.messages) console.log(`\n[${message.role} ${message.createdAt}]${message.streaming ? " (streaming)" : ""}\n${message.text}`);
+  for (const message of reply.messages) console.log(`\n[${message.role} ${message.createdAt}]${message.streaming ? " (streaming)" : ""}\n${message.text}${clippedMarker(message.truncatedChars)}`);
 }
 
 async function waitForThread(threadId, opts, anchor = null) {
@@ -444,13 +455,15 @@ async function waitForThread(threadId, opts, anchor = null) {
     }
     const settled = sent ? failed || completed : !running && (failed || completed);
     if (settled) {
+      const clipped = assistant ? clip(assistant.text, opts.full ? Infinity : 6000) : null;
       return {
         outcome: failed ? turn.state : "completed",
         threadId,
         sent,
         sessionStatus: thread.session?.status ?? "none",
         lastError: thread.session?.lastError ?? null,
-        reply: assistant ? truncate(assistant.text, 6000) : null,
+        reply: clipped?.text ?? null,
+        replyTruncatedChars: clipped?.omitted ?? null,
         replyMessageId: assistant?.id ?? null,
       };
     }
@@ -473,7 +486,10 @@ function printWait(result, asJson) {
   if (asJson) {
     console.log(JSON.stringify(result, null, 2));
   } else if (result.outcome === "completed") {
-    console.log(result.reply ?? "(turn completed with no assistant message)");
+    console.log(
+      (result.reply ?? "(turn completed with no assistant message)") +
+        clippedMarker(result.replyTruncatedChars ?? 0),
+    );
   } else if (result.outcome === "needs-you") {
     console.log(`thread needs input (${result.pendingRequests.length} pending):`);
     for (const request of result.pendingRequests)
@@ -490,8 +506,8 @@ function printWait(result, asJson) {
 }
 
 async function cmdWait(args) {
-  const [opts, pos] = parseArgs(args, new Set(["timeout", "interval"]));
-  if (!pos[0]) throw new UsageError("usage: t3-threads wait <threadId|name> [--timeout seconds] [--json]");
+  const [opts, pos] = parseArgs(args, new Set(["timeout", "interval"]), new Set(["json", "full"]));
+  if (!pos[0]) throw new UsageError("usage: t3-threads wait <threadId|name> [--timeout seconds] [--full] [--json]");
   opts.timeout = numberOption(opts, "timeout", 300, 1);
   opts.interval = numberOption(opts, "interval", 1500, 250);
   const target = await resolveThread(pos[0]);
@@ -504,12 +520,12 @@ async function cmdSend(args) {
   const [opts, pos] = parseArgs(
     args,
     new Set(["timeout", "interval", "command-id", "message-id", "mode", "interaction"]),
-    new Set(["wait", "queue", "json"]),
+    new Set(["wait", "queue", "json", "full"]),
   );
   const reference = pos.shift();
   const text = pos.join(" ").trim();
   if (!reference || !text) {
-    throw new UsageError("usage: t3-threads send <threadId|name> <message> [--wait] [--queue] [--json]");
+    throw new UsageError("usage: t3-threads send <threadId|name> <message> [--wait] [--queue] [--full] [--json]");
   }
   if (opts.mode !== undefined && !RUNTIME_MODES.has(opts.mode)) {
     throw new UsageError(`--mode must be one of: ${[...RUNTIME_MODES].join(", ")}`);

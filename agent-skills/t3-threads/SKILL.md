@@ -40,11 +40,11 @@ scripts/t3-threads.mjs send "<chat name>" "X" --wait   # when the user wants the
 
 ```bash
 scripts/t3-threads.mjs list [--project <id|name>] [--match <text>] [--all] [--json]
-scripts/t3-threads.mjs read <threadId|name> [--turns 6] [--json]   # recent messages, pending approvals/questions
+scripts/t3-threads.mjs read <threadId|name> [--turns 6] [--full] [--json]   # recent messages, pending approvals/questions
 scripts/t3-threads.mjs send <threadId|name> <message> [--wait] [--queue] [--timeout 300] [--interval ms] \
     [--command-id <id>] [--message-id <id>] [--mode approval-required|full-access|auto-accept-edits|auto] \
-    [--interaction default|plan] [--json]
-scripts/t3-threads.mjs wait <threadId|name> [--timeout 300] [--interval ms] [--json]
+    [--interaction default|plan] [--full] [--json]
+scripts/t3-threads.mjs wait <threadId|name> [--timeout 300] [--interval ms] [--full] [--json]
 scripts/t3-threads.mjs token mint|show|revoke [--ttl 30d]
 ```
 
@@ -61,6 +61,13 @@ scripts/t3-threads.mjs token mint|show|revoke [--ttl 30d]
   after the send, with no other user message in between. On a busy thread the provider may steer
   the message into the running turn, which is invisible to the CLI — the wait then times out
   (exit 3, "delivered; reply pending"); use `read` to see the thread.
+- `read` clips each message to 1500 characters and `wait`/`send --wait` clips the reply to 6000,
+  to save tokens. Human output marks a cut with `[N chars truncated; rerun with --full]`. In
+  `--json`, `truncatedChars` on each message and `replyTruncatedChars` on a wait result give the
+  number of omitted characters, 0 when the text is complete. Pass `--full` for the whole text,
+  with `--turns 1` or `2` to keep output small. Never relay or quote clipped text as complete.
+  For a past thread's full history without live state, use the harness-history skill
+  (`chat-read.sh last t3 <id>`).
 - `send` defaults to the target thread's runtime and interaction modes; override only on request.
 - Unknown options and invalid values fail with exit code 2; nothing is sent.
 - An uncertain send failure prints the thread, `commandId`, and `messageId`: inspect with `read`
