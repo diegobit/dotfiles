@@ -1,6 +1,6 @@
 ---
 name: delegate
-description: Delegate implementation, refactors, tests, debugging, or codebase investigations to external Gemini, Claude, Cursor, Codex, or OpenCode workers while keeping verbose execution out of the main context. Gemini is the default. Supports model and reasoning-effort selection (Codex defaults to Sol 6.1, supports Astra and Luna), scoped writes, read-only investigations, continuation, and file-backed evidence.
+description: Delegate implementation, refactors, tests, debugging, or codebase investigations to external Gemini, Claude, Cursor, Codex, or OpenCode workers while keeping verbose execution out of the main context. Supports model and reasoning-effort selection, scoped writes, read-only investigations, continuation, and file-backed evidence.
 ---
 
 # Delegate
