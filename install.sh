@@ -140,6 +140,8 @@ for f in "$HOME/.claude/CLAUDE.md" "$HOME/.codex/AGENTS.md" \
     ln -sf "$HOME/dotfiles/AGENTS.md" "$f"
 done
 
+# Configure MCP servers after installation: see docs/mcp-setup.md.
+
 # ---------------------------------------------
 # Programming Languages and Frameworks, work
 # ---------------------------------------------

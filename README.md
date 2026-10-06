@@ -45,6 +45,8 @@ cd dotfiles
 stow .
 ```
 
+For AI MCP server configuration, see the [MCP setup guide](docs/mcp-setup.md).
+
 ## Setup nvim
 
 ### Inside nvim

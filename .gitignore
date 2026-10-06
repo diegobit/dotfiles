@@ -17,6 +17,11 @@
 !.config/colima/amd64/colima.yaml
 .config/aichat/.env
 
+# MCP configs with local tokens
+.gemini/config/mcp_config.json
+.rivolo-token
+.icloud-mail-token
+
 # docextract: compiled Swift helper is built on first use
 agent-skills/docextract/scripts/vision_ocr
 

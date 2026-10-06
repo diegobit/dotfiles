@@ -1,0 +1,28 @@
+{
+  "mcpServers": {
+    "chrome-devtools": {
+      "command": "npx",
+      "args": ["-y", "chrome-devtools-mcp@latest", "--no-usage-statistics", "--no-performance-crux"]
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@latest", "--browser", "chrome", "--caps", "devtools"]
+    },
+    "rivolo": {
+      "url": "https://mcp.rivolo.app/mcp",
+      "serverUrl": "https://mcp.rivolo.app/mcp",
+      "headers": {
+        "Authorization": "Bearer <RIVOLO_PAT_TOKEN>",
+        "Accept": "application/json, text/event-stream"
+      }
+    },
+    "icloud-mail": {
+      "url": "https://icloud-mail.diegobit.com/mcp",
+      "serverUrl": "https://icloud-mail.diegobit.com/mcp",
+      "headers": {
+        "Authorization": "Bearer <ICLOUD_MAIL_TOKEN>",
+        "Accept": "application/json, text/event-stream"
+      }
+    }
+  }
+}
