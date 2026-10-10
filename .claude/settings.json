@@ -19,6 +19,10 @@
     "defaultMode": "auto"
   },
   "model": "sonnet",
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
   "_disabledHooks": {
     "_comment": "Commented-out hooks (settings.json must be strict JSON, no // comments). To re-enable, move these entries under the \"hooks\" key and delete _disabledHooks.",
     "Notification": [
