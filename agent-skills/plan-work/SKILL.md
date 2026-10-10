@@ -1,6 +1,6 @@
 ---
 name: plan-work
-description: Explicitly requested synthesis of a conversation into a specification or decomposition of agreed work into implementation plans. Replaces to-spec and to-tickets. Select when the user requests plan-work by name.
+description: Explicitly requested synthesis of a conversation into a specification or decomposition of agreed work into implementation plans. Select when the user requests plan-work by name.
 ---
 
 # Plan work

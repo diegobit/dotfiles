@@ -110,7 +110,8 @@ for loc in "${locations[@]}"; do
     # only links this installer owns; leave user files and other targets alone.
     for retired in flash-worker claude-worker cursor-worker external-worker \
         diagnosing-bugs deep-review grilling grill-me grill-with-docs wayfinder \
-        prototype to-spec to-tickets docextract2 writing-for-agents2 writing-for-humans2; do
+        prototype to-spec to-tickets docextract2 writing-for-agents2 writing-for-humans2 \
+        code-simplifier create-verification-skill domain-modeling; do
         [ ! -d "$AGENT_SKILLS_DIR/$retired" ] || continue
         link_path="$dest_dir/$retired"
         [ -L "$link_path" ] || continue
