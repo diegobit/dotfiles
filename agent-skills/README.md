@@ -36,7 +36,7 @@ Nothing here needs a global Python environment. `docextract` declares its Python
 | skill | needs | install |
 |---|---|---|
 | **docextract** | `uv`; Xcode CLT (for `swiftc`, builds the Vision OCR helper once) | `brew install uv` · `xcode-select --install` |
-| **delegate** | `jq`, `shasum` or `sha1sum`; selected authenticated CLI: `agy` (default), `claude`, Cursor `agent`, `codex`, or `opencode` | `brew install jq`; see the skill |
+| **delegate** *(disconnected)* | `jq`, `shasum` or `sha1sum`; selected authenticated CLI: `agy` (default), `claude`, Cursor `agent`, `codex`, or `opencode` | Retained in repo (`agent-skills/delegate/`), disconnected from global harness symlinks |
 | **harness-history** | `python3`, `jq` | `brew install jq` |
 | **code-simplifier** | none | — |
 
@@ -44,6 +44,10 @@ The remaining instruction-only skills are `code-simplifier`, `domain-modeling`,
 `plan-tracker`, `plan-work`, `writing-for-agents`, `writing-for-humans`, and
 `create-verification-skill`. The verification skill uses the established project skill
 root, defaulting to `.agents/skills/` when none exists.
+
+`delegate` remains in `agent-skills/delegate/` for reference and scripts/tests, but is
+disconnected from active harness discovery locations in favor of native T3 Code / harness
+subagent orchestration.
 
 `plan-work` replaces `to-spec` and `to-tickets`, with separate specification and
 implementation-planning modes. It follows `plan-tracker` for publication.

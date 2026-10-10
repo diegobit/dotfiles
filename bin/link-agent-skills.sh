@@ -46,11 +46,26 @@ if [ ! -d "$AGENT_SKILLS_DIR" ]; then
     exit 1
 fi
 
-# Find all skill directories in agent-skills/
+# Skills kept in repository but disconnected from global installation
+DISABLED_SKILLS=(
+    "delegate"
+)
+
+# Find all active skill directories in agent-skills/
 skills=()
 for skill_path in "$AGENT_SKILLS_DIR"/*; do
     if [ -d "$skill_path" ]; then
-        skills+=("$(basename "$skill_path")")
+        skill_name="$(basename "$skill_path")"
+        is_disabled=0
+        for disabled in "${DISABLED_SKILLS[@]}"; do
+            if [ "$skill_name" = "$disabled" ]; then
+                is_disabled=1
+                break
+            fi
+        done
+        if [ "$is_disabled" -eq 0 ]; then
+            skills+=("$skill_name")
+        fi
     fi
 done
 
@@ -106,6 +121,20 @@ for loc in "${locations[@]}"; do
         else
             rm "$link_path"
             echo "Removed retired skill link: $link_path"
+        fi
+    done
+
+    # Remove disconnected / disabled skill links
+    for disabled in "${DISABLED_SKILLS[@]}"; do
+        link_path="$dest_dir/$disabled"
+        [ -L "$link_path" ] || continue
+        [ "$(readlink "$link_path")" = "${rel_prefix}${disabled}" ] || continue
+        if [ "$CHECK_MODE" -eq 1 ]; then
+            echo "DISABLED: $link_path (run link-agent-skills.sh to remove)"
+            errors=$((errors + 1))
+        else
+            rm "$link_path"
+            echo "Removed disconnected skill link: $link_path"
         fi
     done
 
