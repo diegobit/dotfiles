@@ -17,6 +17,6 @@
   task name).
   - ✅ done
   - ❌ error or problem
-  - ❓ stopped intentionally to ask Diego for input
+  - ✋ stopped intentionally to ask Diego for input
   - 🔄 intermediate step done, or waiting on external work — subagents use this, never ✅
 
