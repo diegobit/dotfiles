@@ -18,5 +18,5 @@
   - ✅ done
   - ❌ error or problem
   - ☝️ stopped intentionally to ask Diego for input
-  - 🔄 intermediate step done, or waiting on external work — subagents use this, never ✅
+  - ℹ️ intermediate step done, or waiting on external work — subagents use this, never ✅
 
