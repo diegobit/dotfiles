@@ -39,12 +39,12 @@ agy mcp add --header "Authorization: Bearer $(cat ~/.raindrop-token)" raindrop \
   https://api.raindrop.io/rest/v2/ai/mcp
 ```
 
-Codex has no header flag, so append this to `~/.codex/config.toml`. It reads the header from the file rather than an environment variable because T3 Code starts Codex outside the shell, where exported variables are missing.
+Codex has no header flag, and its native HTTP client rejects this server's reply to the `initialized` notification ("Unexpected content type ... when send initialized notification"). It runs `mcp-remote` as a stdio bridge instead, so append this to `~/.codex/config.toml`. The header comes from the file rather than an environment variable because T3 Code starts Codex outside the shell, where exported variables are missing.
 
 ```toml
 [mcp_servers.raindrop]
-url = "https://api.raindrop.io/rest/v2/ai/mcp"
-http_headers = { Authorization = "Bearer <token>" }
+command = "npx"
+args = ["-y", "mcp-remote", "https://api.raindrop.io/rest/v2/ai/mcp", "--header", "Authorization: Bearer <token>", "--transport", "http-only"]
 ```
 
 ## Tokens
