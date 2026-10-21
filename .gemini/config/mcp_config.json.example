@@ -23,6 +23,14 @@
         "Authorization": "Bearer <ICLOUD_MAIL_TOKEN>",
         "Accept": "application/json, text/event-stream"
       }
+    },
+    "raindrop": {
+      "url": "https://api.raindrop.io/rest/v2/ai/mcp",
+      "serverUrl": "https://api.raindrop.io/rest/v2/ai/mcp",
+      "headers": {
+        "Authorization": "Bearer <RAINDROP_TOKEN>",
+        "Accept": "application/json, text/event-stream"
+      }
     }
   }
 }

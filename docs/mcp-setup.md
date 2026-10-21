@@ -15,12 +15,23 @@ Use the repository files below as the reference for endpoints and commands.
 
 Merge entries into existing files, preserving other settings. Each harness has its own format; adapt the OpenCode configuration for each one.
 
+## Raindrop.io
+
+All four harnesses use the official remote server, `https://api.raindrop.io/rest/v2/ai/mcp`, authenticated with the personal API token in the `Authorization` header. OpenCode reads the token through `{file:~/.raindrop-token}`; Codex and Antigravity carry the header value in their own configuration; Claude Code stores it in `~/.claude.json`.
+
+The server exposes 21 tools. `delete_bookmarks` stays available, while `raindrop_delete_collections` and `raindrop_delete_tags` are denied in OpenCode and `mcp__raindrop__delete_collections` and `mcp__raindrop__delete_tags` in Claude Code. Codex and Antigravity have no equivalent switch, so the global `AGENTS.md` tells agents not to call them.
+
+On the free plan the server answers filtered reads but rejects semantic search with "Semantic search is only available to Pro users". The REST API's `search` parameter still works for keyword search.
+
+The official skills ship separately: `claude plugin install raindrop@claude-plugins-official`, `codex plugin add raindrop@openai-curated`, `gemini extensions install https://github.com/raindropio/skills`.
+
 ## Tokens
 
 Store token values outside the repository, without the `Bearer` prefix, in files with permissions `600`:
 
 - Rivolo: `~/.rivolo-token`; Codex environment variable: `RIVOLO_TOKEN`.
 - iCloud Mail: `~/.icloud-mail-token`; environment variable: `ICLOUD_MAIL_TOKEN`.
+- Raindrop: `~/.raindrop-token`; environment variable: `RAINDROP_TOKEN`.
 
 Your shell can export these variables by reading the files. The process that starts the harness must inherit them. Tracked files, including `config.fish`, should contain only references to secrets. Set permissions `600` on local configurations containing tokens too; keep token values out of logs and agent replies.
 

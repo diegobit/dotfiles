@@ -16,6 +16,10 @@
       "Bash(ls -la /Users/diego/code/finv/fpc-app/backend/src/main/resources/db/changelog/*.xml)",
       "Bash(ls -1 /Users/diego/code/finv/fpc-app/backend/src/main/java/it/aitechnologies/finvers/services/*.java)"
     ],
+    "deny": [
+      "mcp__raindrop__delete_collections",
+      "mcp__raindrop__delete_tags"
+    ],
     "defaultMode": "auto"
   },
   "model": "sonnet",

@@ -43,7 +43,21 @@
       "headers": {
         "Authorization": "Bearer {file:~/.rivolo-token}"
       }
+    },
+    "raindrop": {
+      "type": "remote",
+      "url": "https://api.raindrop.io/rest/v2/ai/mcp",
+      "enabled": true,
+      "oauth": false,
+      "headers": {
+        "Authorization": "Bearer {file:~/.raindrop-token}"
+      }
     }
-  }
+  },
+  // Bookmark deletion stays available; collections and tags do not.
+  "permissions": [
+    { "action": "raindrop_delete_collections", "resource": "*", "effect": "deny" },
+    { "action": "raindrop_delete_tags", "resource": "*", "effect": "deny" }
+  ]
   //"plugin": ["@mohak34/opencode-notifier@latest"]
 }

@@ -20,3 +20,8 @@
   - 🙋 stopped intentionally to ask Diego for input
   - ⏳ intermediate step done, or waiting on external work — subagents use this, never ✅
 
+# Raindrop
+
+- Bookmarks are reachable through the `raindrop` MCP server. Never call
+  `delete_collections` or `delete_tags`; `delete_bookmarks` stays allowed.
+
