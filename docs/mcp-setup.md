@@ -25,6 +25,28 @@ On the free plan the server answers filtered reads but rejects semantic search w
 
 The official skills ship separately: `claude plugin install raindrop@claude-plugins-official`, `codex plugin add raindrop@openai-curated`, `gemini extensions install https://github.com/raindropio/skills`.
 
+Copy the token once into `~/.raindrop-token` on each machine, then:
+
+```sh
+# OpenCode needs nothing: the symlinked configuration already lists the server.
+
+# Claude Code
+claude mcp add --scope user --transport http raindrop https://api.raindrop.io/rest/v2/ai/mcp \
+  --header "Authorization: Bearer $(cat ~/.raindrop-token)"
+
+# Antigravity
+agy mcp add --header "Authorization: Bearer $(cat ~/.raindrop-token)" raindrop \
+  https://api.raindrop.io/rest/v2/ai/mcp
+```
+
+Codex has no header flag, so append this to `~/.codex/config.toml`. It reads the header from the file rather than an environment variable because T3 Code starts Codex outside the shell, where exported variables are missing.
+
+```toml
+[mcp_servers.raindrop]
+url = "https://api.raindrop.io/rest/v2/ai/mcp"
+http_headers = { Authorization = "Bearer <token>" }
+```
+
 ## Tokens
 
 Store token values outside the repository, without the `Bearer` prefix, in files with permissions `600`:
