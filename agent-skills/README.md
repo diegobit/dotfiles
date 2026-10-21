@@ -28,6 +28,9 @@ bin/link-agent-skills.sh --check    # report only, non-zero exit if anything is 
 `install.sh` calls it, so a fresh machine is wired automatically. Adding a skill is: make the
 directory, re-run the script.
 
+`harness-history` stays in this repo and in the in-repo harness directories. The linker
+does not put it in `~/.claude/skills`, `~/.codex/skills`, or `~/.cursor/skills`.
+
 ## Dependencies
 
 Nothing here needs a global Python environment. `docextract` declares its Python packages inline
@@ -36,24 +39,24 @@ Nothing here needs a global Python environment. `docextract` declares its Python
 | skill | needs | install |
 |---|---|---|
 | **docextract** | `uv`; Xcode CLT (for `swiftc`, builds the Vision OCR helper once) | `brew install uv` · `xcode-select --install` |
-| **delegate** *(disconnected)* | `jq`, `shasum` or `sha1sum`; selected authenticated CLI: `agy` (default), `claude`, Cursor `agent`, `codex`, or `opencode` | Retained in repo (`agent-skills/delegate/`), disconnected from global harness symlinks |
+| **delegate** | `jq`, `shasum` or `sha1sum`; selected authenticated CLI: `agy` (default), `claude`, Cursor `agent`, `codex`, or `opencode` | `brew install jq`; see the skill |
 | **harness-history** | `python3`, `jq` | `brew install jq` |
+| **code-simplifier** | none | — |
 
-The remaining instruction-only skills are `plan-tracker`, `plan-work`, `writing-for-agents`,
-and `writing-for-humans`.
+The remaining instruction-only skills are `code-simplifier`, `domain-modeling`,
+`plan-tracker`, `plan-work`, `writing-for-agents`, `writing-for-humans`, and
+`create-verification-skill`. The verification skill uses the established project skill
+root, defaulting to `.agents/skills/` when none exists.
 
-`delegate` remains in `agent-skills/delegate/` for reference and scripts/tests, but is
-disconnected from active harness discovery locations in favor of native T3 Code / harness
-subagent orchestration.
-
-`plan-work` covers both specification and implementation-planning modes.
-It follows `plan-tracker` for publication.
+`plan-work` replaces `to-spec` and `to-tickets`, with separate specification and
+implementation-planning modes. It follows `plan-tracker` for publication.
 
 The revised `docextract`, `writing-for-humans`, and `writing-for-agents` are the
 default versions. Earlier versions remain in Git history; the `*2` comparison
 entry points have been retired.
 
-Codex marks `plan-work` explicit-only through `agents/openai.yaml`.
+Codex marks `code-simplifier`, `create-verification-skill`, and `plan-work`
+explicit-only through `agents/openai.yaml`.
 
 OpenCode's `scheduled-tasks` and `db-cleanup` remain separate under
 `~/.config/opencode/skills/`; the shared linker does not manage them.
@@ -78,7 +81,8 @@ earlier document skill needed the first three; `docextract` was tested without t
 
 ## Sources
 
-- The retained agent-writing skills and `plan-work` were adapted from
+- The retained domain modeling and agent-writing skills, and the planning skills
+  consolidated into `plan-work`, were adapted from
   [mattpocock/skills](https://github.com/mattpocock/skills).
-- `writing-for-humans` was adapted from
+- `create-verification-skill` and `writing-for-humans` were adapted from
   [Pstack](https://github.com/cursor/plugins/tree/main/pstack).

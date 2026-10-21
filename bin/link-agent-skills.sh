@@ -11,6 +11,9 @@
 #   ~/.codex/skills/         -> <relative path to>/agent-skills/<name>
 #   ~/.cursor/skills/        -> <relative path to>/agent-skills/<name>
 #
+# repo_only skills stay in agent-skills/ and the in-repo harness dirs above.
+# They are not linked into the three user-global directories.
+#
 # Usage:
 #   link-agent-skills.sh         # Create/update all symlinks
 #   link-agent-skills.sh --check # Verify existing symlinks without modifying
@@ -46,26 +49,11 @@ if [ ! -d "$AGENT_SKILLS_DIR" ]; then
     exit 1
 fi
 
-# Skills kept in repository but disconnected from global installation
-DISABLED_SKILLS=(
-    "delegate"
-)
-
-# Find all active skill directories in agent-skills/
+# Find all skill directories in agent-skills/
 skills=()
 for skill_path in "$AGENT_SKILLS_DIR"/*; do
     if [ -d "$skill_path" ]; then
-        skill_name="$(basename "$skill_path")"
-        is_disabled=0
-        for disabled in "${DISABLED_SKILLS[@]}"; do
-            if [ "$skill_name" = "$disabled" ]; then
-                is_disabled=1
-                break
-            fi
-        done
-        if [ "$is_disabled" -eq 0 ]; then
-            skills+=("$skill_name")
-        fi
+        skills+=("$(basename "$skill_path")")
     fi
 done
 
@@ -99,6 +87,25 @@ locations=(
     "$CURSOR_SKILLS|$CURSOR_PREFIX"
 )
 
+# Present in the repo and the in-repo harness dirs, not installed user-globally.
+repo_only=(harness-history)
+
+is_repo_only() {
+    local name="$1"
+    local skill
+    for skill in "${repo_only[@]}"; do
+        [ "$skill" = "$name" ] && return 0
+    done
+    return 1
+}
+
+is_user_global() {
+    case "$1" in
+        "$HOME_SKILLS"|"$CODEX_SKILLS"|"$CURSOR_SKILLS") return 0 ;;
+        *) return 1 ;;
+    esac
+}
+
 errors=0
 total=0
 
@@ -110,8 +117,7 @@ for loc in "${locations[@]}"; do
     # only links this installer owns; leave user files and other targets alone.
     for retired in flash-worker claude-worker cursor-worker external-worker \
         diagnosing-bugs deep-review grilling grill-me grill-with-docs wayfinder \
-        prototype to-spec to-tickets docextract2 writing-for-agents2 writing-for-humans2 \
-        code-simplifier create-verification-skill domain-modeling; do
+        prototype to-spec to-tickets docextract2 writing-for-agents2 writing-for-humans2; do
         [ ! -d "$AGENT_SKILLS_DIR/$retired" ] || continue
         link_path="$dest_dir/$retired"
         [ -L "$link_path" ] || continue
@@ -125,24 +131,24 @@ for loc in "${locations[@]}"; do
         fi
     done
 
-    # Remove disconnected / disabled skill links
-    for disabled in "${DISABLED_SKILLS[@]}"; do
-        link_path="$dest_dir/$disabled"
-        [ -L "$link_path" ] || continue
-        [ "$(readlink "$link_path")" = "${rel_prefix}${disabled}" ] || continue
-        if [ "$CHECK_MODE" -eq 1 ]; then
-            echo "DISABLED: $link_path (run link-agent-skills.sh to remove)"
-            errors=$((errors + 1))
-        else
-            rm "$link_path"
-            echo "Removed disconnected skill link: $link_path"
-        fi
-    done
-
     for skill in "${skills[@]}"; do
-        total=$((total + 1))
         link_path="$dest_dir/$skill"
         expected_target="${rel_prefix}${skill}"
+
+        if is_user_global "$dest_dir" && is_repo_only "$skill"; then
+            if [ -L "$link_path" ] && [ "$(readlink "$link_path")" = "$expected_target" ]; then
+                if [ "$CHECK_MODE" -eq 1 ]; then
+                    echo "UNLINKED: $link_path (repo-only; run link-agent-skills.sh to remove)"
+                    errors=$((errors + 1))
+                else
+                    rm "$link_path"
+                    echo "Removed user-global link for repo-only skill: $link_path"
+                fi
+            fi
+            continue
+        fi
+
+        total=$((total + 1))
 
         if [ "$CHECK_MODE" -eq 1 ]; then
             if [ ! -e "$link_path" ] && [ ! -L "$link_path" ]; then

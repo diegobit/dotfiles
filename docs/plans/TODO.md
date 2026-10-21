@@ -22,3 +22,11 @@
 
 - [x] `done` **01 Safe lookup and exact title** — [plan](20260916-harness-history-01-lookup.md) — blocked by: none
 - [x] `done` **02 last and resume recipe** — [plan](20260916-harness-history-02-last.md) — blocked by: 01
+
+## Raindrop MCP proxy
+
+[Design and shared contract](20261021-raindrop-mcp-proxy-00-design.md)
+
+- [ ] `todo` **01 Proxy and tests** — [plan](20261021-raindrop-mcp-proxy-01-proxy.md) — blocked by: none
+- [ ] `todo` **02 Harness integration and migration** — [plan](20261021-raindrop-mcp-proxy-02-integration.md) — blocked by: 01
+
