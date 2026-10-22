@@ -42,10 +42,10 @@ All four harnesses launch `raindrop-mcp` instead of the remote URL, `install.sh`
    - Keep the note that the free plan has no semantic search, now phrased as "the parameter is not exposed".
 
 7. **Verification per harness** (a configuration line is not proof; a completed turn is):
-   - `raindrop-mcp --check` exits 0 and reports six tools without `search`.
-   - OpenCode: `opencode mcp list` shows `connected`, then one `find_collections` call through the agent.
-   - Claude Code: `claude mcp get raindrop` shows connected, then one read.
-   - Codex: `codex mcp get raindrop` shows a stdio command, then one non-interactive turn that lists collections.
+   - `raindrop-mcp --check` exits 0 and reports six tools without `search`, and a REST query that returns results.
+   - OpenCode: `opencode mcp list` shows `connected`, then one `find_collections` call through the agent, then one `find_bookmarks` call with `query` that returns a known bookmark.
+   - Claude Code: `claude mcp get raindrop` shows connected, then one read and one `query` search.
+   - Codex: `codex mcp get raindrop` shows a stdio command, then one non-interactive turn that runs a `query` search.
    - Antigravity: `agy mcp list` shows the server; a turn is deferred until the quota resets.
 
 8. **Rollback, one line per harness:**
