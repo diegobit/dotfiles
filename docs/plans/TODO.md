@@ -25,8 +25,10 @@
 
 ## Raindrop MCP Worker
 
-[Design and shared contract](20261021-raindrop-mcp-proxy-00-design.md)
+Repository: [diegobit/raindrop-mcp](https://github.com/diegobit/raindrop-mcp)
 
-- [ ] `todo` **01 The Worker and its tests** — [plan](20261021-raindrop-mcp-proxy-01-proxy.md) — blocked by: none
-- [ ] `todo` **02 Deployment and harness wiring** — [plan](20261021-raindrop-mcp-proxy-02-integration.md) — blocked by: 01
+[Design and shared contract](https://github.com/diegobit/raindrop-mcp/blob/main/plans/20261021-raindrop-mcp-proxy-00-design.md)
+
+- [ ] `todo` **01 The Worker and its tests** — [plan](https://github.com/diegobit/raindrop-mcp/blob/main/plans/20261021-raindrop-mcp-proxy-01-proxy.md) — blocked by: none
+- [ ] `todo` **02 Deployment and harness wiring** — [plan](https://github.com/diegobit/raindrop-mcp/blob/main/plans/20261021-raindrop-mcp-proxy-02-integration.md) — blocked by: 01
 
