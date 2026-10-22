@@ -12,7 +12,7 @@ New private repository `diegobit/raindrop-mcp` with a Worker exposing six MCP to
 
 1. **Scaffolding:**
    - `gh repo create diegobit/raindrop-mcp --private --clone` under `~/code/raindrop-mcp`.
-   - Dependencies pinned to the versions proven in the precedent: `agents@0.17.4`, `@modelcontextprotocol/sdk@1.29.0`, `zod@4`. Dev: `wrangler@4`, `typescript@5`, `vitest@3`, `@cloudflare/workers-types@4`. Node 24, `npm ci`.
+   - Dependencies pinned to the versions proven in the precedent: `agents@0.17.4`, `@modelcontextprotocol/sdk@1.29.0`, `zod@^4.5.0` (Cloudflare's memory guidance names 4.5.0 as the floor for Workers). Dev: `wrangler@4`, `typescript@5`, `vitest@3`, `@cloudflare/workers-types@4`. Node 24, `npm ci`.
    - Scripts copied from the precedent: `test`, `typecheck`, `dev`, `check:bundle`, `setup`, `deploy`, `deploy:production`, `config` (`scripts/deploy.mjs --print-config`).
    - `wrangler.base.jsonc`: no `account_id`, no `routes`; `main: src/index.ts`, a `compatibility_date`, `nodejs_compat`, `workers_dev: true`, vars `RAINDROP_REST_URL` and `RAINDROP_MCP_URL`, and the rate-limit binding below.
    - Copy `scripts/deploy.mjs` and `scripts/lib/*.mjs` (config composer, target resolution, wrangler adapter). `deploy-profiles.jsonc` is a repository convention consumed by that script, not by wrangler directly; do not claim otherwise.
@@ -47,10 +47,11 @@ New private repository `diegobit/raindrop-mcp` with a Worker exposing six MCP to
    - Per-isolate `let session: Promise<void> | null`. On rejection, **clear it** so the next call initializes afresh; a transient failure must not poison the isolate.
    - `initialize` with `protocolVersion: "2025-06-18"`, empty capabilities, a named `clientInfo`; then `notifications/initialized`, whose **200 with an empty body and no content type** is the official server's expected answer and must be ignored without JSON parsing.
    - `fetchContent(env, bookmarkId)`: `tools/call` for `fetch_bookmark_content`; decode `structuredContent` first, else the first `content` item of type `text` parsed as JSON; read `bookmark.body`, `title`, `link`.
-   - Before implementing the decoder, capture one sanitized real response into `test/fixtures/content.json` (fields only, no personal bookmark text in a committed fixture; replace text with a placeholder). The envelope is therefore verified, not assumed.
+   - Before implementing the decoder, capture one real response. The implementer runs `find_bookmarks` (no `query`) with `limit: 1` and then `fetch_bookmark_content` on that id against the official server, saves the raw JSON under `test/fixtures/content.raw.json` (gitignored), and derives `test/fixtures/content.json` from it with `body` replaced by a 200-character placeholder and only structure, field names, and types kept. No user action is required; the raw file never gets committed.
+   - Cap the saved text at 100,000 characters before returning it, so a long article cannot blow the CPU or memory budget.
    - `AbortSignal.timeout(30_000)`; missing or empty `body` throws "no saved content for this bookmark".
 
-7. **`src/mcp.ts`:** six tools on `McpServer` with zod objects. Keep the strict objects whole when registering; passing only `.shape` loses strictness.
+7. **`src/mcp.ts`:** six tools on `McpServer` with zod objects. Keep the strict objects whole when registering; passing only `.shape` loses strictness. Build the six schema objects **once at module scope** (cheap global init, no per-request cost) and only the `McpServer` per request. Serialize with `JSON.stringify(value)`, never with indentation: pretty-printing costs CPU and model tokens.
    - `find_bookmarks({query?, collection?, sort?, limit?, page?})`: defaults 0/`newest`/20/0, `limit` 1–50, `page` ≥ 0. Path `/raindrops/{collection}` with `search`, `sort`, `perpage`, `page`; map `count→total`, `_id→id`, `collection.$id→collection_id`, `link→url`; drop empty `excerpt`/`note`. `relevance` without `query` → `errorResult`.
    - `find_collections()`: merge `/collections` and `/collections/childrens`, add `system: {unsorted: -1, trash: -99}`.
    - `fetch_bookmark_content({bookmark_id})`: delegates to `content.ts`.
