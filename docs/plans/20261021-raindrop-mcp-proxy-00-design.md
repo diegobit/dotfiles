@@ -68,6 +68,7 @@ Rotating the client token does not touch the Raindrop account token, and a leake
 ## Transport and limits
 
 - Only `POST`/`GET`/`DELETE /mcp` are routed; anything else is `404`.
+- The handler answers `notifications/initialized` to harnesses with **202, empty body, no content type**, which satisfies the protocol. That is a different response from the official server's empty **200** described in the Problem.
 - A Workers rate-limit binding keyed by the token digest gives **approximate burst protection**. It is not a global quota: one `update_bookmarks` call can issue up to 25 REST requests, so one admitted MCP request can fan out well past the binding's nominal limit. The binding is location-local and best-effort; Raindrop's own 429 handling remains the real ceiling.
 - Outbound calls use `fetch` with `AbortSignal.timeout`, 60 s for REST and 30 s for content.
 - No queue, no retry, no replay. A write that may have arrived is reported `uncertain`.
@@ -112,7 +113,7 @@ No arguments. `GET /collections` plus `GET /collections/childrens`, merged by id
 ## Content backend details
 
 - `initialize` once per isolate with `protocolVersion: "2025-06-18"`, empty capabilities, a named `clientInfo`; keep the promise, not the object, and clear it when it rejects so a single transient failure does not poison the isolate.
-- Send `notifications/initialized` once and ignore its answer: **202, empty body, no content type**. That is the handler's correct behaviour, and it is not the same response that breaks Codex against the official server.
+- Send `notifications/initialized` once and ignore its **200, empty body, no content type** answer: never attempt to parse it as JSON. This is the official server's behaviour, the same response that breaks Codex; our own client must tolerate it.
 - Decode `structuredContent` first, else parse the first `content` item of type `text` as JSON; `bookmark.body` is the text. The envelope is confirmed against one captured sanitized response before the decoder is written, not assumed.
 - A failure leaves the other five tools untouched.
 
@@ -127,13 +128,13 @@ One structured `console.log` per tool call: tool name, backend, upstream status,
 - `content.ts`: `structuredContent`, text-JSON, `isError`, empty body, timeout.
 - `mcp.ts`: build the server, drive it over `InMemoryTransport`, assert the six names, the total declaration size under 8,000 characters, and that `relevance` without `query` returns `isError` rather than a protocol error.
 - `auth.ts`: constant-time compare, malformed header, wrong token, absent secret.
-- Integration: `wrangler dev` plus curl for `initialize` and `tools/list`, asserting the six names and a response with a content type on the notification.
+- Integration: `wrangler dev` plus curl for `initialize` and `tools/list`, asserting the six names and a **202 with an empty body** for `notifications/initialized`.
 
 ## Deployment
 
 - `wrangler.base.jsonc` holds portable defaults; `deploy-profiles.jsonc` maps `production` to `raindrop-mcp.diegobit.com` with `workers_dev: false`, mirroring `icloud-mail-proxy`.
 - `npm run check:bundle` (dry-run) must not create routes or secrets.
-- `wrangler secret put RAINDROP_TOKEN`, `wrangler secret put MCP_TOKEN`.
+- Generate the production config with `npm run config -- --profile production` and upload both secrets against it: `wrangler secret put RAINDROP_TOKEN -c <generated-config>` and `wrangler secret put MCP_TOKEN -c <generated-config>`. A bare `wrangler secret put` does not discover `wrangler.base.jsonc` and can target the wrong Worker.
 - `DEPLOY.md` records the order: bundle check, secrets, deploy, curl verification, harness wiring.
 
 ## Risks

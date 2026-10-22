@@ -45,7 +45,7 @@ New private repository `diegobit/raindrop-mcp` with a Worker exposing six MCP to
 
 6. **`src/content.ts`:**
    - Per-isolate `let session: Promise<void> | null`. On rejection, **clear it** so the next call initializes afresh; a transient failure must not poison the isolate.
-   - `initialize` with `protocolVersion: "2025-06-18"`, empty capabilities, a named `clientInfo`; then `notifications/initialized`, whose **202 with an empty body and no content type** is the expected answer and is ignored.
+   - `initialize` with `protocolVersion: "2025-06-18"`, empty capabilities, a named `clientInfo`; then `notifications/initialized`, whose **200 with an empty body and no content type** is the official server's expected answer and must be ignored without JSON parsing.
    - `fetchContent(env, bookmarkId)`: `tools/call` for `fetch_bookmark_content`; decode `structuredContent` first, else the first `content` item of type `text` parsed as JSON; read `bookmark.body`, `title`, `link`.
    - Before implementing the decoder, capture one sanitized real response into `test/fixtures/content.json` (fields only, no personal bookmark text in a committed fixture; replace text with a placeholder). The envelope is therefore verified, not assumed.
    - `AbortSignal.timeout(30_000)`; missing or empty `body` throws "no saved content for this bookmark".
