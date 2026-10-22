@@ -1,82 +1,67 @@
-# Work Unit 01: the `raindrop-mcp` adapter and its tests
+# Work Unit 01: the Raindrop MCP Worker
 
 Status: `todo`
 Depends on: none
-Design: [Raindrop MCP adapter](20261021-raindrop-mcp-proxy-00-design.md)
+Design: [Raindrop MCP Worker](20261021-raindrop-mcp-proxy-00-design.md)
 
 ## Deliverable
 
-`bin/raindrop-mcp.py`, executable, Python 3.9+, standard library only, plus `bin/tests/test_raindrop_mcp.py`. No package, no virtual environment, no dependency file: it runs from a checkout and from `~/.local/bin`.
+New private repository `diegobit/raindrop-mcp` with a Worker exposing six MCP tools on `/mcp`, plus its vitest suite. Modeled on `~/code/icloud-mail-proxy`, which is the working precedent: `agents/mcp` handler, `@modelcontextprotocol/sdk`, zod, wrangler profiles.
 
 ## Detailed Specifications
 
-1. **Entry point and configuration:**
-   - Shebang `#!/usr/bin/env python3`; on a Python older than 3.9 print one line to stderr and exit 2.
-   - Token: `RAINDROP_TOKEN` if set and non-empty, else `~/.raindrop-token`; strip whitespace. Missing or empty exits 2 with one stderr line.
-   - Endpoints: `https://api.raindrop.io/rest/v1` and `https://api.raindrop.io/rest/v2/ai/mcp`, overridable with `RAINDROP_REST_URL` and `RAINDROP_MCP_URL` (tests and `--check` against a fake).
-   - `--list-tools`: print the six names, one per line, no network.
-   - `--declarations`: print each tool name and the JSON length of its declaration, plus the total. Must total under 8,000 characters.
-   - `--check`: token present; MCP `initialize` plus `tools/list` reachable; REST reachable with a one-word query. Report tool count, declaration size, and whether the REST answer carried a `count` field. An empty result set is healthy. Exit 0 if all transports answered, 1 otherwise. `--check` is a smoke test, not proof that every advertised operator still behaves.
-   - No other CLI surface.
+1. **Scaffolding:**
+   - `gh repo create diegobit/raindrop-mcp --private --clone` under `~/code/raindrop-mcp`.
+   - `package.json` dependencies: `agents`, `@modelcontextprotocol/sdk`, `zod`. Dev: `wrangler`, `typescript`, `vitest`, `@cloudflare/workers-types`. Node 24, `npm ci`.
+   - Scripts mirroring the precedent: `test` (`vitest run`), `typecheck` (`tsc --noEmit`), `dev` (`wrangler dev -c wrangler.base.jsonc`), `check:bundle` (`wrangler deploy --dry-run -c wrangler.base.jsonc`), `deploy:production`.
+   - `wrangler.base.jsonc`: no `account_id`, no `routes`; `main: src/index.ts`, `compatibility_date` matching the precedent, `nodejs_compat`, `workers_dev: true`, vars `RAINDROP_REST_URL` and `RAINDROP_MCP_URL`, and one rate-limit binding for `/mcp`.
+   - `deploy-profiles.jsonc`: `production` → `raindrop-mcp.diegobit.com`, `workers_dev: false`, `custom_domain: true`.
 
-2. **Framing:**
-   - Read stdin line by line, ignore blank lines, write one compact JSON object plus `\n` per response, flush.
-   - Error ladder: unparsable line → `-32700`; parseable JSON that is not an object with `jsonrpc` and `method` → `-32600`; unknown method → `-32601`; unknown tool or malformed arguments → `-32602`. Keep running after each.
-   - Valid notifications, including ones whose method is unknown, produce no output and no error.
-   - Never write anything but protocol frames to stdout. `SIGINT` and `SIGTERM` exit 0 without a traceback.
-   - One request at a time; no threads.
+2. **`src/auth.ts`:**
+   - `extractBearer(request)` with the same `^Bearer (.+)$` rule as the precedent.
+   - `tokenMatches(presented, secret)`: SHA-256 both values, compare with `crypto.subtle.timingSafeEqual`; an empty secret never matches.
+   - `json(body, status, headers)` and `withNoStore(response)` helpers.
 
-3. **Lifecycle:**
-   - Support `2025-06-18` only. `initialize` receives one `protocolVersion`; if it is not supported, answer `2025-06-18`. Never echo an unknown version. `capabilities: {"tools": {}}`, `serverInfo: {"name": "raindrop-mcp", "version": "1.0.0"}`.
-   - `notifications/initialized`, `notifications/cancelled`: consume locally, emit nothing, never forward. This is the Codex fix.
-   - `ping`: `{}`. `resources/list`, `prompts/list`: empty arrays. EOF: exit 0.
+3. **`src/index.ts`:**
+   - Route `POST|GET|DELETE /mcp` only; everything else `404`.
+   - Extract and verify the bearer before building a server; on failure `401` with `WWW-Authenticate: Bearer` and no detail.
+   - Rate limit keyed by the token digest: `env.MCP_LIMITER.limit({ key })`; on failure `429` with `Retry-After: 60`.
+   - `createMcpHandler(() => buildServer(env))` with a fresh server per request.
+   - Every response through `withNoStore`.
 
-4. **`tools/list` and `tools/call`:**
-   - `tools/list` returns the six declarations from the module constants. No upstream call, no rewriting.
-   - `tools/call` dispatches on the tool name. Names outside the six → `-32602`, no network call.
-   - Argument validation runs before any request, against the literal schema including `additionalProperties: false`: wrong type, unknown top-level or nested property, `limit` outside 1–50, `page` below 0, more than 25 ids, more than 100 items, empty required array → `-32602` naming the argument.
-   - `relevance` without `query` is **not** a validation error: it is a cross-field refusal and returns `isError: true`.
-   - Success answer: `{"content": [{"type": "text", "text": "<compact json>"}], "structuredContent": <same object>, "isError": false}`.
-   - Execution failure (upstream 4xx/5xx, timeout, unreachable, cross-field refusal): `{"content": [{"type": "text", "text": "<message>"}], "isError": true}`. No `structuredContent`. Never a JSON-RPC error.
-   - A write that partially succeeds returns `isError: true` **and** the four-bucket object, so the caller keeps the per-item outcome.
+4. **`src/rest.ts`:**
+   - `call(env, path, init)` with base `env.RAINDROP_REST_URL`, `Authorization: Bearer env.RAINDROP_TOKEN`, `Accept: application/json`, `AbortSignal.timeout(60_000)`.
+   - Typed helpers: `listRaindrops(collection, params)`, `listCollections()`, `listChildren()`, `createRaindrops(items)`, `updateRaindrop(id, body)`, `moveToTrash(id)`.
+   - One error type carrying a short, user-safe message per the design's status mapping; no response body echoed into errors except Raindrop's own `errorMessage` truncated to 200 characters.
+   - No retries anywhere.
 
-5. **HTTP layer:**
-   - One `urlopen` per request, `timeout=60`, headers `Authorization: Bearer <token>`, `Accept: application/json` for REST and `Accept: application/json, text/event-stream` for MCP, `Content-Type: application/json` when a body is sent.
-   - REST answers JSON only. MCP answers either JSON or `text/event-stream`: parse events, ignore leading notifications, return the message whose `id` matches, stop reading. An empty body on a request is an error; on a notification it is ignored.
-   - Map status codes to `isError` messages exactly as the design table. Never retry.
+5. **`src/content.ts`:**
+   - Per-isolate `let session: Promise<void> | null`, resolving after `initialize` and `notifications/initialized`; the empty 200 on the notification is expected and ignored.
+   - `fetchContent(env, bookmarkId)`: `POST` a `tools/call` for `fetch_bookmark_content`, decode `structuredContent` first then the first `content` item of type `text`, and return `{id, title, url, text}` from `bookmark`.
+   - `AbortSignal.timeout(30_000)`; on any failure throw the same error type so the tool answers `isError`.
+   - A missing or empty `body` throws "no saved content for this bookmark".
 
-6. **Upstream MCP session:**
-   - On first use: `initialize` with `protocolVersion: "2025-06-18"`, `capabilities: {}`, `clientInfo: {"name": "raindrop-mcp", "version": "1.0.0"}`, then `notifications/initialized` whose empty 200 answer is ignored.
-   - Store `Mcp-Session-Id` from the initialize response headers when present, and send it on later requests. Send `MCP-Protocol-Version: 2025-06-18` on requests after initialization.
-   - Decode a tool result by preferring `structuredContent`, else parsing the first `content` item of type `text` as JSON. An upstream `isError` becomes an `isError` result carrying its text.
-   - On a session-invalid response, mark the session dead, report the failure once, and reconnect on the next call. Never replay the failed call.
+6. **`src/mcp.ts`:** register six tools on `McpServer` with zod schemas and `.strict()`.
+   - `find_bookmarks({query?, collection?, sort?, limit?, page?})`: defaults 0/`newest`/20/0 with `limit` 1–50 and `page` ≥ 0. Builds `/raindrops/{collection}?search&sort&perpage&page`, maps `count→total` and `_id→id`, `collection.$id→collection_id`, `link→url`, drops empty `excerpt`/`note`. `relevance` without `query` → `errorResult`, not a protocol error.
+   - `find_collections()`: merge `/collections` and `/collections/childrens` by id, add `system: {unsorted: -1, trash: -99}`.
+   - `fetch_bookmark_content({bookmark_id})`: delegates to `content.ts`.
+   - `create_bookmarks({items})` with `items` 1–100: one `POST /raindrops`, wire `url→link`, `collection→{"$id": n}`; answer per index `created/failed/uncertain`. A transport failure on the single call marks every item `uncertain`, because the commit is unknown.
+   - `update_bookmarks({bookmark_ids, title?, note?, tags?, favorite?, collection?})` with 1–25 ids: sequential `PUT /raindrop/{id}` (singular), `favorite→important` preserving `false`, `tags` replacing. Stop at the first 429, remainder `unattempted`. Transport failure → `uncertain` for that id and stop.
+   - `delete_bookmarks({bookmark_ids})` with 1–25 ids: sequential `PUT /raindrop/{id}` with `{"collection": {"$id": -99}}`. Never `DELETE`. Same stop rule and buckets.
+   - Every handler wraps work in a guard that turns the shared error type into `errorResult`; partial writes return the bucket object alongside `isError`.
 
-7. **Tool implementations:**
-   - `find_bookmarks`: `limit` 1–50 default 20, `page` 0-based default 0, `collection` default 0, `sort` default `newest`. Path `/raindrops/{collection}`, query `search`, `sort`, `perpage`, `page`. Map `count`→`total`; items→`{id, title, url, tags, collection_id, created, type, excerpt?, note?}` with `_id`→`id`, `collection.$id`→`collection_id`, `link`→`url`, dropping empty `excerpt`/`note`.
-   - `find_collections`: `GET /collections` and `GET /collections/childrens`, merge by id, keep `{id, title, parent_id, count}`; return the system ids `-1` and `-99` in a separate object.
-   - `create_bookmarks`: one `POST /raindrops` with `items` (1–100). Wire mapping: `url`→`link`, `collection`→`{"$id": n}`, `title`/`note`/`tags` unchanged. Bucket by input index: `created: [{index, url, id}]`, `failed: [{index, url, error}]`, `uncertain: [{index, url}]` for entries whose answer was lost. No retry.
-   - `update_bookmarks`: per id, `PUT /raindrop/{id}` — **singular**. Send only the supplied fields; `favorite`→`important` (keep `false`), `collection`→`{"$id": n}`, `tags` replaces the list. Sequential, maximum 25, in the given order. Stop at the first 429 and mark the remainder `unattempted`. Bucket results into `updated`, `failed`, `unattempted`, `uncertain`; a timeout or unreadable answer goes to `uncertain` and is not retried.
-   - `delete_bookmarks`: per id, `PUT /raindrop/{id}` with `{"collection": {"$id": -99}}` — a move to Trash. Never `DELETE`. Same cap, order, 429 stop rule and four buckets. Before relying on it, verify once with a disposable bookmark that the resource lands in `-99`.
-   - `fetch_bookmark_content`: lazy upstream session, then `tools/call` with `{"bookmark_id": n}`. Map the returned `bookmark.body` to `text`, plus `title` and `link`. A failure marks only this tool as failed; the other five keep working. Missing or empty `body` → `isError` "no saved content for this bookmark".
+7. **Tests (`test/`):**
+   - `auth.test.ts`: missing, malformed, wrong and correct bearer; empty secret.
+   - `rest.test.ts` with `vi.stubGlobal("fetch")`: URL and query construction for every helper, wire mappings, status mapping, assignment of the timeout signal.
+   - `content.test.ts`: `structuredContent`, text-JSON, `isError`, empty body, timeout, and that a second call reuses the initialized session.
+   - `mcp.test.ts` over `InMemoryTransport`: the six names, total declaration size under 8,000 characters, `relevance` without `query` is `isError`, `.strict()` rejects an unknown argument, a partial write returns buckets with `isError`.
+   - No test touches the network; no test reads a real token.
 
-8. **Constants:**
-   - Six schema literals with descriptions written for a model: what the tool does, its limits, that `query` accepts Raindrop operators, that page-body search needs Pro, that `delete_bookmarks` moves to Trash and never deletes permanently, that tag updates replace the list, that `create_bookmarks` accepts at most 100 items.
-   - One module-level tuple of the six names, used by validation, `--list-tools`, and the dispatch table.
-
-9. **Logging:**
-   - Off by default. `RAINDROP_MCP_DEBUG=1` writes one stderr line per request: method, tool, backend, status, duration. No bodies, no bookmark text, no notes, no token.
-
-10. **Tests (`bin/tests/test_raindrop_mcp.py`):**
-    - `python3 -m unittest discover -s bin/tests`, no network beyond `127.0.0.1`.
-    - Three fake upstreams on `ThreadingHTTPServer`: REST with canned `raindrops`, `collections`, `childrens`, and scripted statuses; MCP with `initialize`, `tools/list`, `tools/call`, in JSON and SSE modes; a session-mode MCP that rejects requests missing the session id or version header. All record every request.
-    - The adapter runs as a subprocess; tests write JSON-RPC lines and read one line back.
-    - Cover the eighteen cases in the design, plus `--list-tools`, `--declarations`, `--check` against the fakes, and the missing-token exit 2.
-    - Assert no upstream request for: a notification, an unknown tool, and a call rejected by argument validation.
-    - Assert the singular update route and the absence of `DELETE` in every write test.
+8. **Docs in the repo:** `README.md` (what it is, the six tools, the two secrets), `DEPLOY.md` (bundle check, secrets, deploy, curl verification), and `plans/` only if a decision needs recording.
 
 ## Acceptance
 
-- `bin/raindrop-mcp.py --declarations` totals under 8,000 characters.
-- `bin/raindrop-mcp.py --check` exits 0 against the live API, reporting the upstream tool count and a REST `count`.
-- `python3 -m unittest discover -s bin/tests` passes.
-- No third-party import anywhere in the script.
+- `npm test`, `npm run typecheck`, `npm run check:bundle` all pass.
+- `wrangler dev` plus curl: `initialize` and `tools/list` return six tools, and `notifications/initialized` gets an empty response with a content type.
+- No secret appears in the repository, in `wrangler.base.jsonc`, or in logs.
+- The declaration total is under 8,000 characters, asserted by a test.
