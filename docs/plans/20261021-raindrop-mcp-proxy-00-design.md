@@ -48,7 +48,7 @@ harness ──HTTPS + bearer──→ Worker /mcp (agents/mcp handler, SDK, zod)
                               └── MCP /rest/v2/ai/mcp    (saved page text only)
 ```
 
-- The MCP transport, sessions, SSE framing, and notification handling come from `createMcpHandler`, not from our code. That is what makes Codex work, and why no `mcp-remote` is needed.
+- The MCP transport, sessions, SSE framing, and notification handling come from `createMcpHandler`, not from our code. Native Codex support is the target; it is verified by an early probe before any harness is touched, and the documented fallback is `npx mcp-remote` if that probe fails.
 - A fresh `McpServer` is built per request, as in `icloud-mail-proxy`; no module-level server object.
 - The Worker holds no bookmark state. The only retained state is a per-isolate promise for the upstream content session.
 
@@ -68,7 +68,7 @@ Rotating the client token does not touch the Raindrop account token, and a leake
 ## Transport and limits
 
 - Only `POST`/`GET`/`DELETE /mcp` are routed; anything else is `404`.
-- A Workers rate-limit binding keyed by the token digest caps bursts below Raindrop's own 120 requests per minute.
+- A Workers rate-limit binding keyed by the token digest gives **approximate burst protection**. It is not a global quota: one `update_bookmarks` call can issue up to 25 REST requests, so one admitted MCP request can fan out well past the binding's nominal limit. The binding is location-local and best-effort; Raindrop's own 429 handling remains the real ceiling.
 - Outbound calls use `fetch` with `AbortSignal.timeout`, 60 s for REST and 30 s for content.
 - No queue, no retry, no replay. A write that may have arrived is reported `uncertain`.
 
@@ -105,15 +105,15 @@ No arguments. `GET /collections` plus `GET /collections/childrens`, merged by id
 ## Results and errors
 
 - Success: `content: [{type: "text", text: "<compact json>"}]`, plus `structuredContent` when the payload is an object.
-- Execution failure (upstream 4xx/5xx, timeout, unreachable, cross-field refusal): `isError: true` with a short message. Argument validation is the SDK's, which answers a JSON-RPC error.
+- Execution failure (upstream 4xx/5xx, timeout, unreachable, cross-field refusal): `isError: true` with a short message. Zod rejects unknown or malformed arguments before the handler, and SDK 1.29.0 surfaces that as `isError: true` too, not as a JSON-RPC error.
 - Partial write: `isError: true` **and** the full bucket object, so per-item outcomes survive.
 - Status mapping: 401/403 `raindrop token rejected`; 429 `raindrop rate limit, retry after <n>s`; 5xx `raindrop upstream error <status>`.
 
 ## Content backend details
 
-- `initialize` once per isolate with `protocolVersion: "2025-06-18"`, empty capabilities, a named `clientInfo`; keep the promise, not the object.
-- Send `notifications/initialized` once and ignore its empty 200 answer.
-- Decode `structuredContent` first, else parse the first `content` item of type `text` as JSON; `bookmark.body` is the text. An upstream `isError` becomes our error result.
+- `initialize` once per isolate with `protocolVersion: "2025-06-18"`, empty capabilities, a named `clientInfo`; keep the promise, not the object, and clear it when it rejects so a single transient failure does not poison the isolate.
+- Send `notifications/initialized` once and ignore its answer: **202, empty body, no content type**. That is the handler's correct behaviour, and it is not the same response that breaks Codex against the official server.
+- Decode `structuredContent` first, else parse the first `content` item of type `text` as JSON; `bookmark.body` is the text. The envelope is confirmed against one captured sanitized response before the decoder is written, not assumed.
 - A failure leaves the other five tools untouched.
 
 ## Observability
@@ -138,7 +138,8 @@ One structured `console.log` per tool call: tool name, backend, upstream status,
 
 ## Risks
 
-- **Workers Free CPU.** If the account is on the free plan, the 10 ms CPU limit per invocation may be tight for the SDK plus JSON parsing of a large saved article. Measure CPU time with `wrangler tail` during unit 02; a paid plan raises it. This is the one risk that can force a plan change.
+- **Workers Free CPU.** Free allows 10 ms of CPU per invocation; network waiting is excluded but server construction, zod validation, parsing a large article, and serialization count. This is a **gate before any harness is switched**, measured from Workers Logs invocation CPU (dashboard or Logs, not `wrangler tail` duration) on synthetic payloads: 50 results, 100 creates, 25 updates, one large article, cold and warm. If it exceeds the allowance, Workers Paid ($5/month) is required before cutover.
+- **Credential recovery.** Worker secrets are write-only: the account token cannot be read back. Keep a local copy at `~/.raindrop-token` (600) until the Worker is verified, because rollback to the official URL needs it. Neither copy belongs in a repository.
 - **New deploy surface.** The Worker is one more thing that can be down; if it is, all four harnesses lose bookmarks, while the previous local design only depended on Raindrop.
 - **Token in Cloudflare.** The account token now lives in a secret on a public endpoint. Mitigated by two secrets, constant-time compare, a rate-limit binding, and no token in responses or logs.
 - **Upstream content service.** Raindrop documents its MCP as a Pro beta while it answers free-account tokens. Only `fetch_bookmark_content` depends on it.

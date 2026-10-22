@@ -6,19 +6,21 @@ Design: [Raindrop MCP Worker](20261021-raindrop-mcp-proxy-00-design.md)
 
 ## Deliverable
 
-The Worker live at `https://raindrop-mcp.diegobit.com/mcp`, four harnesses pointing at it, and `docs/mcp-setup.md` describing the new wiring. No `mcp-remote`, no per-machine install.
+The Worker live at `https://raindrop-mcp.diegobit.com/mcp`, four harnesses pointing at it, and `docs/mcp-setup.md` describing the new wiring. No per-machine install; Codex uses the native transport when the probe proves it works, and the documented bridge otherwise.
 
 ## Detailed Specifications
 
 1. **Deploy:**
    - `npm run check:bundle` must not create routes or secrets; confirm the dry run output.
-   - `wrangler secret put RAINDROP_TOKEN` with the account token; `wrangler secret put MCP_TOKEN` with a freshly generated 32-byte hex value. Record only where they live, never the values.
-   - `npm run deploy:production`, then `curl` the custom domain: `initialize`, `tools/list` (six names), and one `tools/call` to `find_collections`. Confirm `Cache-Control: no-store` on every response and `401` without a bearer.
-   - First the custom domain, then Cloudflare Access if the user wants it. Access would require service tokens for every client; recommend keeping the bearer model instead, as `icloud-mail-proxy` does.
+   - Generate the production config first (`npm run config -- --profile production` or the path `npm run deploy` prints), then upload secrets against **that** config: `wrangler secret put RAINDROP_TOKEN -c <generated-config>` and the same for `MCP_TOKEN` with a freshly generated 32-byte hex value. A bare `wrangler secret put` does not discover `wrangler.base.jsonc` and can target the wrong Worker.
+   - `npm run deploy:production`, then `curl` the custom domain: `initialize`, `tools/list` (six names), and one `tools/call` to `find_collections`. Confirm `Cache-Control: no-store`, `401` without a bearer, and `429` past the binding.
+   - **CPU gate before any harness changes:** exercise the synthetic payloads from the design and read invocation CPU from Workers Logs, not `wrangler tail` duration. If the free allowance is exceeded, enable Workers Paid before continuing.
+   - Cloudflare Access is not enabled: it would require service tokens for every client. The bearer model mirrors `icloud-mail-proxy`.
 
 2. **Client token on the machines:**
    - Write the `MCP_TOKEN` value to `~/.raindrop-mcp-token`, mode 600, on the Linux machine and on the Mac. It is not the Raindrop token and never goes into a repository.
-   - `docs/mcp-setup.md` gains this file and drops `~/.raindrop-token` from the harness section; the Raindrop token now exists only in the Worker secret.
+   - **Keep `~/.raindrop-token` on disk** until the Worker is verified on every harness. Worker secrets are write-only, so a rollback would otherwise have no account token to send. Delete it only after the fallback is no longer plausible.
+   - `docs/mcp-setup.md` gains the new file and drops `~/.raindrop-token` from the harness section while keeping it in the rollback note.
 
 3. **OpenCode:**
    - Remote entry, `oauth: false`, header `Authorization: Bearer {file:~/.raindrop-mcp-token}`, URL `https://raindrop-mcp.diegobit.com/mcp`.
@@ -31,10 +33,10 @@ The Worker live at `https://raindrop-mcp.diegobit.com/mcp`, four harnesses point
    - Keep the existing `mcp__raindrop__delete_*` deny entries.
 
 5. **Codex:**
-   - Try the native form first, since the Worker answers the notification correctly:
-     `[mcp_servers.raindrop]` with `url = "https://raindrop-mcp.diegobit.com/mcp"` and `http_headers = { Authorization = "Bearer <token>" }`.
-   - If Codex still rejects the transport, fall back to `npx -y mcp-remote <url> --header "Authorization: Bearer <token>" --transport http-only`. Record which one was needed in `docs/mcp-setup.md`; do not assume.
-   - Remove the current `mcp-remote` entry pointing at `api.raindrop.io`.
+   - **Probe before touching the config:** point a throwaway Codex profile or a temporary config at the deployed Worker and complete `initialize`, `tools/list`, and one harmless `find_collections` call. The current `mcp-remote` entry stays intact during the probe.
+   - If the probe passes, use the native form: `[mcp_servers.raindrop]` with `url = "https://raindrop-mcp.diegobit.com/mcp"` and `http_headers = { Authorization = "Bearer <token>" }`.
+   - If it fails, keep `npx -y mcp-remote <url> --header "Authorization: Bearer <token>" --transport http-only` and record which one was needed in `docs/mcp-setup.md`. Native is the target, the bridge is the documented fallback; do not assume either without the probe.
+   - Either way, remove the current `mcp-remote` entry pointing at `api.raindrop.io` only after the replacement answers.
 
 6. **Antigravity:**
    - `agy mcp remove raindrop`, then `agy mcp add --header "Authorization: Bearer $(cat ~/.raindrop-mcp-token)" raindrop https://raindrop-mcp.diegobit.com/mcp`.
