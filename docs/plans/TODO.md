@@ -30,5 +30,5 @@ Repository: [diegobit/raindrop-mcp](https://github.com/diegobit/raindrop-mcp)
 [Design and shared contract](https://github.com/diegobit/raindrop-mcp/blob/main/plans/20261021-raindrop-mcp-proxy-00-design.md)
 
 - [x] `done` **01 The Worker and its tests** — [plan](https://github.com/diegobit/raindrop-mcp/blob/main/plans/20261021-raindrop-mcp-proxy-01-proxy.md) — blocked by: none
-- [ ] `wip` **02 Deployment and harness wiring** — [plan](https://github.com/diegobit/raindrop-mcp/blob/main/plans/20261021-raindrop-mcp-proxy-02-integration.md) — blocked by: 01; deployed, three harnesses verified, client token rotated and clients re-checked with read-only turns; CPU coverage partial (sequential write fan-out and 100,000-character content unmeasured); Mac token and the Antigravity turn still pending
+- [ ] `wip` **02 Deployment and harness wiring** — [plan](https://github.com/diegobit/raindrop-mcp/blob/main/plans/20261021-raindrop-mcp-proxy-02-integration.md) — blocked by: 01; deployed; OpenCode, Claude Code, and Codex verified on both machines; Antigravity pending quota; CPU samples measured (25-item update 20 ms, 25-item delete 16 ms, 100,000-char content 12 ms) on a `standard`/Paid deployment, so the Free 10 ms target is not met and the plan/caps decision is open
 
