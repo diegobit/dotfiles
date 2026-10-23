@@ -30,5 +30,5 @@ Repository: [diegobit/raindrop-mcp](https://github.com/diegobit/raindrop-mcp)
 [Design and shared contract](https://github.com/diegobit/raindrop-mcp/blob/main/plans/20261021-raindrop-mcp-proxy-00-design.md)
 
 - [x] `done` **01 The Worker and its tests** — [plan](https://github.com/diegobit/raindrop-mcp/blob/main/plans/20261021-raindrop-mcp-proxy-01-proxy.md) — blocked by: none
-- [ ] `wip` **02 Deployment and harness wiring** — [plan](https://github.com/diegobit/raindrop-mcp/blob/main/plans/20261021-raindrop-mcp-proxy-02-integration.md) — blocked by: 01; deployed; OpenCode, Claude Code, and Codex verified on both machines; Antigravity pending quota; caps reduced to 10 ids and 50,000 characters, redeployed; warm CPU 5–8 ms but cold-start samples 23–40 ms, so the Free 10 ms target remains unguaranteed on a `standard`/Paid deployment
+- [x] `done` **02 Deployment and harness wiring** — [plan](https://github.com/diegobit/raindrop-mcp/blob/main/plans/20261021-raindrop-mcp-proxy-02-integration.md) — blocked by: 01; deployed; OpenCode, Claude Code, and Codex verified on both machines; Antigravity pending quota; caps 10 ids / 50,000 characters, redeployed; warm CPU 5–8 ms but cold-start samples 23–40 ms, so the Paid/standard plan is accepted
 
