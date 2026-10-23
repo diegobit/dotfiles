@@ -23,10 +23,10 @@ All four harnesses use the Worker at `https://raindrop-mcp.diegobit.com/mcp`. It
 | --- | --- |
 | `find_bookmarks` | 1–50 results per page, page 0 or later. |
 | `find_collections` | No arguments. Includes Unsorted (`-1`) and Trash (`-99`). |
-| `fetch_bookmark_content` | Saved page text only, capped at 100,000 characters. |
+| `fetch_bookmark_content` | Saved page text only, capped at 50,000 characters. |
 | `create_bookmarks` | 1–100 items in one request. |
-| `update_bookmarks` | 1–25 bookmarks, sequential; stops at the first rate limit. |
-| `delete_bookmarks` | 1–25 bookmarks, sequential; moves them to Trash and never deletes permanently. |
+| `update_bookmarks` | 1–10 bookmarks, sequential; stops at the first rate limit. |
+| `delete_bookmarks` | 1–10 bookmarks, sequential; moves them to Trash and never deletes permanently. |
 
 `find_bookmarks` takes a keyword `query` with Raindrop's search operators. There is no semantic search, no page-body search, and no permanent deletion. `fetch_bookmark_content` asks Raindrop's official MCP server for the text saved with a bookmark; it never fetches the live page. A bookmark without saved text is an error, not an empty success.
 
