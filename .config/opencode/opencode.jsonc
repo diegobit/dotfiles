@@ -2,55 +2,52 @@
   "$schema": "https://opencode.ai/config.jsonc",
   "autoupdate": true,
   "mcp": {
-    "chrome-devtools": {
-      "type": "local",
-      "command": [
-        "npx",
-        "-y",
-        "chrome-devtools-mcp@latest",
-        "--no-usage-statistics",
-        "--no-performance-crux"
-      ],
-      "enabled": true
-    },
-    "playwright": {
-      "type": "local",
-      "command": [
-        "npx",
-        "-y",
-        "@playwright/mcp@latest",
-        "--browser",
-        "chrome",
-        "--caps",
-        "devtools"
-      ],
-      "enabled": true
-    },
-    "icloud-mail": {
-      "type": "remote",
-      "url": "https://icloud-mail.diegobit.com/mcp",
-      "enabled": true,
-      "oauth": false,
-      "headers": {
-        "Authorization": "Bearer {env:ICLOUD_MAIL_TOKEN}"
-      }
-    },
-    "rivolo": {
-      "type": "remote",
-      "url": "https://mcp.rivolo.app/mcp",
-      "enabled": true,
-      "oauth": false,
-      "headers": {
-        "Authorization": "Bearer {file:~/.rivolo-token}"
-      }
-    },
-    "raindrop": {
-      "type": "remote",
-      "url": "https://api.raindrop.io/rest/v2/ai/mcp",
-      "enabled": true,
-      "oauth": false,
-      "headers": {
-        "Authorization": "Bearer {file:~/.raindrop-token}"
+    "servers": {
+      "chrome-devtools": {
+        "type": "local",
+        "command": [
+          "npx",
+          "-y",
+          "chrome-devtools-mcp@latest",
+          "--no-usage-statistics",
+          "--no-performance-crux"
+        ]
+      },
+      "playwright": {
+        "type": "local",
+        "command": [
+          "npx",
+          "-y",
+          "@playwright/mcp@latest",
+          "--browser",
+          "chrome",
+          "--caps",
+          "devtools"
+        ]
+      },
+      "icloud-mail": {
+        "type": "remote",
+        "url": "https://icloud-mail.diegobit.com/mcp",
+        "oauth": false,
+        "headers": {
+          "Authorization": "Bearer {env:ICLOUD_MAIL_TOKEN}"
+        }
+      },
+      "rivolo": {
+        "type": "remote",
+        "url": "https://mcp.rivolo.app/mcp",
+        "oauth": false,
+        "headers": {
+          "Authorization": "Bearer {file:~/.rivolo-token}"
+        }
+      },
+      "raindrop": {
+        "type": "remote",
+        "url": "https://raindrop-mcp.diegobit.com/mcp",
+        "oauth": false,
+        "headers": {
+          "Authorization": "Bearer {file:~/.raindrop-mcp-token}"
+        }
       }
     }
   },

@@ -25,10 +25,10 @@
       }
     },
     "raindrop": {
-      "url": "https://api.raindrop.io/rest/v2/ai/mcp",
-      "serverUrl": "https://api.raindrop.io/rest/v2/ai/mcp",
+      "url": "https://raindrop-mcp.diegobit.com/mcp",
+      "serverUrl": "https://raindrop-mcp.diegobit.com/mcp",
       "headers": {
-        "Authorization": "Bearer <RAINDROP_TOKEN>",
+        "Authorization": "Bearer <RAINDROP_MCP_TOKEN>",
         "Accept": "application/json, text/event-stream"
       }
     }
