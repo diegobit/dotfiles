@@ -39,15 +39,11 @@ Nothing here needs a global Python environment. `docextract` declares its Python
 | skill | needs | install |
 |---|---|---|
 | **docextract** | `uv`; Xcode CLT (for `swiftc`, builds the Vision OCR helper once) | `brew install uv` · `xcode-select --install` |
-| **delegate** | `jq`, `shasum` or `sha1sum`; selected authenticated CLI: `agy` (default), `claude`, Cursor `agent`, `codex`, or `opencode` | `brew install jq`; see the skill |
 | **harness-history** | `python3`, `jq` | `brew install jq` |
 | **telegram-notify** | `tg` on `PATH`; `~/.telegram-bot-token-<profile>` and `~/.telegram-chat-id-<profile>` (`~/.telegram-default-profile` optional, absent means `dg`) | `install.sh` links `bin/tg.sh` on macOS; elsewhere `ln -sf ~/dotfiles/bin/tg.sh ~/.local/bin/tg` |
-| **code-simplifier** | none | — |
 
-The remaining instruction-only skills are `code-simplifier`, `domain-modeling`,
-`plan-tracker`, `plan-work`, `writing-for-agents`, `writing-for-humans`, and
-`create-verification-skill`. The verification skill uses the established project skill
-root, defaulting to `.agents/skills/` when none exists.
+The remaining instruction-only skills are `plan-tracker`, `plan-work`, `writing-for-agents`,
+and `writing-for-humans`.
 
 `plan-work` replaces `to-spec` and `to-tickets`, with separate specification and
 implementation-planning modes. It follows `plan-tracker` for publication.
@@ -56,8 +52,7 @@ The revised `docextract`, `writing-for-humans`, and `writing-for-agents` are the
 default versions. Earlier versions remain in Git history; the `*2` comparison
 entry points have been retired.
 
-Codex marks `code-simplifier`, `create-verification-skill`, and `plan-work`
-explicit-only through `agents/openai.yaml`.
+Codex marks `plan-work` explicit-only through `agents/openai.yaml`.
 
 OpenCode's `scheduled-tasks` and `db-cleanup` remain separate under
 `~/.config/opencode/skills/`; the shared linker does not manage them.
@@ -82,8 +77,7 @@ earlier document skill needed the first three; `docextract` was tested without t
 
 ## Sources
 
-- The retained domain modeling and agent-writing skills, and the planning skills
-  consolidated into `plan-work`, were adapted from
-  [mattpocock/skills](https://github.com/mattpocock/skills).
-- `create-verification-skill` and `writing-for-humans` were adapted from
+- The agent-writing skills, and the planning skills consolidated into `plan-work`, were
+  adapted from [mattpocock/skills](https://github.com/mattpocock/skills).
+- `writing-for-humans` was adapted from
   [Pstack](https://github.com/cursor/plugins/tree/main/pstack).
