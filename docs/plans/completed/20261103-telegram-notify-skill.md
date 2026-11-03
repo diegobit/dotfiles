@@ -96,8 +96,10 @@ Deployment did not follow the steps above: the Linux hosts have no dotfiles clon
 already had a skills tree; `spark-1135` and `spark-4921` (never the prod sparks) were aligned to
 it by copying `~/agent-skills` and linking every skill into `~/.claude/skills`,
 `~/.config/opencode/skills` and `~/.codex/skills`. All three carry the same 11 skills with
-identical content. None of them has `tg` or its secrets, so the skill stays silent there until
-it is installed.
+identical content. They also now have `tg` in `~/.local/bin`, the `ait` token/chat pair and
+`~/.telegram-default-profile` set to `ait`, so notifications from those hosts go to the AIT
+channel; a silent test message from `spark-1135` succeeded. The `dg` profile was not copied to
+the company machines.
 
 Still open: the behavioural checks (explicit trigger, blocked case, silent ordinary run) need a
 fresh session.
