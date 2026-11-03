@@ -88,7 +88,15 @@ For each machine with the dotfiles clone:
 
 ## Validation
 
-Completed 2026-11-03 on this machine: `bin/link-agent-skills.sh --check` passes with all 63
-symlinks valid, the skill resolves in all seven discovery roots, `AGENTS.md` contains no `tg`
-reference, and the front matter parses. The behavioural checks (explicit trigger, blocked case,
-silent ordinary run) need a fresh session. Other machines still need `git pull` and the linker.
+Completed 2026-11-03: `bin/link-agent-skills.sh --check` passes with all 63 symlinks valid, the
+skill resolves in all seven discovery roots, `AGENTS.md` contains no `tg` reference, and the
+front matter parses.
+
+Deployment did not follow the steps above: only `jacky` had a skills tree, and it has no
+dotfiles clone. It received the skill by `rsync` plus absolute symlinks in `~/.claude/skills`,
+`~/.config/opencode/skills` and `~/.codex/skills`. That host has no `tg` and no secrets, so the
+skill stays silent there. The two spark hosts have no agent-skills tree and no skills discovery
+setup, so they were skipped.
+
+Still open: the behavioural checks (explicit trigger, blocked case, silent ordinary run) need a
+fresh session.
