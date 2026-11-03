@@ -41,6 +41,7 @@ Nothing here needs a global Python environment. `docextract` declares its Python
 | **docextract** | `uv`; Xcode CLT (for `swiftc`, builds the Vision OCR helper once) | `brew install uv` · `xcode-select --install` |
 | **delegate** | `jq`, `shasum` or `sha1sum`; selected authenticated CLI: `agy` (default), `claude`, Cursor `agent`, `codex`, or `opencode` | `brew install jq`; see the skill |
 | **harness-history** | `python3`, `jq` | `brew install jq` |
+| **telegram-notify** | `tg` on `PATH`; `~/.telegram-bot-token-<profile>` and `~/.telegram-chat-id-<profile>` (`~/.telegram-default-profile` optional, absent means `dg`) | `install.sh` links `bin/tg.sh` on macOS; elsewhere `ln -sf ~/dotfiles/bin/tg.sh ~/.local/bin/tg` |
 | **code-simplifier** | none | — |
 
 The remaining instruction-only skills are `code-simplifier`, `domain-modeling`,
