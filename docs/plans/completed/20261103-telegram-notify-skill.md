@@ -104,9 +104,9 @@ the company machines.
 `geekom` is personal and different: it has a dotfiles clone at `~/code/dotfiles` with the four
 harness instruction files symlinked to it, and `tg` is a symlink to the clone's `bin/tg.sh`,
 defaulting to `dg`. It received the trimmed `AGENTS.md` (keeping its own `# Raindrop` section), the skill
-copied into the clone and linked in five discovery roots, and a silent `tg` test succeeded. Its
-clone is left with uncommitted changes, because the Mac's `main` is 4 ahead and 16 behind
-`origin/main` and nothing could be pushed.
+copied into the clone and linked in five discovery roots, and a silent `tg` test succeeded. After
+the Mac's branch was rebased onto `origin/main` and pushed, `geekom` pulled the same commit
+(`02cf621`); its tree is clean apart from the linker's untracked `delegate` links.
 
 Still open: the behavioural checks (explicit trigger, blocked case, silent ordinary run) need a
 fresh session.
