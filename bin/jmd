@@ -1,0 +1,508 @@
+#!/usr/bin/env python3
+"""Export a Jira issue as clean Markdown for an LLM.
+
+  jmd DWH-10091                     fetch via REST (needs JIRA_EMAIL + JIRA_TOKEN)
+  jmd ~/Downloads/DWH-10091.doc     convert an Export > Word file
+  jmd DWH-10091 -o ticket.md        write to a file instead of stdout
+
+Markdown goes to stdout so it composes: `jmd DWH-10091 | pbcopy`.
+Credentials are read from JIRA_EMAIL / JIRA_TOKEN, with JIRA_BASE_URL optional.
+"""
+
+from __future__ import annotations
+
+import argparse
+import base64
+import json
+import os
+import re
+import sys
+import urllib.error
+import urllib.request
+from datetime import date
+from html.parser import HTMLParser
+
+# ---------------------------------------------------------------- ADF -> MD
+
+INLINE_MARKS = {
+    "strong": ("**", "**"),
+    "em": ("_", "_"),
+    "code": ("`", "`"),
+    "strike": ("~~", "~~"),
+}
+
+
+def _inline(node: dict) -> str:
+    """Render the children of an inline container (paragraph-ish)."""
+    out = []
+    for child in node.get("content", []):
+        t = child.get("type")
+        if t == "text":
+            s = child.get("text", "")
+            for mark in reversed(child.get("marks", [])):
+                mt = mark.get("type")
+                if mt in INLINE_MARKS:
+                    a, b = INLINE_MARKS[mt]
+                    s = f"{a}{s}{b}"
+                elif mt == "link":
+                    s = f"[{s}]({mark.get('attrs', {}).get('href', '')})"
+            out.append(s)
+        elif t == "hardBreak":
+            out.append("  \n")
+        elif t == "mention":
+            out.append("@" + child.get("attrs", {}).get("text", "user"))
+        elif t == "inlineCard":
+            out.append(child.get("attrs", {}).get("url", ""))
+        elif t == "emoji":
+            out.append(child.get("attrs", {}).get("text", ""))
+        else:
+            out.append(_inline(child))
+    return "".join(out)
+
+
+def _block(node: dict, depth: int = 0) -> str:
+    t = node.get("type")
+    pad = "  " * depth
+    if t == "paragraph":
+        return _inline(node).strip() + "\n\n"
+    if t == "heading":
+        lvl = min(int(node.get("attrs", {}).get("level", 2)), 6)
+        return "#" * lvl + " " + _inline(node).strip() + "\n\n"
+    if t == "rule":
+        return "---\n\n"
+    if t == "codeBlock":
+        lang = node.get("attrs", {}).get("language", "")
+        return f"```{lang}\n{_inline(node)}\n```\n\n"
+    if t == "blockquote":
+        body = "".join(_block(c, depth) for c in node.get("content", []))
+        return "\n".join("> " + ln for ln in body.strip().splitlines()) + "\n\n"
+    if t in ("bulletList", "orderedList"):
+        lines = []
+        for i, item in enumerate(node.get("content", []), 1):
+            marker = "-" if t == "bulletList" else f"{i}."
+            body = "".join(_block(c, depth + 1) for c in item.get("content", []))
+            body = body.strip().replace("\n", "\n" + pad + "  ")
+            lines.append(f"{pad}{marker} {body}")
+        return "\n".join(lines) + "\n\n"
+    if t == "taskList":
+        lines = []
+        for item in node.get("content", []):
+            done = item.get("attrs", {}).get("state") == "DONE"
+            body = _inline(item).strip() or "".join(
+                _block(c, depth) for c in item.get("content", [])
+            ).strip()
+            lines.append(f"{pad}- [{'x' if done else ' '}] {body}")
+        return "\n".join(lines) + "\n\n"
+    if t == "panel":
+        body = "".join(_block(c, depth) for c in node.get("content", []))
+        return "\n".join("> " + ln for ln in body.strip().splitlines()) + "\n\n"
+    if t == "table":
+        rows = []
+        for row in node.get("content", []):
+            cells = []
+            for cell in row.get("content", []):
+                txt = "".join(_block(c, depth) for c in cell.get("content", []))
+                cells.append(re.sub(r"\s+", " ", txt).strip().replace("|", "\\|"))
+            rows.append("| " + " | ".join(cells) + " |")
+        if rows:
+            sep = "| " + " | ".join("---" for _ in rows[0].split("|")[1:-1]) + " |"
+            rows = [rows[0], sep] + rows[1:]
+        return "\n".join(rows) + "\n\n"
+    if t == "mediaSingle":
+        return "(image)\n\n"
+    # container-ish fallbacks
+    if node.get("content"):
+        return "".join(_block(c, depth) for c in node["content"])
+    return ""
+
+
+def adf_to_md(adf: dict | None) -> str:
+    if not adf:
+        return ""
+    if isinstance(adf, str):  # API v2 style
+        return adf.strip()
+    return _block(adf).strip()
+
+
+# ---------------------------------------------------------------- HTML -> MD
+
+BLOCK_TAGS = {"p", "div", "li", "h1", "h2", "h3", "h4", "h5", "h6", "pre", "blockquote"}
+
+
+class _MD(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.out: list[str] = []
+        self.skip = 0
+        self.list_stack: list[list] = []  # [tag, counter]
+        self.href: str | None = None
+        self.a_open = False
+        self.tt_wrapped = False
+        self.buf: list[str] = []
+
+    def handle_starttag(self, tag, attrs):
+        a = dict(attrs)
+        if tag in ("script", "style"):
+            self.skip += 1
+        elif tag in ("b", "strong"):
+            self.buf.append("**")
+        elif tag in ("i", "em"):
+            self.buf.append("_")
+        elif tag in ("tt", "code"):
+            self.buf.append("`")
+        elif tag == "a":
+            href = a.get("href")
+            if href:  # ignore bare anchors like <a name="Context"></a>
+                self.href = href
+                self.a_open = True
+                # a link wrapped in <tt> should render as a link, not as code
+                self.tt_wrapped = bool(self.buf) and self.buf[-1] == "`"
+                if self.tt_wrapped:
+                    self.buf.pop()
+                self.buf.append("[")
+        elif tag == "br":
+            self.buf.append("  \n")
+        elif tag == "hr":
+            self.flush()
+            self.out.append("---\n\n")
+        elif re.fullmatch(r"h[1-6]", tag):
+            self.flush()
+            self.buf.append("#" * int(tag[1]) + " ")
+        elif tag in ("ul", "ol"):
+            if not self.list_stack:
+                self.flush()
+            self.list_stack.append([tag, 0])
+        elif tag == "li":
+            self.flush(sep="\n" if self.list_stack else "\n\n")
+            depth = max(len(self.list_stack) - 1, 0)
+            if self.list_stack and self.list_stack[-1][0] == "ol":
+                self.list_stack[-1][1] += 1
+                marker = f"{self.list_stack[-1][1]}."
+            else:
+                marker = "-"
+            self.buf.append("  " * depth + marker + " ")
+        elif tag == "pre":
+            self.flush()
+            self.out.append("```\n")
+
+    def handle_endtag(self, tag):
+        if tag in ("script", "style"):
+            self.skip = max(self.skip - 1, 0)
+        elif tag in ("b", "strong"):
+            self.buf.append("**")
+        elif tag in ("i", "em"):
+            self.buf.append("_")
+        elif tag in ("tt", "code"):
+            self.buf.append("`")
+        elif tag == "a":
+            if self.a_open:
+                if self.href:
+                    self.buf.append(f"]({self.href})")
+                else:
+                    self.buf.append("]")
+                self.href = None
+                self.a_open = False
+                if self.tt_wrapped:
+                    self.buf.append("`")
+                    self.tt_wrapped = False
+        elif re.fullmatch(r"h[1-6]", tag):
+            self.flush()
+        elif tag in ("ul", "ol"):
+            if self.list_stack:
+                self.list_stack.pop()
+            if not self.list_stack:
+                self.flush()
+        elif tag == "li":
+            if not self.list_stack:  # stray li
+                self.flush()
+        elif tag == "pre":
+            self.out.append("```\n\n")
+        elif tag in ("p", "div", "blockquote"):
+            self.flush()
+
+    def handle_data(self, data):
+        if self.skip:
+            return
+        self.buf.append(re.sub(r"\s+", " ", data))
+
+    def flush(self, sep: str = "\n\n"):
+        text = "".join(self.buf).strip()
+        self.buf.clear()
+        if text:
+            self.out.append(text + sep)
+
+
+def html_to_md(fragment: str) -> str:
+    p = _MD()
+    p.feed(fragment)
+    p.flush()
+    md = "".join(p.out)
+    md = re.sub(r"[ \t]+\n", "\n", md)
+    return re.sub(r"\n{3,}", "\n\n", md).strip()
+
+
+# ---------------------------------------------------------------- sources
+
+
+def from_api(key: str, base: str, email: str, token: str) -> str:
+    fields = ",".join(
+        [
+            "summary",
+            "description",
+            "status",
+            "labels",
+            "priority",
+            "assignee",
+            "reporter",
+            "parent",
+            "issuelinks",
+            "comment",
+            "customfield_10193",  # Acceptance Criteria
+        ]
+    )
+    url = f"{base.rstrip('/')}/rest/api/3/issue/{key}?fields={fields}"
+    req = urllib.request.Request(url)
+    auth = base64.b64encode(f"{email}:{token}".encode()).decode()
+    req.add_header("Authorization", f"Basic {auth}")
+    req.add_header("Accept", "application/json")
+    try:
+        with urllib.request.urlopen(req, timeout=30) as r:
+            data = json.load(r)
+    except urllib.error.HTTPError as e:
+        if e.code in (401, 403):
+            raise SystemExit(
+                f"jmd: {e.code} from {base} — credentials rejected.\n"
+                "  check JIRA_EMAIL is the account email (not the site name) and that\n"
+                "  JIRA_TOKEN is a fresh API token from id.atlassian.com → Security → API tokens"
+            ) from None
+        if e.code == 404:
+            raise SystemExit(
+                f"jmd: {key} not found, or your account can't see it.\n"
+                "  Jira returns the same 404 for a rejected token, so if the key looks\n"
+                "  right, check your credentials with:  jmd --check"
+            ) from None
+        raise SystemExit(f"jmd: HTTP {e.code} from {base}") from None
+    except urllib.error.URLError as e:
+        raise SystemExit(f"jmd: can't reach {base}: {e.reason}") from None
+    return render_issue(data["fields"], key)
+
+
+def _name(x) -> str:
+    if isinstance(x, dict):
+        return str(x.get("name") or x.get("displayName") or "")
+    return str(x or "")
+
+
+def render_issue(f: dict, key: str) -> str:
+    lines = [f"# [{key}] {(f.get('summary') or '').strip()}", ""]
+    meta = []
+    if _name(f.get("status")):
+        meta.append(f"**Status:** {_name(f['status'])}")
+    if _name(f.get("priority")):
+        meta.append(f"**Priority:** {_name(f['priority'])}")
+    if f.get("labels"):
+        meta.append("**Labels:** " + ", ".join(f["labels"]))
+    if f.get("parent"):
+        pk = f["parent"].get("key", "")
+        ps = (f["parent"].get("fields") or {}).get("summary", "")
+        meta.append(f"**Parent:** {pk} {ps}".strip())
+    if meta:
+        lines += ["  \n".join(meta), ""]
+
+    lines += ["---", "", adf_to_md(f.get("description")) or "_(empty description)_", ""]
+
+    ac = f.get("customfield_10193")
+    ac_md = adf_to_md(ac) if not isinstance(ac, str) else (ac or "").strip()
+    if ac_md:
+        lines += ["---", "", "## Acceptance Criteria", "", ac_md, ""]
+
+    links = f.get("issuelinks") or []
+    if links:
+        lines.append("## Links")
+        lines.append("")
+        for ln in links:
+            t = ln.get("type", {}).get("name", "link")
+            other = ln.get("outwardIssue") or ln.get("inwardIssue")
+            if other:
+                s = (other.get("fields") or {}).get("summary", "")
+                lines.append(f"- {t}: {other.get('key')} {s}".strip())
+        lines.append("")
+
+    comments = ((f.get("comment") or {}).get("comments")) or []
+    if comments:
+        lines.append("## Comments")
+        lines.append("")
+        for c in comments:
+            who = (c.get("author") or {}).get("displayName", "unknown")
+            lines.append(f"**{who}** — {c.get('created', '')[:10]}")
+            lines.append("")
+            lines.append(adf_to_md(c.get("body")) or "")
+            lines.append("")
+    return "\n".join(lines).strip() + "\n"
+
+
+def from_html(path: str, key: str | None = None) -> str:
+    raw = open(path, encoding="utf-8", errors="replace").read()
+    m_title = re.search(r"(?s)<title>(.*?)</title>", raw)
+    title = m_title.group(1).strip() if m_title else ""
+
+    # key from: explicit arg -> filename -> <title>
+    key = key or (KEY_RE.search(os.path.basename(path)) or [None])[0]
+    key = key or (KEY_RE.search(title) or [None])[0] or "ISSUE"
+
+    summary = re.sub(r"^\[#?" + re.escape(key) + r"\]\s*", "", title).strip()
+    summary = re.sub(r"^\[#?[A-Z][A-Z0-9_]+-\d+\]\s*", "", summary).strip() or key
+    row = {}
+    for name, val in re.findall(
+        r'(?s)<b>([^<]+):</b></td>\s*<td[^>]*>(.*?)</td>', raw
+    ):
+        v = re.sub(r"<[^>]+>", " ", val)
+        v = re.sub(r"\s+", " ", v).strip()
+        if v:
+            row[name] = v
+
+    m = re.search(r'(?s)<td id="descriptionArea">(.*?)</td>\s*</tr>', raw)
+    body = html_to_md(m.group(1)) if m else "_(description not found)_"
+
+    lines = [f"# [{key}] {summary}", ""]
+    for k in ("Status", "Type", "Priority", "Labels", "Parent", "Assignee"):
+        if k in row:
+            lines.append(f"**{k}:** {row[k]}")
+    lines += ["", "---", "", body, ""]
+    return key, "\n".join(lines)
+
+
+KEY_RE = re.compile(r"[A-Z][A-Z0-9_]+-\d+")
+DEFAULT_BASE = "https://logifuture-jira.atlassian.net"
+CRED_FILE = "~/.config/jmd/credentials"
+
+
+def _load_credentials() -> dict[str, str]:
+    """Read KEY=VALUE lines from ~/.config/jmd/credentials, if it exists."""
+    path = os.path.expanduser(CRED_FILE)
+    creds: dict[str, str] = {}
+    try:
+        with open(path, encoding="utf-8") as fh:
+            for line in fh:
+                line = line.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                k, v = line.split("=", 1)
+                creds[k.strip()] = v.strip().strip("'\"")
+    except FileNotFoundError:
+        pass
+    return creds
+
+
+def check_credentials(base: str, email: str | None, token: str | None) -> int:
+    """Confirm the token works, without needing an issue key."""
+    if not (email and token):
+        print(f"jmd: no credentials found in {CRED_FILE} (or env)", file=sys.stderr)
+        return 2
+    req = urllib.request.Request(f"{base.rstrip('/')}/rest/api/3/myself")
+    auth = base64.b64encode(f"{email}:{token}".encode()).decode()
+    req.add_header("Authorization", f"Basic {auth}")
+    req.add_header("Accept", "application/json")
+    try:
+        with urllib.request.urlopen(req, timeout=30) as r:
+            me = json.load(r)
+    except urllib.error.HTTPError as e:
+        print(f"jmd: rejected ({e.code}) — check JIRA_EMAIL and JIRA_TOKEN", file=sys.stderr)
+        return 1
+    except urllib.error.URLError as e:
+        print(f"jmd: can't reach {base}: {e.reason}", file=sys.stderr)
+        return 1
+    who = me.get("displayName") or me.get("emailAddress") or "ok"
+    print(f"ok: {who} ({me.get('emailAddress', email)}) on {base}")
+    return 0
+
+
+def main(argv: list[str] | None = None) -> int:
+    ap = argparse.ArgumentParser(
+        prog="jmd",
+        description="Render a Jira issue as clean Markdown.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""examples:
+  jmd DWH-10091                   fetch from Jira (credentials from env or file)
+  jmd ~/Downloads/DWH-10091.doc    convert an "Export > Word" file
+  jmd DWH-10091 -o ticket.md       write to a file
+  jmd DWH-10091 --save             write 20261104-DWH-10091.md here
+  jmd --check                      verify the stored credentials
+
+credentials, in order of precedence: --email/--token, environment, then
+~/.config/jmd/credentials holding JIRA_EMAIL= and JIRA_TOKEN= lines.
+""",
+    )
+    ap.add_argument("source", nargs="?", help="issue key, or path to an exported .doc/.html")
+    ap.add_argument("--check", action="store_true", help="verify the stored credentials and exit")
+    ap.add_argument("-o", "--out", help="output path (default: stdout)")
+    ap.add_argument(
+        "--save",
+        nargs="?",
+        const=".",
+        metavar="DIR",
+        help="write YYYYMMDD-KEY.md here, or into DIR",
+    )
+    ap.add_argument("--key", help="override the issue key used in the title")
+    ap.add_argument("--base-url", default=None)
+    ap.add_argument("--email", default=None)
+    ap.add_argument("--token", default=None)
+    a = ap.parse_args(argv)
+
+    creds = _load_credentials()
+    base = a.base_url or os.environ.get("JIRA_BASE_URL") or creds.get("JIRA_BASE_URL") or DEFAULT_BASE
+    email = a.email or os.environ.get("JIRA_EMAIL") or creds.get("JIRA_EMAIL")
+    token = a.token or os.environ.get("JIRA_TOKEN") or creds.get("JIRA_TOKEN")
+
+    if a.check:
+        return check_credentials(base, email, token)
+
+    if not a.source:
+        ap.error("give an issue key or a file (or --check to test credentials)")
+
+    src = os.path.expanduser(a.source)
+
+    key = a.key or src
+
+    if os.path.isfile(src):
+        key, md = from_html(src, a.key)
+    elif KEY_RE.fullmatch(src):
+        if not (email and token):
+            print(
+                "jmd: no API credentials found.\n"
+                f"  create an API token at https://id.atlassian.com/manage-profile/security/api-tokens\n"
+                f"  then put it in {CRED_FILE}:\n"
+                "    mkdir -p ~/.config/jmd\n"
+                "    printf 'JIRA_EMAIL=%s\\nJIRA_TOKEN=%s\\n' \"$EMAIL\" \"$TOKEN\" > ~/.config/jmd/credentials\n"
+                "    chmod 600 ~/.config/jmd/credentials\n"
+                f"  or pass an exported file instead:  jmd ~/Downloads/{src}.doc",
+                file=sys.stderr,
+            )
+            return 2
+        md = from_api(src, base, email, token)
+    else:
+        ap.error(f"not a file and not an issue key: {a.source}")
+
+    out = a.out
+    if a.save:
+        if a.out:
+            ap.error("use either -o or --save, not both")
+        name = f"{date.today().strftime('%Y%m%d')}-{key}.md"
+        out = name if a.save in (".", "") else os.path.join(a.save, name)
+
+    if not out:
+        sys.stdout.write(md)
+        return 0
+
+    out = os.path.expanduser(out)
+    parent = os.path.dirname(out)
+    if parent:
+        os.makedirs(parent, exist_ok=True)
+    with open(out, "w", encoding="utf-8") as fh:
+        fh.write(md)
+    print(f"wrote {out}  ({len(md)} chars, ~{len(md) // 4} tokens)", file=sys.stderr)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
