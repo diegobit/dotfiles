@@ -118,7 +118,8 @@ for loc in "${locations[@]}"; do
     for retired in flash-worker claude-worker cursor-worker external-worker \
         diagnosing-bugs deep-review grilling grill-me grill-with-docs wayfinder \
         prototype to-spec to-tickets docextract2 writing-for-agents2 writing-for-humans2 \
-        delegate code-simplifier create-verification-skill domain-modeling; do
+        delegate code-simplifier create-verification-skill domain-modeling \
+        plan-work; do
         [ ! -d "$AGENT_SKILLS_DIR/$retired" ] || continue
         link_path="$dest_dir/$retired"
         [ -L "$link_path" ] || continue
