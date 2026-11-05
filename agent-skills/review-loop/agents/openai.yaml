@@ -1,0 +1,5 @@
+interface:
+  display_name: "Review Loop"
+  short_description: "Loop a code change through a reviewer model the user names"
+policy:
+  allow_implicit_invocation: false

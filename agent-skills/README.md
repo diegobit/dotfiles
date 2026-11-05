@@ -42,8 +42,10 @@ Nothing here needs a global Python environment. `docextract` declares its Python
 | **harness-history** | `python3`, `jq` | `brew install jq` |
 | **telegram-notify** | `tg` on `PATH`; `~/.telegram-bot-token-<profile>` and `~/.telegram-chat-id-<profile>` (`~/.telegram-default-profile` optional, absent means `dg`) | `install.sh` links `bin/tg.sh` on macOS; elsewhere `ln -sf ~/dotfiles/bin/tg.sh ~/.local/bin/tg` |
 
-The remaining instruction-only skills are `plan-tracker`, `plan-work`, `writing-for-agents`,
-and `writing-for-humans`.
+The remaining instruction-only skills are `plan-tracker`, `plan-work`, `review-loop`,
+`writing-for-agents`, and `writing-for-humans`.
+
+`review-loop` is tstack's `sol-loop` with the reviewer model chosen per run instead of fixed.
 
 `plan-work` replaces `to-spec` and `to-tickets`, with separate specification and
 implementation-planning modes. It follows `plan-tracker` for publication.
@@ -52,7 +54,7 @@ The revised `docextract`, `writing-for-humans`, and `writing-for-agents` are the
 default versions. Earlier versions remain in Git history; the `*2` comparison
 entry points have been retired.
 
-Codex marks `plan-work` explicit-only through `agents/openai.yaml`.
+Codex marks `plan-work` and `review-loop` explicit-only through `agents/openai.yaml`.
 
 OpenCode's `scheduled-tasks` and `db-cleanup` remain separate under
 `~/.config/opencode/skills/`; the shared linker does not manage them.
