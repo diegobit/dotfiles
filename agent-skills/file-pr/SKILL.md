@@ -45,8 +45,7 @@ secrets and private details.
 
 Open a real PR rather than a draft so review bots run. If `gh pr create` fails
 because the GraphQL rate limit is used up, open it through REST with
-`gh api repos/<owner>/<repo>/pulls -f title=... -f head=... -f base=... -F body=@<file>`. If the user also asked
-to babysit it, watch its checks and reviews with what the harness provides.
+`gh api repos/<owner>/<repo>/pulls -f title=... -f head=... -f base=... -F body=@<file>`.
 
 Do not post a follow-up PR comment unless it serves the user's request. When a
 comment is needed, use the `leaving-pr-comments` skill.
