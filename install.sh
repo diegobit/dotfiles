@@ -137,7 +137,7 @@ if [ ! -d "$FLEET_DIR/.git" ]; then
 fi
 [ -x "$FLEET_DIR/bin/apply.sh" ] && "$FLEET_DIR/bin/apply.sh"
 
-# Configure MCP servers after installation: see docs/mcp-setup.md.
+# fleet also writes the MCP servers into every harness: see docs/mcp-setup.md.
 
 # ---------------------------------------------
 # Programming Languages and Frameworks, work

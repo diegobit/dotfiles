@@ -6,39 +6,37 @@
       "chrome-devtools": {
         "type": "local",
         "command": [
-          "npx",
+          "/Users/diego/.local/share/mise/installs/node/24/bin/npx",
           "-y",
           "chrome-devtools-mcp@latest",
           "--no-usage-statistics",
           "--no-performance-crux"
-        ]
+        ],
+        "environment": {
+          "PATH": "/Users/diego/.local/share/mise/installs/node/24/bin:/usr/local/bin:/usr/bin:/bin"
+        }
       },
       "playwright": {
         "type": "local",
         "command": [
-          "npx",
+          "/Users/diego/.local/share/mise/installs/node/24/bin/npx",
           "-y",
           "@playwright/mcp@latest",
           "--browser",
           "chrome",
           "--caps",
           "devtools"
-        ]
+        ],
+        "environment": {
+          "PATH": "/Users/diego/.local/share/mise/installs/node/24/bin:/usr/local/bin:/usr/bin:/bin"
+        }
       },
       "icloud-mail": {
         "type": "remote",
         "url": "https://icloud-mail.diegobit.com/mcp",
         "oauth": false,
         "headers": {
-          "Authorization": "Bearer {env:ICLOUD_MAIL_TOKEN}"
-        }
-      },
-      "rivolo": {
-        "type": "remote",
-        "url": "https://mcp.rivolo.app/mcp",
-        "oauth": false,
-        "headers": {
-          "Authorization": "Bearer {file:~/.rivolo-token}"
+          "Authorization": "Bearer {file:~/.icloud-mail-token}"
         }
       },
       "raindrop": {
@@ -54,15 +52,34 @@
         "command": [
           "/Users/diego/.local/share/mise/installs/node/24/bin/node",
           "/Users/diego/code/dg/icloud-notes-mcp/src/server.mjs"
-        ]
+        ],
+        "environment": {
+          "PATH": "/Users/diego/.local/share/mise/installs/node/24/bin:/usr/local/bin:/usr/bin:/bin"
+        }
+      },
+      "rivolo-diego": {
+        "type": "remote",
+        "url": "https://mcp.rivolo.app/mcp",
+        "oauth": false,
+        "headers": {
+          "Authorization": "Bearer {file:~/.rivolo-token}"
+        }
       }
     }
   },
-  // Bookmark deletion stays available; collections and tags do not.
   "permissions": [
-    { "action": "raindrop_delete_collections", "resource": "*", "effect": "deny" },
-    { "action": "raindrop_delete_tags", "resource": "*", "effect": "deny" }
+    {
+      "action": "raindrop_delete_collections",
+      "resource": "*",
+      "effect": "deny"
+    },
+    {
+      "action": "raindrop_delete_tags",
+      "resource": "*",
+      "effect": "deny"
+    }
   ],
-  "plugin": ["opencode-scheduled-tasks"]
-  //"plugin": ["@mohak34/opencode-notifier@latest"]
+  "plugin": [
+    "opencode-scheduled-tasks"
+  ]
 }

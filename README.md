@@ -45,7 +45,7 @@ cd dotfiles
 stow .
 ```
 
-For AI MCP server configuration, see the [MCP setup guide](docs/mcp-setup.md).
+The diegobit/fleet repo configures the MCP servers of every agent harness; see the [MCP setup guide](docs/mcp-setup.md).
 
 My agent skills are public in [diegobit/skills](https://github.com/diegobit/skills). Agent
 instructions, the `tg` notifier and the wiring that links the skills on every machine I run coding
