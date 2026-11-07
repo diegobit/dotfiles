@@ -40,6 +40,7 @@ Nothing here needs a global Python environment. `docextract` declares its Python
 |---|---|---|
 | **docextract** | `uv`; Xcode CLT (for `swiftc`, builds the Vision OCR helper once) | `brew install uv` · `xcode-select --install` |
 | **harness-history** | `python3`, `jq` | `brew install jq` |
+| **test-audit** *(disconnected)* | instruction-only | Retained in repo (`agent-skills/test-audit/`), disconnected from global harness symlinks |
 | **telegram-notify** | `tg` on `PATH`; `~/.telegram-bot-token-<profile>` and `~/.telegram-chat-id-<profile>` (`~/.telegram-default-profile` optional, absent means `dg`) | `install.sh` links `bin/tg.sh` on macOS; elsewhere `ln -sf ~/dotfiles/bin/tg.sh ~/.local/bin/tg` |
 
 The remaining instruction-only skills are `file-pr`, `leaving-pr-comments`, `modernize`,
@@ -49,6 +50,9 @@ The remaining instruction-only skills are `file-pr`, `leaving-pr-comments`, `mod
 `file-pr`, `leaving-pr-comments`, and `modernize` come from
 [tstack](https://github.com/t3dotgg/tstack); `leaving-pr-comments` also applies
 `writing-for-humans` to the comment body.
+
+`test-audit` remains in `agent-skills/test-audit/` for test authoring gates and audit campaigns,
+disconnected from global harness symlinks.
 
 The revised `docextract`, `writing-for-humans`, and `writing-for-agents` are the
 default versions. Earlier versions remain in Git history; the `*2` comparison
@@ -83,3 +87,5 @@ earlier document skill needed the first three; `docextract` was tested without t
   [mattpocock/skills](https://github.com/mattpocock/skills).
 - `writing-for-humans` was adapted from
   [Pstack](https://github.com/cursor/plugins/tree/main/pstack).
+- `test-audit` was adapted from
+  [openclaw/openclaw](https://github.com/openclaw/openclaw).

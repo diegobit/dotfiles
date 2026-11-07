@@ -88,7 +88,7 @@ locations=(
 )
 
 # Present in the repo and the in-repo harness dirs, not installed user-globally.
-repo_only=(harness-history)
+repo_only=(harness-history test-audit)
 
 is_repo_only() {
     local name="$1"
