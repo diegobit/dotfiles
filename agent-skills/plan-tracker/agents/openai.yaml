@@ -1,5 +1,0 @@
-interface:
-  display_name: "Plan Tracker"
-  short_description: "Locate the project's markdown plan tracker and conventions"
-policy:
-  allow_implicit_invocation: true

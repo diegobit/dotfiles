@@ -47,6 +47,10 @@ stow .
 
 For AI MCP server configuration, see the [MCP setup guide](docs/mcp-setup.md).
 
+Agent instructions, agent skills and the `tg` notifier live in my private `diegobit/fleet` repo,
+shared by every machine I run coding agents on. `install.sh` clones it to `~/code/dg/fleet` and
+runs its `bin/apply.sh`; skip that step if you are not me.
+
 ## Setup nvim
 
 ### Inside nvim

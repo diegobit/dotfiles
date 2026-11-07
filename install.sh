@@ -112,12 +112,7 @@ curl -fsSL https://claude.ai/install.sh | bash
 # for docextract skill (uv is installed below via astral.sh; swiftc for Vision OCR helper)
 xcode-select -p &>/dev/null || xcode-select --install
 
-# Symlink agent skills across harnesses
-"$HOME/dotfiles/bin/link-agent-skills.sh"
-
-# Expose bin scripts as commands (PATH includes ~/.local/bin)
 mkdir -p "$HOME/.local/bin"
-ln -sf "$HOME/dotfiles/bin/tg.sh" "$HOME/.local/bin/tg"
 
 # Tailscale CLI wrapper and fish completion (App Store or standalone app)
 if [ -x "/Applications/Tailscale.app/Contents/MacOS/Tailscale" ]; then
@@ -132,8 +127,9 @@ EOF
     fi
 fi
 
-# Global agent instructions live in the private diegobit/fleet repo, which
-# builds ~/AGENTS.md per host and links Claude Code, Codex, opencode and Gemini.
+# Agent instructions, agent skills, the tg notifier and the shared fish file
+# live in the private diegobit/fleet repo; its apply.sh links them for every
+# harness (Claude Code, Codex, Cursor, opencode, Gemini).
 FLEET_DIR="$HOME/code/dg/fleet"
 if [ ! -d "$FLEET_DIR/.git" ]; then
     git clone git@github.com:diegobit/fleet.git "$FLEET_DIR" ||

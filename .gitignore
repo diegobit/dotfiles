@@ -22,8 +22,5 @@
 .rivolo-token
 .icloud-mail-token
 
-# docextract: compiled Swift helper is built on first use
-agent-skills/docextract/scripts/vision_ocr
-
 # Python bytecode caches
 __pycache__/
