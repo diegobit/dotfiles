@@ -132,13 +132,14 @@ EOF
     fi
 fi
 
-# Global agent instructions: one canonical file symlinked into every harness
-# (Claude Code, Codex, opencode, Gemini)
-for f in "$HOME/.claude/CLAUDE.md" "$HOME/.codex/AGENTS.md" \
-         "$HOME/.config/opencode/AGENTS.md" "$HOME/.gemini/GEMINI.md"; do
-    mkdir -p "$(dirname "$f")"
-    ln -sf "$HOME/dotfiles/AGENTS.md" "$f"
-done
+# Global agent instructions live in the private diegobit/fleet repo, which
+# builds ~/AGENTS.md per host and links Claude Code, Codex, opencode and Gemini.
+FLEET_DIR="$HOME/code/dg/fleet"
+if [ ! -d "$FLEET_DIR/.git" ]; then
+    git clone git@github.com:diegobit/fleet.git "$FLEET_DIR" ||
+        echo "Could not clone diegobit/fleet; agent instructions not installed." >&2
+fi
+[ -x "$FLEET_DIR/bin/apply.sh" ] && "$FLEET_DIR/bin/apply.sh"
 
 # Configure MCP servers after installation: see docs/mcp-setup.md.
 
