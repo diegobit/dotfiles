@@ -127,9 +127,9 @@ EOF
     fi
 fi
 
-# Agent instructions, agent skills, the tg notifier and the shared fish file
-# live in the private diegobit/fleet repo; its apply.sh links them for every
-# harness (Claude Code, Codex, Cursor, opencode, Gemini).
+# Agent instructions, the tg notifier and the shared fish file live in the
+# private diegobit/fleet repo. Its apply.sh also clones the public
+# diegobit/skills repo and links the skills for every harness.
 FLEET_DIR="$HOME/code/dg/fleet"
 if [ ! -d "$FLEET_DIR/.git" ]; then
     git clone git@github.com:diegobit/fleet.git "$FLEET_DIR" ||
