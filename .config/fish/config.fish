@@ -301,3 +301,6 @@ if status is-interactive
     end
 
 end
+
+# Added by Antigravity IDE
+fish_add_path /Users/diego/.antigravity-ide/antigravity-ide/bin
