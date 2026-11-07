@@ -48,6 +48,13 @@
         "headers": {
           "Authorization": "Bearer {file:~/.raindrop-mcp-token}"
         }
+      },
+      "icloud-notes": {
+        "type": "local",
+        "command": [
+          "/Users/diego/.local/share/mise/installs/node/24/bin/node",
+          "/Users/diego/code/dg/icloud-notes-mcp/src/server.mjs"
+        ]
       }
     }
   },
@@ -55,6 +62,7 @@
   "permissions": [
     { "action": "raindrop_delete_collections", "resource": "*", "effect": "deny" },
     { "action": "raindrop_delete_tags", "resource": "*", "effect": "deny" }
-  ]
+  ],
+  "plugin": ["opencode-scheduled-tasks"]
   //"plugin": ["@mohak34/opencode-notifier@latest"]
 }

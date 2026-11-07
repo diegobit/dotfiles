@@ -318,5 +318,15 @@
     "geminicodeassist.project": "plg-chatbot",
     "python.defaultInterpreterPath": "/opt/homebrew/bin/python3",
     "python.analysis.typeCheckingMode": "basic",
-    "terminal.integrated.initialHint": false
+    "terminal.integrated.initialHint": false,
+    "yaml.disableSchemaDetection": [
+        "**/.github/workflows/*.yml",
+        "**/.github/workflows/*.yaml",
+        "**/.gitea/workflows/*.yml",
+        "**/.gitea/workflows/*.yaml",
+        "**/.forgejo/workflows/*.yml",
+        "**/.forgejo/workflows/*.yaml"
+    ],
+    "chat.disableAIFeatures": true,
+    "task.allowAutomaticTasks": "on"
 }

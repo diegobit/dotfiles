@@ -97,8 +97,8 @@ To keep VM state outside this repo while versioning only the configuration:
 ```
 ~/.config/colima/                      real dir, VM state, never in git
 ├── _lima/, _store/, ssh_config
-├── default/colima.yaml  ─┐
-└── amd64/colima.yaml    ─┴─→ ~/dotfiles/.config/colima/<profile>/colima.yaml
+├── default/colima.yaml  ──┐
+└── amd64/colima.yaml    ──┴─→ ~/dotfiles/.config/colima/<profile>/colima.yaml
 ```
 
 `~/.config/colima` is colima's default when `COLIMA_HOME` is unset, so non-fish shells (`$SHELL` is zsh) resolve to the same VMs. Never create `~/.colima` — it silently takes precedence over everything above.

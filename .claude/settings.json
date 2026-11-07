@@ -1,5 +1,9 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
   "permissions": {
     "allow": [
       "Bash(grep -E \"\\\\.xml$|\\\\.java$|pom|Dockerfile\")",
@@ -23,10 +27,23 @@
     "defaultMode": "auto"
   },
   "model": "sonnet",
-  "attribution": {
-    "commit": "",
-    "pr": ""
+  "statusLine": {
+    "type": "command",
+    "command": "sh /Users/diego/.claude/statusline-command.sh"
   },
+  "enabledPlugins": {},
+  "extraKnownMarketplaces": {},
+  "effortLevel": "high",
+  "awaySummaryEnabled": false,
+  "tui": "fullscreen",
+  "autoMemoryEnabled": false,
+  "autoDreamEnabled": false,
+  "skipDangerousModePermissionPrompt": true,
+  "theme": "dark",
+  "preferredNotifChannel": "auto",
+  "inputNeededNotifEnabled": true,
+  "agentPushNotifEnabled": true,
+  "skipAutoPermissionPrompt": true,
   "_disabledHooks": {
     "_comment": "Commented-out hooks (settings.json must be strict JSON, no // comments). To re-enable, move these entries under the \"hooks\" key and delete _disabledHooks.",
     "Notification": [
@@ -51,20 +68,5 @@
         ]
       }
     ]
-  },
-  "statusLine": {
-    "type": "command",
-    "command": "sh /Users/diego/.claude/statusline-command.sh"
-  },
-  "enabledPlugins": {},
-  "extraKnownMarketplaces": {},
-  "effortLevel": "high",
-  "autoMemoryEnabled": false,
-  "awaySummaryEnabled": false,
-  "tui": "fullscreen",
-  "skipDangerousModePermissionPrompt": true,
-  "preferredNotifChannel": "auto",
-  "inputNeededNotifEnabled": true,
-  "agentPushNotifEnabled": true,
-  "skipAutoPermissionPrompt": true
+  }
 }
